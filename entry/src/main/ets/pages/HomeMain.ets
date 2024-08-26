@@ -1,7 +1,7 @@
 import { emitter } from '@kit.BasicServicesKit';
 import {
   getScreenUIType,
-  ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE, SCREEN_UI_OLD_TYPE } from '../utils/ScreenUIAdapter';
+  ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../utils/ScreenUIAdapter';
 
 /**
  * 首页。

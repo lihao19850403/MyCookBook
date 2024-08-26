@@ -1,8 +1,9 @@
-import { Size, window } from '@kit.ArkUI';
+import { display, Size, window } from '@kit.ArkUI';
 import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW,
   GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX,
   GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX } from './GlobalConfig';
 import emitter from '@ohos.events.emitter';
+import deviceInfo from '@ohos.deviceInfo';
 
 /**
  * 屏幕状态相关工具方法。
@@ -15,8 +16,9 @@ export const SCREEN_UI_NEW_TYPE: string = 'SCREEN_UI_NEW_TYPE';
 
 /** 屏幕类型。 */
 export const enum ScreenUIType {
-  /** 直板单屏状态。 */ NORMAL,
+  /** 直板单屏、折叠屏设备已合上、默认状态。 */ NORMAL,
   /** 折叠屏设备已打开状态。 */ FOLD_OPENED,
+  /** 平板类型设备屏幕。 */ PAD
 }
 
 /**
@@ -32,13 +34,23 @@ export function observeScreenUIChange() {
  * @returns 当前屏幕类型。
  */
 export function getScreenUIType(): ScreenUIType {
-  let screenWidthPx = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX) as number;
-  let screenHeightPx = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX) as number;
-  let bigEdgeLength = Math.max(screenWidthPx, screenHeightPx);
-  let smallEdgeLength = Math.min(screenWidthPx, screenHeightPx);
-  let rate = bigEdgeLength / smallEdgeLength;
-  if (rate > 1 && rate < 1.2) {
-    return ScreenUIType.FOLD_OPENED;
+  let deviceType = deviceInfo.deviceType;
+  if (deviceType === 'tablet' || deviceType === 'tv' || deviceType === 'car' || deviceType === 'smartVision') {
+    return ScreenUIType.PAD;
+  }
+  if (canIUse('SystemCapability.Window.SessionManager')) {
+    if (display.isFoldable() && display.getFoldStatus().toString() !== "2") {
+      return ScreenUIType.FOLD_OPENED;
+    }
+  } else {
+    let screenWidthPx = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX) as number;
+    let screenHeightPx = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX) as number;
+    let bigEdgeLength = Math.max(screenWidthPx, screenHeightPx);
+    let smallEdgeLength = Math.min(screenWidthPx, screenHeightPx);
+    let rate = bigEdgeLength / smallEdgeLength;
+    if (rate > 1 && rate < 1.2 || screenWidthPx > screenHeightPx) {
+      return ScreenUIType.FOLD_OPENED;
+    }
   }
   return ScreenUIType.NORMAL;
 }
