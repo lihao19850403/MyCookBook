@@ -5,8 +5,12 @@
       "value": "#FFFFFF"
     },
     {
-      "name": "main_selected_color",
+      "name": "main_selected_color_light",
       "value": "#FF8BD159"
+    },
+    {
+      "name": "main_selected_color",
+      "value": "#FF5E9D3B"
     },
     {
       "name": "main_unselected_color",
