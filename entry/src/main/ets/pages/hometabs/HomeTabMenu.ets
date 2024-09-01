@@ -1,4 +1,8 @@
+import { CallResult, HttpUtils } from '../../utils/HttpUtils';
+import { getHttpKey } from '../../utils/Utils';
 
+/** 网络请求接口。 */
+const API_PATH: string = 'https://apis.tianapi.com/caipu/index';
 
 /**
  * 首页 - 菜谱。
@@ -12,6 +16,17 @@ export struct HomeTabMenu {
 
   /** 此Tab序号。 */
   private thisIndex: number = 1;
+
+  async aboutToAppear(): Promise<void> {
+    let appKey: string = await getHttpKey();
+    HttpUtils.get<Object>(`${API_PATH}?key=${appKey}&word=家常&num=20`)
+      .then((response: CallResult<Object>) => {
+        console.log(`=== then：${JSON.stringify(response)}`)
+      })
+      .catch((error: CallResult<Object>) => {
+        console.log(`=== error：${JSON.stringify(error)}`)
+      })
+  }
 
   build() {
     TabContent() {
@@ -27,7 +42,6 @@ export struct HomeTabMenu {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Color.Green)
   }
 
   @Builder

@@ -39,7 +39,7 @@ export function getScreenUIType(): ScreenUIType {
     return ScreenUIType.PAD;
   }
   if (canIUse('SystemCapability.Window.SessionManager')) {
-    if (display.isFoldable() && display.getFoldStatus().toString() !== "2") {
+    if (display.isFoldable() && display.getFoldStatus().toString() !== '2') {
       return ScreenUIType.FOLD_OPENED;
     }
   } else {
