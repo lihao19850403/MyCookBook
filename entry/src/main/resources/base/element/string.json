@@ -11,6 +11,22 @@
     {
       "name": "EntryAbility_label",
       "value": "$string:app_name"
+    },
+    {
+      "name": "home_tab_news",
+      "value": "头条"
+    },
+    {
+      "name": "home_tab_menu",
+      "value": "菜谱"
+    },
+    {
+      "name": "home_tab_socialize",
+      "value": "美食圈"
+    },
+    {
+      "name": "home_tab_mine",
+      "value": "我的"
     }
   ]
 }
