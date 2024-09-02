@@ -8,7 +8,7 @@ export const GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX: string = 'GLOBAL_CONFIG_KEY_WIN
  */
 export class GlobalConfig {
 
-  /** 配制记录。 */
+  /** 配置记录。 */
   private static mMap: Record<string, Object> = {};
 
   /**
