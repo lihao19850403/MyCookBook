@@ -7,7 +7,7 @@ export const DEFAULT_REQUEST_TIMEOUT_MS = 1000 * 30;
 /** 网络请求参数类型。 */
 export type HttpRequestParams = Record<string, Object>;
 
-/** 网络请求类型。 */
+/** 网络响应类型。 */
 export interface CallResult<ResultType> {
 
   /** 状态码。 */
@@ -32,12 +32,19 @@ export class HttpUtils {
    * @returns 请求结果。
    */
   static get<ResultType>(apiPath: string): Promise<CallResult<ResultType>> {
-    return axios<string, AxiosResponse<CallResult<ResultType>>, HttpRequestParams>({
+    return axios<string, AxiosResponse<ResultType>, HttpRequestParams>({
       url: apiPath,
       timeout: DEFAULT_REQUEST_TIMEOUT_MS,
       method: http.RequestMethod.GET
     })
-      .then((response: AxiosResponse<CallResult<ResultType>>) => response.data)
+      .then((response: AxiosResponse<ResultType>) => {
+        let result: CallResult<ResultType> = {
+          status: response.status,
+          message: response.statusText,
+          data: response.data
+        };
+        return result;
+      })
       .catch((error: AxiosError) => {
         let result: CallResult<ResultType> = {
           status: error.status,
@@ -54,13 +61,20 @@ export class HttpUtils {
    * @returns 请求结果。
    */
   static post<ResultType>(apiPath: string, params: HttpRequestParams): Promise<CallResult<ResultType>> {
-    return axios<string, AxiosResponse<CallResult<ResultType>>, HttpRequestParams>({
+    return axios<string, AxiosResponse<ResultType>, HttpRequestParams>({
       url: apiPath,
       timeout: DEFAULT_REQUEST_TIMEOUT_MS,
       method: http.RequestMethod.POST,
       data: params
     })
-      .then((response: AxiosResponse<CallResult<ResultType>>) => response.data)
+      .then((response: AxiosResponse<ResultType>) => {
+        let result: CallResult<ResultType> = {
+          status: response.status,
+          message: response.statusText,
+          data: response.data
+        };
+        return result;
+      })
       .catch((error: AxiosError) => {
         let result: CallResult<ResultType> = {
           status: error.status,

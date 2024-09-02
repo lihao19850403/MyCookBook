@@ -1,5 +1,6 @@
+import { RecommendMenuModel } from '../../models/RecommendMenuModel';
 import { CallResult, HttpUtils } from '../../utils/HttpUtils';
-import { getHttpKey } from '../../utils/Utils';
+import { KeysUtils } from '../../utils/KeysUtils';
 
 /** 网络请求接口。 */
 const API_PATH: string = 'https://apis.tianapi.com/caipu/index';
@@ -17,15 +18,8 @@ export struct HomeTabMenu {
   /** 此Tab序号。 */
   private thisIndex: number = 1;
 
-  async aboutToAppear(): Promise<void> {
-    let appKey: string = await getHttpKey();
-    HttpUtils.get<Object>(`${API_PATH}?key=${appKey}&word=家常&num=20`)
-      .then((response: CallResult<Object>) => {
-        console.log(`=== then：${JSON.stringify(response)}`)
-      })
-      .catch((error: CallResult<Object>) => {
-        console.log(`=== error：${JSON.stringify(error)}`)
-      })
+  aboutToAppear(): void {
+    this.apiLoadRecommendMenus();
   }
 
   build() {
@@ -58,6 +52,22 @@ export struct HomeTabMenu {
     }
     .padding({ top: 6, bottom: 6 })
     .alignItems(HorizontalAlign.Center)
+  }
+
+  /**
+   * 获取今日推荐菜谱。
+   */
+  private async apiLoadRecommendMenus() {
+    let reqKey: string = await KeysUtils.getKeyForID(KeysUtils.KEY_HOME_TAB_MENU_REQUEST);
+    HttpUtils.get<RecommendMenuModel>(`${API_PATH}?key=${reqKey}&word=家常&num=3`)
+      .then((response: CallResult<RecommendMenuModel>) => {
+        if (response !== undefined) {
+
+        }
+      })
+      .catch((error: CallResult<RecommendMenuModel>) => {
+
+      })
   }
 }
 
