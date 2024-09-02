@@ -1,4 +1,4 @@
-import { RecommendMenuModel } from '../../models/RecommendMenuModel';
+import { RecommendMenuModel, RecommendMenuResult } from '../../models/RecommendMenuModel';
 import { CallResult, HttpUtils } from '../../utils/HttpUtils';
 import { KeysUtils } from '../../utils/KeysUtils';
 
@@ -61,13 +61,21 @@ export struct HomeTabMenu {
     let reqKey: string = await KeysUtils.getKeyForID(KeysUtils.KEY_HOME_TAB_MENU_REQUEST);
     HttpUtils.get<RecommendMenuModel>(`${API_PATH}?key=${reqKey}&word=家常&num=3`)
       .then((response: CallResult<RecommendMenuModel>) => {
-        if (response !== undefined) {
-
+        if (response !== undefined && response.data !== undefined && response.data.result != undefined) {
+          this.handleRecommendMenuItems(response.data.result);
         }
       })
       .catch((error: CallResult<RecommendMenuModel>) => {
 
       })
+  }
+
+  /**
+   * 处理今日推荐菜谱。
+   * @param data 今日推荐菜谱数据。
+   */
+  private handleRecommendMenuItems(data: RecommendMenuResult) {
+
   }
 }
 
