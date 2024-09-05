@@ -48,8 +48,10 @@ export function getScreenUIType(): ScreenUIType {
     let bigEdgeLength = Math.max(screenWidthPx, screenHeightPx);
     let smallEdgeLength = Math.min(screenWidthPx, screenHeightPx);
     let rate = bigEdgeLength / smallEdgeLength;
-    if (rate > 1 && rate < 1.2 || screenWidthPx > screenHeightPx) {
+    if (rate > 1 && rate < 1.2) {
       return ScreenUIType.FOLD_OPENED;
+    } else if (screenWidthPx > screenHeightPx) {
+      return ScreenUIType.PAD;
     }
   }
   return ScreenUIType.NORMAL;
