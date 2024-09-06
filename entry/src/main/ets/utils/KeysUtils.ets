@@ -23,9 +23,6 @@ export interface KeyInfo {
  */
 export class KeysUtils {
 
-  /** 菜谱页面网络请求key。 */
-  public static KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
-
   /** 记录密钥的文件名。 */
   private static KEYS_FILE_NAME: string = 'keys.json5';
 
@@ -46,6 +43,9 @@ export class KeysUtils {
     return keyInfo ? keyInfo.value : '';
   }
 
+  /**
+   * 初始化所有密钥信息。
+   */
   private static async initKeyInfos() {
     let context = GlobalContext.getContext();
     if (context === undefined) {

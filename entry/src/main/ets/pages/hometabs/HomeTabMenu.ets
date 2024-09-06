@@ -1,9 +1,16 @@
-import { RecommendMenuModel, RecommendMenuResult } from '../../models/RecommendMenuModel';
+import { RecommendMenuModel } from '../../models/RecommendMenuModel';
 import { CallResult, HttpUtils } from '../../utils/HttpUtils';
 import { KeysUtils } from '../../utils/KeysUtils';
+import { KVUtils } from '../../utils/KVUtils';
+
+/** 菜谱页面网络请求key。 */
+const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
 
 /** 网络请求接口。 */
 const API_PATH: string = 'https://apis.tianapi.com/caipu/index';
+
+/** 推荐菜谱配置文件名。 */
+const FILE_NAME_RECOMMEND_MENU: string = 'recommend_menu';
 
 /**
  * 首页 - 菜谱。
@@ -19,7 +26,12 @@ export struct HomeTabMenu {
   private thisIndex: number = 1;
 
   aboutToAppear(): void {
-    this.apiLoadRecommendMenus();
+    let today: string = new Date().toLocaleDateString();
+    if (!KVUtils.hasKV(FILE_NAME_RECOMMEND_MENU, today)) { // 每日拉取新推荐菜谱。
+      this.apiLoadRecommendMenus();
+    } else { // 今日已拉取过推荐菜谱，使用已保存的数据。
+      this.prepareRecommendMenu();
+    }
   }
 
   build() {
@@ -58,23 +70,35 @@ export struct HomeTabMenu {
    * 获取今日推荐菜谱。
    */
   private async apiLoadRecommendMenus() {
-    let reqKey: string = await KeysUtils.getKeyForID(KeysUtils.KEY_HOME_TAB_MENU_REQUEST);
-    HttpUtils.get<RecommendMenuModel>(`${API_PATH}?key=${reqKey}&word=家常&num=3`)
+    let reqKey: string = await KeysUtils.getKeyForID(KEY_HOME_TAB_MENU_REQUEST);
+    let page: number = Math.floor(Math.random() * 10) % 2 + 1;
+    let num: number = Math.floor(Math.random() * 10) + 3;
+    HttpUtils.get<RecommendMenuModel>(`${API_PATH}?key=${reqKey}&word=家常&page=${page}&num=${num}`)
       .then((response: CallResult<RecommendMenuModel>) => {
         if (response !== undefined && response.data !== undefined && response.data.result != undefined) {
-          this.handleRecommendMenuItems(response.data.result);
+          let today: string = new Date().toLocaleDateString();
+          KVUtils.setKV(FILE_NAME_RECOMMEND_MENU, today, JSON.stringify(response.data.result));
+          this.prepareRecommendMenu();
+        } else {
+          this.prepareMockRecommendMenu();
         }
       })
       .catch((error: CallResult<RecommendMenuModel>) => {
-
+        this.prepareMockRecommendMenu();
       })
   }
 
   /**
-   * 处理今日推荐菜谱。
-   * @param data 今日推荐菜谱数据。
+   * 根据今日推荐菜谱信息准备数据。
    */
-  private handleRecommendMenuItems(data: RecommendMenuResult) {
+  private prepareRecommendMenu() {
+
+  }
+
+  /**
+   * 准备模拟数据。
+   */
+  private prepareMockRecommendMenu() {
 
   }
 }
