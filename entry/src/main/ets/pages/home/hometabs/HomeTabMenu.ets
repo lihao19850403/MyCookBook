@@ -1,12 +1,13 @@
-import { RecommendMenuItem, RecommendMenuModel, RecommendMenuResult } from '../../models/RecommendMenuModel';
-import { GlobalContext } from '../../utils/GlobalContext';
-import { CallResult, HttpUtils } from '../../utils/HttpUtils';
-import { KeysUtils } from '../../utils/KeysUtils';
-import { KVUtils } from '../../utils/KVUtils';
+import { RecommendMenuItem, RecommendMenuModel, RecommendMenuResult } from '../../../models/RecommendMenuModel';
+import { GlobalContext } from '../../../utils/GlobalContext';
+import { CallResult, HttpUtils } from '../../../utils/HttpUtils';
+import { KeysUtils } from '../../../utils/KeysUtils';
+import { KVUtils } from '../../../utils/KVUtils';
 import { util } from '@kit.ArkTS';
-import { LHCommonTitleBar } from '../../views/common/LHCommonTitleBar';
-import { ScreenUIType } from '../../utils/ScreenUIAdapter';
-import { MenuTipsCard } from '../../views/MenuTipsCard';
+import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
+import { ScreenUIType } from '../../../utils/ScreenUIAdapter';
+import { MenuTipsCard } from '../../../views/MenuTipsCard';
+import { RouterUtils } from '../../../utils/RouterUtils';
 
 /** 菜谱页面网络请求key。 */
 const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
@@ -78,8 +79,7 @@ export struct HomeTabMenu {
                 ForEach(this.recommendMenu.list.slice(0, 3), (menuItem: RecommendMenuItem, index: number) => {
                   GridItem() {
                     MenuTipsCard({
-                      menuInfo: menuItem,
-                      // style: MenuTipsCardStyle.SQUARE_BANNER
+                      menuInfo: menuItem
                     })
                   }
                 })
@@ -137,6 +137,7 @@ export struct HomeTabMenu {
       Text($r('app.string.check_all'))
         .fontColor($r('app.color.main_selected_color'))
         .fontSize(14)
+        .visibility(this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0 ? Visibility.Visible : Visibility.None)
     }
     .width('100%')
     .height(32)
@@ -144,6 +145,11 @@ export struct HomeTabMenu {
     .justifyContent(FlexAlign.Center)
     .alignItems(VerticalAlign.Center)
     .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+    .onClick((event: ClickEvent) => {
+      if (this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0) {
+        RouterUtils.go('pages/recommendmenu/RecommendMenu', this.recommendMenu);
+      }
+    })
   }
 
   /**

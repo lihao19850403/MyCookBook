@@ -1,3 +1,5 @@
+import { GlobalContext } from './GlobalContext';
+
 /**
  * 通用工具类。
  * @author li.hao85
@@ -19,4 +21,21 @@ export function firstNotVoid<T>(...objects: T[]): T {
     }
   }
   return BLANK_OBJECT as T;
+}
+
+/**
+ * 将资源转成字符串。
+ * @param res 待转换的资源。
+ * @returns 转换结果。
+ */
+export function res2string(res: Resource): string {
+  let context = GlobalContext.getContext();
+  if (context === undefined) {
+    return '';
+  }
+  try {
+    return context.resourceManager.getStringSync(res);
+  } catch (error) {
+  }
+  return '';
 }

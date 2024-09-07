@@ -58,6 +58,33 @@ export function getScreenUIType(): ScreenUIType {
 }
 
 /**
+ * 获取屏幕宽，单位是像素。
+ * @returns 屏幕像素宽。
+ */
+export function getScreenWidthPx(): number {
+  return display.getDefaultDisplaySync().width;
+}
+
+/**
+ * 获取屏幕高，单位是像素。
+ * @returns 屏幕像素高。
+ */
+export function getScreenHeightPx(): number {
+  return display.getDefaultDisplaySync().height;
+}
+
+/**
+ * 获取屏幕底部导航条安全区域高度。
+ * @returns 屏幕底部导航条安全区域高度。
+ */
+export function getScreenBottomSafeZoneHeightPx(): number {
+  let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+  let type = window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR;
+  let avoidArea = mainWindow.getWindowAvoidArea(type);
+  return avoidArea.bottomRect.height;
+}
+
+/**
  * 响应屏幕尺寸的变化。
  * @param windowSize 当前屏幕尺寸数据。
  */

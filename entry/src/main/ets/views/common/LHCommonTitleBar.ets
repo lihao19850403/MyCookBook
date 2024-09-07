@@ -1,3 +1,4 @@
+import { RouterUtils } from '../../utils/RouterUtils';
 import { firstNotVoid } from '../../utils/Utils';
 import { LHDivider } from './LHDivider';
 
@@ -21,6 +22,17 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
   needBottomDivider: true
 }
 
+/** 一个默认的标题栏返回按钮。 */
+@Builder
+export function LHCommonTitleBarLeftBack() {
+  Image($r('app.media.ic_main_back_arrow'))
+    .width(48)
+    .height(48)
+    .padding(12)
+    .objectFit(ImageFit.Contain)
+    .onClick((event: ClickEvent) => RouterUtils.back())
+}
+
 /**
  * 自定义的标题栏。
  * @author li.hao85
@@ -37,6 +49,12 @@ export struct LHCommonTitleBar {
   /** 标题栏背景。 */
   private titleBarBg?: ResourceColor;
 
+  /** 左侧区域。 */
+  @BuilderParam private leftAction?: () => void;
+
+  /** 右侧区域。 */
+  @BuilderParam private rightAction?: () => void;
+
   /** 是否需要底部分割线。 */
   private needBottomDivider?: boolean;
 
@@ -48,6 +66,29 @@ export struct LHCommonTitleBar {
         .height('100%')
         .fontSize(18)
         .fontWeight(FontWeight.Medium)
+      Row() {
+        Stack({
+          alignContent: Alignment.Center
+        }) {
+          if (this.leftAction !== undefined) {
+            this.leftAction()
+          }
+        }
+        .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
+        Stack({
+          alignContent: Alignment.Center
+        }) {
+          if (this.rightAction !== undefined) {
+            this.rightAction()
+          }
+        }
+        .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
+      }
+      .width('100%')
+      .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
+      .justifyContent(FlexAlign.SpaceBetween)
+      .alignItems(VerticalAlign.Center)
+      .hitTestBehavior(HitTestMode.None)
       if (firstNotVoid(this.needBottomDivider, DEFAULT_ATTRIBUTES.needBottomDivider)) {
         LHDivider()
       }
