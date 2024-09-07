@@ -23,7 +23,7 @@ export class KVUtils {
     }
     try {
       let handler = preferences.getPreferencesSync(context, { name: fileName });
-      return handler.getSync(fileName, key);
+      return handler.getSync(key, '');
     } catch (error) {
     }
     return EMPTY_KV;
@@ -80,6 +80,29 @@ export class KVUtils {
     try {
       let handler = preferences.getPreferencesSync(context, { name: fileName });
       handler.putSync(key, value);
+      handler.flush();
+    } catch (error) {
+    }
+  }
+
+  /**
+   * 将多个键值对一次性存入配置文件中。
+   * @param fileName 配置文件名。
+   * @param kvPairs 待存储的键值对记录。
+   */
+  public static setKVs(fileName: string, kvPairs: Record<string, preferences.ValueType>) {
+    let context = GlobalContext.getContext();
+    if (context === undefined) {
+      return;
+    }
+    try {
+      let handler = preferences.getPreferencesSync(context, { name: fileName });
+      let keys: string[] = Object.keys(kvPairs);
+      keys.forEach((key: string) => {
+        let value: preferences.ValueType = kvPairs[key];
+        handler.putSync(key, value);
+      });
+      handler.flush();
     } catch (error) {
     }
   }
@@ -97,6 +120,27 @@ export class KVUtils {
     try {
       let handler = preferences.getPreferencesSync(context, { name: fileName });
       handler.deleteSync(key);
+      handler.flush();
+    } catch (error) {
+    }
+  }
+
+  /**
+   * 一次性删除多个键值对。
+   * @param fileName 配置文件名。
+   * @param keys 待删除的多个键。
+   */
+  public static removeKVs(fileName: string, keys: string[]) {
+    let context = GlobalContext.getContext();
+    if (context === undefined) {
+      return;
+    }
+    try {
+      let handler = preferences.getPreferencesSync(context, { name: fileName });
+      keys.forEach((key: string) => {
+        handler.deleteSync(key);
+      });
+      handler.flush();
     } catch (error) {
     }
   }
@@ -113,12 +157,13 @@ export class KVUtils {
     try {
       let handler = preferences.getPreferencesSync(context, { name: fileName });
       handler.clearSync();
+      handler.flush();
     } catch (error) {
     }
   }
 
   /**
-   * 刷新一遍配置文件内容。
+   * 手动刷新一遍配置文件内容。
    * @param fileName 配置文件名。
    */
   public static refresh(fileName: string) {
