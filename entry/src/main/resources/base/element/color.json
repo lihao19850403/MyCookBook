@@ -15,6 +15,30 @@
     {
       "name": "main_unselected_color",
       "value": "#FFBFBFBF"
+    },
+    {
+      "name": "main_bg_gray_color",
+      "value": "#FFF2F2F2"
+    },
+    {
+      "name": "main_bg_green_light_color",
+      "value": "#FFEDFFED"
+    },
+    {
+      "name": "menu_type_name_bg_color",
+      "value": "#FFCBDFAE"
+    },
+    {
+      "name": "menu_type_name_text_color",
+      "value": "#FF3E5529"
+    },
+    {
+      "name": "menu_feature_bg_color",
+      "value": "#FFF1CCB1"
+    },
+    {
+      "name": "menu_feature_text_color",
+      "value": "#FF80401A"
     }
   ]
 }

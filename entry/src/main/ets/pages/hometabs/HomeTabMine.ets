@@ -1,4 +1,4 @@
-
+import { ScreenUIType } from '../../utils/ScreenUIAdapter';
 
 /**
  * 首页 - 个人主页。
@@ -9,6 +9,9 @@ export struct HomeTabMine {
 
   /** 当前选中的Tab序号。 */
   @Prop selectedIndex: number;
+
+  /** 屏幕状态。 */
+  @Prop screenUIType: ScreenUIType;
 
   /** 此Tab序号。 */
   private thisIndex: number = 3;
@@ -27,7 +30,7 @@ export struct HomeTabMine {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(Color.Blue)
+    .backgroundColor($r('app.color.main_bg_gray_color'))
   }
 
   @Builder

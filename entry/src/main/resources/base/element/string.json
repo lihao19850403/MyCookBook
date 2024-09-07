@@ -27,6 +27,18 @@
     {
       "name": "home_tab_mine",
       "value": "我的"
+    },
+    {
+      "name": "today_s_recommend",
+      "value": "今日推荐"
+    },
+    {
+      "name": "no_recommend_menu_available",
+      "value": "暂无推荐菜谱"
+    },
+    {
+      "name": "check_all",
+      "value": "查看全部"
     }
   ]
 }

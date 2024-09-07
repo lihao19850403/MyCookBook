@@ -39,10 +39,10 @@ struct HomeMain {
         index: 0,
         controller: this.tabsController
       }) {
-        HomeTabNews({selectedIndex: this.curSelectedTabIndex})
-        HomeTabMenu({selectedIndex: this.curSelectedTabIndex})
-        HomeTabSocialize({selectedIndex: this.curSelectedTabIndex})
-        HomeTabMine({selectedIndex: this.curSelectedTabIndex})
+        HomeTabNews({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
+        HomeTabMenu({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
+        HomeTabSocialize({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
+        HomeTabMine({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
       }
       .vertical(this.screenUIType !== ScreenUIType.NORMAL)
       .edgeEffect(EdgeEffect.None)
