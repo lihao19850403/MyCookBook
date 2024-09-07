@@ -1,8 +1,6 @@
 import preferences from '@ohos.data.preferences';
 import { GlobalContext } from './GlobalContext';
-
-/** 空的preferences配置项。 */
-export const EMPTY_KV: Object = new Object();
+import { BLANK_OBJECT } from './Utils';
 
 /**
  * 读取密钥工具类。
@@ -19,14 +17,14 @@ export class KVUtils {
   public static queryKV(fileName: string, key: string): preferences.ValueType {
     let context = GlobalContext.getContext();
     if (context === undefined) {
-      return EMPTY_KV;
+      return BLANK_OBJECT;
     }
     try {
       let handler = preferences.getPreferencesSync(context, { name: fileName });
       return handler.getSync(key, '');
     } catch (error) {
     }
-    return EMPTY_KV;
+    return BLANK_OBJECT;
   }
 
   /**
@@ -37,14 +35,14 @@ export class KVUtils {
   public static queryAllKVs(fileName: string): Object {
     let context = GlobalContext.getContext();
     if (context === undefined) {
-      return EMPTY_KV;
+      return BLANK_OBJECT;
     }
     try {
       let handler = preferences.getPreferencesSync(context, { name: fileName });
       return handler.getAllSync();
     } catch (error) {
     }
-    return EMPTY_KV;
+    return BLANK_OBJECT;
   }
 
   /**
