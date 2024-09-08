@@ -18,11 +18,15 @@ interface DefaultAttributes {
 
   /** 菜谱详情样式。 */
   style: MenuDetailCardStyle;
+
+  /** 无标题模式，适合嵌入单页显示。 */
+  noTitleMode: boolean;
 }
 
 /** 默认属性。 */
 const DEFAULT_ATTRIBUTES: DefaultAttributes = {
-  style: MenuDetailCardStyle.ROUND_CARD
+  style: MenuDetailCardStyle.ROUND_CARD,
+  noTitleMode: false
 }
 
 /**
@@ -40,6 +44,9 @@ export struct MenuDetailCard {
 
   /** 菜谱详情样式。 */
   private style?: MenuDetailCardStyle;
+
+  /** 无标题模式，适合嵌入单页显示。 */
+  private noTitleMode?: boolean;
 
   build() {
     if (this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined && this.menuInfo.cp_name !== '') {
@@ -79,11 +86,13 @@ export struct MenuDetailCard {
     Column({
       space: 8
     }) {
-      Text(menuName)
-        .width('100%')
-        .fontSize(18)
-        .fontWeight(FontWeight.Medium)
-        .textAlign(this.screenUIType === ScreenUIType.NORMAL ? TextAlign.Center : TextAlign.Start)
+      if (!firstNotVoid(this.noTitleMode, DEFAULT_ATTRIBUTES.noTitleMode)) {
+        Text(menuName)
+          .width('100%')
+          .fontSize(18)
+          .fontWeight(FontWeight.Medium)
+          .textAlign(this.screenUIType === ScreenUIType.NORMAL ? TextAlign.Center : TextAlign.Start)
+      }
       if (this.menuInfo!.type_name !== undefined && this.menuInfo!.type_name !== '') {
         Text(this.menuInfo!.type_name)
           .fontSize(12)

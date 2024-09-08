@@ -81,6 +81,7 @@ export struct HomeTabMenu {
                     MenuTipsCard({
                       menuInfo: menuItem
                     })
+                      .onClick((event: ClickEvent) => RouterUtils.go('pages/menudetail/MenuDetailPage', menuItem))
                   }
                 })
               }
