@@ -36,12 +36,15 @@ export struct MenuTipsCard {
   /** 菜谱名片样式。 */
   private style?: MenuTipsCardStyle;
 
+  /** 随机菜谱图片。s */
+  private tempPic: ResourceStr = this.randomMenuPic();
+
   build() {
     if (this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined && this.menuInfo.cp_name !== '') {
       Row({
         space: 8
       }) {
-        Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.randomMenuPic()))
+        Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic))
           .width(112)
           .height(63)
           .objectFit(ImageFit.Contain)

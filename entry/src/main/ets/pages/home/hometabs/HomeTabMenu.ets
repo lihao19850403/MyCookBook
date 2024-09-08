@@ -6,8 +6,10 @@ import { KVUtils } from '../../../utils/common/KVUtils';
 import { util } from '@kit.ArkTS';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
-import { MenuTipsCard } from '../../../views/MenuTipsCard';
-import { RouterUtils } from '../../../utils/common/RouterUtils';
+import { HomeTabMenuRecommend } from './HomeTabMenuRecommend';
+import { HomeTabMenuFavorite } from './HomeTabMenuFavorite';
+import emitter from '@ohos.events.emitter';
+import { FavoriteMenuUtils, FAVORITE_MENU_CHANGE_EVENT } from '../../../utils/FavoriteMenuUtils';
 
 /** 菜谱页面网络请求key。 */
 const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
@@ -40,6 +42,9 @@ export struct HomeTabMenu {
   /** 正在加载今日推荐菜谱。 */
   @State isLoadingRecommendMenu: boolean = true;
 
+  /** 已收藏的菜谱。 */
+  @State favoriteMenu: RecommendMenuItem[] | undefined = undefined;
+
   /** 此Tab序号。 */
   private thisIndex: number = 1;
 
@@ -54,6 +59,8 @@ export struct HomeTabMenu {
       this.recommendMenu = JSON.parse(recommendMenuStr) as RecommendMenuResult;
       this.isLoadingRecommendMenu = false;
     }
+    this.initFavoriteMenu();
+    emitter.on(FAVORITE_MENU_CHANGE_EVENT, () => this.initFavoriteMenu());
   }
 
   build() {
@@ -70,40 +77,19 @@ export struct HomeTabMenu {
         centerTitleText: $r('app.string.home_tab_menu')
       })
       List() {
-        ListItemGroup({
-          header: this.RecommendMenuHeader()
-        }) {
-          ListItem() {
-            if (this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0) {
-              Grid() {
-                ForEach(this.recommendMenu.list.slice(0, 3), (menuItem: RecommendMenuItem, index: number) => {
-                  GridItem() {
-                    MenuTipsCard({
-                      menuInfo: menuItem
-                    })
-                      .onClick((event: ClickEvent) => RouterUtils.go('pages/menudetail/MenuDetailPage', menuItem))
-                  }
-                })
-              }
-              .columnsTemplate(this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr'
-                : this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr'
-                  : '1fr')
-              .columnsGap(4)
-              .rowsGap(4)
-              .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-            } else {
-              Text($r('app.string.no_recommend_menu_available'))
-                .width('100%')
-                .height('100')
-                .textAlign(TextAlign.Center)
-                .fontSize(16)
-                .fontColor($r('app.color.main_unselected_color'))
-            }
-          }
-        }
+        HomeTabMenuRecommend({
+          screenUIType: this.screenUIType,
+          isLoadingRecommendMenu: this.isLoadingRecommendMenu,
+          recommendMenu: this.recommendMenu
+        })
+        HomeTabMenuFavorite({
+          screenUIType: this.screenUIType,
+          favoriteMenu: this.favoriteMenu
+        })
       }
       .edgeEffect(EdgeEffect.None)
       .sticky(StickyStyle.Header)
+      .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
@@ -124,33 +110,6 @@ export struct HomeTabMenu {
     }
     .padding({ top: 6, bottom: 6 })
     .alignItems(HorizontalAlign.Center)
-  }
-
-  @Builder
-  RecommendMenuHeader() {
-    Row() {
-      Text($r('app.string.today_s_recommend'))
-        .fontSize(14)
-      LoadingProgress()
-        .visibility(this.isLoadingRecommendMenu ? Visibility.Visible : Visibility.None)
-      Blank()
-        .layoutWeight(1)
-      Text($r('app.string.check_all'))
-        .fontColor($r('app.color.main_selected_color'))
-        .fontSize(14)
-        .visibility(this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0 ? Visibility.Visible : Visibility.None)
-    }
-    .width('100%')
-    .height(32)
-    .backgroundColor($r('app.color.main_bg_green_light_color'))
-    .justifyContent(FlexAlign.Center)
-    .alignItems(VerticalAlign.Center)
-    .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-    .onClick((event: ClickEvent) => {
-      if (this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0) {
-        RouterUtils.go('pages/recommendmenu/RecommendMenuListPage', this.recommendMenu);
-      }
-    })
   }
 
   /**
@@ -188,6 +147,33 @@ export struct HomeTabMenu {
     let textDecoder = util.TextDecoder.create('UTF-8', { ignoreBOM: true });
     let fileContent: string = textDecoder.decodeToString(rawFile, { stream: false });
     this.recommendMenu = JSON.parse(fileContent) as RecommendMenuResult;
+  }
+
+  /**
+   * 初始化已收藏的菜谱数据。
+   */
+  private initFavoriteMenu() {
+    let favoriteOrder = FavoriteMenuUtils.queryFavoriteOrder();
+    if (favoriteOrder === undefined) {
+      this.favoriteMenu = [];
+      return;
+    }
+    try {
+      if ((favoriteOrder as Array<number>).length === 0) {
+        this.favoriteMenu = [];
+        return;
+      }
+      let newFavoriteMenu: RecommendMenuItem[] = [];
+      for (let index = 0; index < (favoriteOrder as Array<number>).length; index++) {
+        let favoriteMenuItem = FavoriteMenuUtils.queryOneFavoriteMenu((favoriteOrder as Array<number>)[index]);
+        if (favoriteMenuItem === undefined) {
+          continue;
+        }
+        newFavoriteMenu.push(favoriteMenuItem as RecommendMenuItem);
+      }
+      this.favoriteMenu = newFavoriteMenu;
+    } catch (error) {
+    }
   }
 }
 

@@ -59,6 +59,18 @@
     {
       "name": "tips",
       "value": "温馨\n提示"
+    },
+    {
+      "name": "my_favorite",
+      "value": "我的收藏"
+    },
+    {
+      "name": "no_favorite_tips",
+      "value": "还没有中意的菜谱吗？\n去菜谱详情页点亮星星吧！"
+    },
+    {
+      "name": "can_reorder_by_drag",
+      "value": "可长按拖拽排序"
     }
   ]
 }

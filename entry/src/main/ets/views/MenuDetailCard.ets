@@ -48,12 +48,15 @@ export struct MenuDetailCard {
   /** 无标题模式，适合嵌入单页显示。 */
   private noTitleMode?: boolean;
 
+  /** 随机菜谱图片。s */
+  private tempPic: ResourceStr = this.randomMenuPic();
+
   build() {
     if (this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined && this.menuInfo.cp_name !== '') {
       Stack() {
         if (this.screenUIType === ScreenUIType.NORMAL) {
           Column() {
-            Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.randomMenuPic()))
+            Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic))
               .width(224)
               .height(126)
               .objectFit(ImageFit.Contain)
