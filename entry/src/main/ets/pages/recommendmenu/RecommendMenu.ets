@@ -7,6 +7,7 @@ import { RecommendMenuItem, RecommendMenuResult } from '../../models/RecommendMe
 import { RouterUtils } from '../../utils/RouterUtils';
 import { MenuDetailCard, MenuDetailCardStyle } from '../../views/MenuDetailCard';
 import { res2string } from '../../utils/Utils';
+import { LengthMetrics } from '@kit.ArkUI';
 
 /**
  * 今日推荐菜谱页。
@@ -44,11 +45,30 @@ struct RecommendMenu {
         }) {
           ForEach(this.recommendMenu?.list, (menuItem: RecommendMenuItem, index: number) => {
             ListItem() {
-              MenuDetailCard({
-                screenUIType: this.screenUIType,
-                menuInfo: menuItem,
-                style: MenuDetailCardStyle.SQUARE_BANNER
-              })
+              Stack({
+                alignContent: Alignment.Top
+              }) {
+                MenuDetailCard({
+                  screenUIType: this.screenUIType,
+                  menuInfo: menuItem,
+                  style: MenuDetailCardStyle.SQUARE_BANNER
+                })
+                Row() {
+                  Text(`${index + 1}`)
+                    .width(35)
+                    .height(35)
+                    .textAlign(TextAlign.Start)
+                    .fontColor(Color.White)
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Medium)
+                    .padding({ left: 5 })
+                    .backgroundColor($r('app.color.menu_index_bg_color'))
+                    .borderRadius({ bottomEnd: LengthMetrics.vp(35) })
+                }
+                .width('100%')
+                .justifyContent(FlexAlign.SpaceBetween)
+                .alignItems(VerticalAlign.Center)
+              }
             }
           })
           ListItem() {

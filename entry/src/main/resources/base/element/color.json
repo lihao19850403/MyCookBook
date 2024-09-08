@@ -40,9 +40,6 @@
       "name": "menu_feature_text_color",
       "value": "#FF80401A"
     },
-
-
-
     {
       "name": "menu_tips_bg_color",
       "value": "#FFDAE1F0"
@@ -54,6 +51,10 @@
     {
       "name": "menu_tips_content_color",
       "value": "#FF4965FB"
+    },
+    {
+      "name": "menu_index_bg_color",
+      "value": "#FFDAE1F0"
     }
   ]
 }
