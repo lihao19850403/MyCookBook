@@ -1,7 +1,7 @@
 import { emitter } from '@kit.BasicServicesKit';
 import {
   getScreenUIType,
-  ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/ScreenUIAdapter';
+  ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
 import { HomeTabMenu } from './hometabs/HomeTabMenu';
 import { HomeTabMine } from './hometabs/HomeTabMine';
 import { HomeTabNews } from './hometabs/HomeTabNews';

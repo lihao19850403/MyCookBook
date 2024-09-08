@@ -1,13 +1,13 @@
 import { RecommendMenuItem, RecommendMenuModel, RecommendMenuResult } from '../../../models/RecommendMenuModel';
-import { GlobalContext } from '../../../utils/GlobalContext';
-import { CallResult, HttpUtils } from '../../../utils/HttpUtils';
-import { KeysUtils } from '../../../utils/KeysUtils';
-import { KVUtils } from '../../../utils/KVUtils';
+import { GlobalContext } from '../../../utils/common/GlobalContext';
+import { CallResult, HttpUtils } from '../../../utils/common/HttpUtils';
+import { KeysUtils } from '../../../utils/common/KeysUtils';
+import { KVUtils } from '../../../utils/common/KVUtils';
 import { util } from '@kit.ArkTS';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
-import { ScreenUIType } from '../../../utils/ScreenUIAdapter';
+import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { MenuTipsCard } from '../../../views/MenuTipsCard';
-import { RouterUtils } from '../../../utils/RouterUtils';
+import { RouterUtils } from '../../../utils/common/RouterUtils';
 
 /** 菜谱页面网络请求key。 */
 const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
@@ -148,7 +148,7 @@ export struct HomeTabMenu {
     .padding({ left: 12, right: 12, top: 4, bottom: 4 })
     .onClick((event: ClickEvent) => {
       if (this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0) {
-        RouterUtils.go('pages/recommendmenu/RecommendMenu', this.recommendMenu);
+        RouterUtils.go('pages/recommendmenu/RecommendMenuListPage', this.recommendMenu);
       }
     })
   }

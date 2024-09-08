@@ -1,7 +1,7 @@
 {
   "src": [
     "pages/home/HomeMain",
-    "pages/recommendmenu/RecommendMenu",
+    "pages/recommendmenu/RecommendMenuListPage",
     "pages/menudetail/MenuDetailPage"
   ]
 }

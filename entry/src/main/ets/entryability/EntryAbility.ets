@@ -1,12 +1,12 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { display, window } from '@kit.ArkUI';
-import { GlobalContext } from '../utils/GlobalContext';
-import { getScreenUIType, observeScreenUIChange, ScreenUIType } from '../utils/ScreenUIAdapter';
+import { GlobalContext } from '../utils/common/GlobalContext';
+import { getScreenUIType, observeScreenUIChange, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW,
   GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX,
-  GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX } from '../utils/GlobalConfig';
-import { setScreenOrientation } from '../utils/ScreenOrientationUtil';
+  GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX } from '../utils/common/GlobalConfig';
+import { setScreenOrientation } from '../utils/common/ScreenOrientationUtil';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {

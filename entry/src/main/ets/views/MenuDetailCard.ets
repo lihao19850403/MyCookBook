@@ -1,6 +1,6 @@
 import { RecommendMenuItem } from '../models/RecommendMenuModel';
-import { ScreenUIType } from '../utils/ScreenUIAdapter';
-import { firstNotVoid } from '../utils/Utils';
+import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { firstNotVoid } from '../utils/common/Utils';
 import { LengthMetrics } from '@ohos.arkui.node';
 
 /** 菜谱详情样式。 */

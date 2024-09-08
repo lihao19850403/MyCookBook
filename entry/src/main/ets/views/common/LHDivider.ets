@@ -1,4 +1,4 @@
-import { firstNotVoid } from '../../utils/Utils';
+import { firstNotVoid } from '../../utils/common/Utils';
 
 /** 默认属性。 */
 interface DefaultAttributes {

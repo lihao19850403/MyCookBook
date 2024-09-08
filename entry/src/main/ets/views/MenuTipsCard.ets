@@ -1,5 +1,5 @@
 import { RecommendMenuItem } from '../models/RecommendMenuModel';
-import { firstNotVoid } from '../utils/Utils';
+import { firstNotVoid } from '../utils/common/Utils';
 
 /** 菜谱名片样式。 */
 export enum MenuTipsCardStyle {

@@ -1,13 +1,15 @@
 import {
   getScreenBottomSafeZoneHeightPx,
-  getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/ScreenUIAdapter';
+  getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
 import { emitter } from '@kit.BasicServicesKit';
 import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../views/common/LHCommonTitleBar';
 import { RecommendMenuItem, RecommendMenuResult } from '../../models/RecommendMenuModel';
-import { RouterUtils } from '../../utils/RouterUtils';
+import { RouterUtils } from '../../utils/common/RouterUtils';
 import { MenuDetailCard, MenuDetailCardStyle } from '../../views/MenuDetailCard';
-import { res2string } from '../../utils/Utils';
+import { res2string } from '../../utils/common/Utils';
 import { LengthMetrics } from '@kit.ArkUI';
+import { LHMarkedStar } from '../../views/common/LHMarkedStar';
+import { FavoriteMenuUtils } from '../../utils/FavoriteMenuUtils';
 
 /**
  * 今日推荐菜谱页。
@@ -15,7 +17,7 @@ import { LengthMetrics } from '@kit.ArkUI';
  */
 @Entry
 @Component
-struct RecommendMenu {
+struct RecommendMenuListPage {
 
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();
@@ -64,6 +66,18 @@ struct RecommendMenu {
                     .padding({ left: 5 })
                     .backgroundColor($r('app.color.menu_index_bg_color'))
                     .borderRadius({ bottomEnd: LengthMetrics.vp(35) })
+                  LHMarkedStar({
+                    isSelected: menuItem.id !== undefined && FavoriteMenuUtils.isFavoriteMenu(menuItem.id),
+                    onSelectedChanged: (newStatus: boolean) => {
+                      if (menuItem.id !== undefined) {
+                        if (newStatus) {
+                          FavoriteMenuUtils.addOneFavoriteMenu(menuItem);
+                        } else {
+                          FavoriteMenuUtils.removeOneFavoriteMenu(menuItem.id);
+                        }
+                      }
+                    }
+                  })
                 }
                 .width('100%')
                 .justifyContent(FlexAlign.SpaceBetween)

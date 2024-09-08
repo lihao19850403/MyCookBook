@@ -1,4 +1,4 @@
-import { ScreenUIType } from '../../../utils/ScreenUIAdapter';
+import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 
 /**
  * 首页 - 美食圈。

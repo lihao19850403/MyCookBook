@@ -1,5 +1,5 @@
-import { RouterUtils } from '../../utils/RouterUtils';
-import { firstNotVoid } from '../../utils/Utils';
+import { RouterUtils } from '../../utils/common/RouterUtils';
+import { firstNotVoid } from '../../utils/common/Utils';
 import { LHDivider } from './LHDivider';
 
 /** 默认属性。 */
