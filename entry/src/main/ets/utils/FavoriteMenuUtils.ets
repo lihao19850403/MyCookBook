@@ -6,6 +6,16 @@ import emitter from '@ohos.events.emitter';
 /** 事件：收藏的菜谱发生了变化。 */
 export const FAVORITE_MENU_CHANGE_EVENT: string = 'FAVORITE_MENU_CHANGE_EVENT';
 
+/** 事件参数名：收藏的菜谱发生了变化，此事件的类型。 */
+export const FAVORITE_MENU_CHANGE_EVENT_TYPE: string = 'FAVORITE_MENU_CHANGE_EVENT_TYPE';
+
+/** 收藏的菜谱发生了怎样的变化。 */
+export const enum FavoriteMenuChangeEventType {
+  /** 更新菜谱收藏夹条目顺序。 */ UPDATE_FAVORITE_ORDER,
+  /** 添加一个喜欢的菜谱。 */ ADD_ONE_FAVORITE_MENU,
+  /** 删除一个喜欢的菜谱。 */ REMOVE_ONE_FAVORITE_MENU
+}
+
 /** 配置文件：已收藏菜谱。 */
 const FILE_NAME_FAVORITE_MENU: string = 'favorite_menu';
 
@@ -76,7 +86,11 @@ export class FavoriteMenuUtils {
    */
   public static updateFavoriteOrder(newOrder: Array<number>) {
     KVUtils.setKV(FILE_NAME_FAVORITE_MENU, KEY_FAVORITE_ORDER, newOrder);
-    emitter.emit(FAVORITE_MENU_CHANGE_EVENT);
+    let dataWrap: emitter.EventData = {};
+    dataWrap.data = {
+      FAVORITE_MENU_CHANGE_EVENT_TYPE: FavoriteMenuChangeEventType.UPDATE_FAVORITE_ORDER
+    };
+    emitter.emit(FAVORITE_MENU_CHANGE_EVENT, dataWrap);
   }
 
   /**
@@ -101,7 +115,11 @@ export class FavoriteMenuUtils {
       (favoriteOrder as Array<number>).unshift(menu.id);
       KVUtils.setKV(FILE_NAME_FAVORITE_MENU, KEY_FAVORITE_ORDER, favoriteOrder);
       KVUtils.setKV(FILE_NAME_FAVORITE_MENU, `${menu.id}`, JSON.stringify(menu));
-      emitter.emit(FAVORITE_MENU_CHANGE_EVENT);
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        FAVORITE_MENU_CHANGE_EVENT_TYPE: FavoriteMenuChangeEventType.ADD_ONE_FAVORITE_MENU
+      };
+      emitter.emit(FAVORITE_MENU_CHANGE_EVENT, dataWrap);
     } catch (error) {
     }
   }
@@ -126,7 +144,11 @@ export class FavoriteMenuUtils {
       (favoriteOrder as Array<number>).splice(index, 1);
       KVUtils.setKV(FILE_NAME_FAVORITE_MENU, KEY_FAVORITE_ORDER, favoriteOrder);
       KVUtils.removeKV(FILE_NAME_FAVORITE_MENU, `${id}`);
-      emitter.emit(FAVORITE_MENU_CHANGE_EVENT);
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        FAVORITE_MENU_CHANGE_EVENT_TYPE: FavoriteMenuChangeEventType.REMOVE_ONE_FAVORITE_MENU
+      };
+      emitter.emit(FAVORITE_MENU_CHANGE_EVENT, dataWrap);
     } catch (error) {
     }
   }

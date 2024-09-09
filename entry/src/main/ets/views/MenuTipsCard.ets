@@ -30,9 +30,6 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct MenuTipsCard {
 
-  /** 动态指定小卡片的宽。 */
-  @Prop cardWidth: number;
-
   /** 动态指定小卡片的高。 */
   @Prop cardHeight: number;
 
@@ -100,7 +97,7 @@ export struct MenuTipsCard {
         .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.Start)
       }
-      .width(this.cardWidth === undefined ? '100%' : this.cardWidth)
+      .width('100%')
       .height(this.cardHeight)
       .justifyContent(FlexAlign.SpaceBetween)
       .alignItems(VerticalAlign.Top)

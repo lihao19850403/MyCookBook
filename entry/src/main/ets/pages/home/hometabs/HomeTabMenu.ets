@@ -9,7 +9,10 @@ import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { HomeTabMenuRecommend } from './HomeTabMenuRecommend';
 import { HomeTabMenuFavorite } from './HomeTabMenuFavorite';
 import emitter from '@ohos.events.emitter';
-import { FavoriteMenuUtils, FAVORITE_MENU_CHANGE_EVENT } from '../../../utils/FavoriteMenuUtils';
+import {
+  FavoriteMenuChangeEventType,
+  FavoriteMenuUtils, FAVORITE_MENU_CHANGE_EVENT,
+  FAVORITE_MENU_CHANGE_EVENT_TYPE } from '../../../utils/FavoriteMenuUtils';
 
 /** 菜谱页面网络请求key。 */
 const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
@@ -45,6 +48,9 @@ export struct HomeTabMenu {
   /** 已收藏的菜谱。 */
   @State favoriteMenu: RecommendMenuItem[] | undefined = undefined;
 
+  /** 已收藏菜谱内容发生了怎样的改变。 */
+  @State favoriteMenuChangeEventType: FavoriteMenuChangeEventType | undefined = undefined;
+
   /** 此Tab序号。 */
   private thisIndex: number = 1;
 
@@ -60,7 +66,12 @@ export struct HomeTabMenu {
       this.isLoadingRecommendMenu = false;
     }
     this.initFavoriteMenu();
-    emitter.on(FAVORITE_MENU_CHANGE_EVENT, () => this.initFavoriteMenu());
+    emitter.on(FAVORITE_MENU_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
+      this.initFavoriteMenu();
+      if (dataWrap.data) {
+        this.favoriteMenuChangeEventType = dataWrap.data[FAVORITE_MENU_CHANGE_EVENT_TYPE] as FavoriteMenuChangeEventType;
+      }
+    });
   }
 
   build() {
@@ -84,7 +95,8 @@ export struct HomeTabMenu {
         })
         HomeTabMenuFavorite({
           screenUIType: this.screenUIType,
-          favoriteMenu: this.favoriteMenu
+          favoriteMenu: this.favoriteMenu,
+          favoriteMenuChangeEventType: this.favoriteMenuChangeEventType
         })
       }
       .edgeEffect(EdgeEffect.None)
