@@ -18,6 +18,12 @@ export struct HomeTabMenuFavorite {
   /** 已收藏的菜谱。 */
   @Prop favoriteMenu: RecommendMenuItem[] | undefined;
 
+  /** 每个小卡片的宽。 */
+  @State cardWidth: number = -1;
+
+  /** 每个小卡片的高。 */
+  @State cardHeight: number = -1;
+
   build() {
     this.Build()
   }
@@ -33,8 +39,13 @@ export struct HomeTabMenuFavorite {
             ForEach(this.favoriteMenu, (menuItem: RecommendMenuItem, index: number) => {
               GridItem() {
                 MenuTipsCard({
+                  cardHeight: this.cardHeight,
                   menuInfo: menuItem
                 })
+                  .onAreaChange((_, newSize: Area) => {
+                    this.cardWidth = Math.max(this.cardWidth, newSize.width as number);
+                    this.cardHeight = Math.max(this.cardHeight, newSize.height as number);
+                  })
                   .onClick((event: ClickEvent) => RouterUtils.go('pages/menudetail/MenuDetailPage', menuItem))
               }
             })
@@ -112,6 +123,10 @@ export struct HomeTabMenuFavorite {
 
   @Builder
   private DragThumbnail(menuItem: RecommendMenuItem) {
-    MenuTipsCard({ menuInfo: menuItem })
+    MenuTipsCard({
+      cardWidth: this.cardWidth,
+      cardHeight: this.cardHeight,
+      menuInfo: menuItem
+    })
   }
 }

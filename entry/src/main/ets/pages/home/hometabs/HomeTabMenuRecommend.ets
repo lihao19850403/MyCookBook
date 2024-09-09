@@ -19,6 +19,9 @@ export struct HomeTabMenuRecommend {
   /** 今日推荐菜谱。 */
   @Prop recommendMenu: RecommendMenuResult | undefined;
 
+  /** 每个小卡片的高。 */
+  @State cardHeight: number = -1;
+
   build() {
     this.Build()
   }
@@ -34,8 +37,12 @@ export struct HomeTabMenuRecommend {
             ForEach(this.recommendMenu.list.slice(0, this.screenUIType === ScreenUIType.FOLD_OPENED ? 4 : 3), (menuItem: RecommendMenuItem, index: number) => {
               GridItem() {
                 MenuTipsCard({
+                  cardHeight: this.cardHeight,
                   menuInfo: menuItem
                 })
+                  .onAreaChange((_, newSize: Area) => {
+                    this.cardHeight = Math.max(this.cardHeight, newSize.height as number);
+                  })
                   .onClick((event: ClickEvent) => RouterUtils.go('pages/menudetail/MenuDetailPage', menuItem))
               }
             })
