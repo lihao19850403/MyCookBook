@@ -31,7 +31,7 @@ export struct HomeTabMenuRecommend {
       ListItem() {
         if (this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0) {
           Grid() {
-            ForEach(this.recommendMenu.list.slice(0, 3), (menuItem: RecommendMenuItem, index: number) => {
+            ForEach(this.recommendMenu.list.slice(0, this.screenUIType === ScreenUIType.FOLD_OPENED ? 4 : 3), (menuItem: RecommendMenuItem, index: number) => {
               GridItem() {
                 MenuTipsCard({
                   menuInfo: menuItem
