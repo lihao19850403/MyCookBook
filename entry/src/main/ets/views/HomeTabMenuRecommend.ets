@@ -1,7 +1,7 @@
-import { RecommendMenuItem, RecommendMenuResult } from '../../../models/RecommendMenuModel';
-import { RouterUtils } from '../../../utils/common/RouterUtils';
-import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
-import { MenuTipsCard } from '../../../views/MenuTipsCard';
+import { RecommendMenuItem, RecommendMenuResult } from '../models/RecommendMenuModel';
+import { RouterUtils } from '../utils/common/RouterUtils';
+import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { MenuTipsCard } from './MenuTipsCard';
 
 /**
  * 首页 - 菜谱 - 今日推荐。

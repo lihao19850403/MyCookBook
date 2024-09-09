@@ -1,9 +1,9 @@
-import { RecommendMenuItem } from '../../../models/RecommendMenuModel';
-import { RouterUtils } from '../../../utils/common/RouterUtils';
-import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
-import { FavoriteMenuChangeEventType, FavoriteMenuUtils } from '../../../utils/FavoriteMenuUtils';
-import { LHMarkedStar } from '../../../views/common/LHMarkedStar';
-import { MenuTipsCard } from '../../../views/MenuTipsCard';
+import { RecommendMenuItem } from '../models/RecommendMenuModel';
+import { RouterUtils } from '../utils/common/RouterUtils';
+import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { FavoriteMenuChangeEventType, FavoriteMenuUtils } from '../utils/FavoriteMenuUtils';
+import { LHMarkedStar } from './common/LHMarkedStar';
+import { MenuTipsCard } from './MenuTipsCard';
 import { componentUtils } from '@kit.ArkUI';
 
 /**

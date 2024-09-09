@@ -6,8 +6,8 @@ import { KVUtils } from '../../../utils/common/KVUtils';
 import { util } from '@kit.ArkTS';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
-import { HomeTabMenuRecommend } from './HomeTabMenuRecommend';
-import { HomeTabMenuFavorite } from './HomeTabMenuFavorite';
+import { HomeTabMenuRecommend } from '../../../views/HomeTabMenuRecommend';
+import { HomeTabMenuFavorite } from '../../../views/HomeTabMenuFavorite';
 import emitter from '@ohos.events.emitter';
 import {
   FavoriteMenuChangeEventType,
