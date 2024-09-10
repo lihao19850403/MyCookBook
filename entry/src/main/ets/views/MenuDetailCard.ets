@@ -2,6 +2,8 @@ import { RecommendMenuItem } from '../models/RecommendMenuModel';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { firstNotVoid } from '../utils/common/Utils';
 import { LengthMetrics } from '@ohos.arkui.node';
+import { RouterUtils } from '../utils/common/RouterUtils';
+import { PhotoViewerParams } from '../pages/photoviewer/LHPhotoViewer';
 
 /** 菜谱详情样式。 */
 export enum MenuDetailCardStyle {
@@ -56,10 +58,7 @@ export struct MenuDetailCard {
       Stack() {
         if (this.screenUIType === ScreenUIType.NORMAL) {
           Column() {
-            Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic))
-              .width(224)
-              .height(126)
-              .objectFit(ImageFit.Contain)
+            this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
             this.Detail(this.menuInfo.cp_name)
           }
           .width('100%')
@@ -69,10 +68,7 @@ export struct MenuDetailCard {
           .borderRadius(firstNotVoid(this.style, DEFAULT_ATTRIBUTES.style) === MenuDetailCardStyle.ROUND_CARD ? 4 : 0)
         } else {
           Row() {
-            Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.randomMenuPic()))
-              .width(224)
-              .height(126)
-              .objectFit(ImageFit.Contain)
+            this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
             this.Detail(this.menuInfo.cp_name)
           }
           .width('100%')
@@ -82,6 +78,21 @@ export struct MenuDetailCard {
         }
       }
     }
+  }
+
+  @Builder
+  private Image(src: ResourceStr) {
+    Image(src)
+      .width(224)
+      .height(126)
+      .objectFit(ImageFit.Contain)
+      .onClick((event: ClickEvent) => {
+        let params: PhotoViewerParams = {
+          title: this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined ? this.menuInfo.cp_name : $r('app.string.photo_viewer'),
+          uri: firstNotVoid(this.menuInfo?.cp_thumbnail, this.tempPic)!
+        };
+        RouterUtils.go('pages/photoviewer/LHPhotoViewer', params);
+      })
   }
 
   @Builder

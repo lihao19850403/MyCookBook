@@ -71,6 +71,10 @@
     {
       "name": "can_reorder_by_drag",
       "value": "可长按拖拽排序"
+    },
+    {
+      "name": "photo_viewer",
+      "value": "图片阅览器"
     }
   ]
 }
