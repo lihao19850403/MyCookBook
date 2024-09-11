@@ -57,6 +57,7 @@ export struct HomeTabMenuFavorite {
           .columnsGap(4)
           .rowsGap(4)
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .scrollBar(BarState.Off)
           .editMode(true)
           .supportAnimation(true)
           .onItemDragStart((event: ItemDragInfo, itemIndex: number) => {

@@ -97,6 +97,7 @@ struct RecommendMenuListPage {
         }
         .edgeEffect(EdgeEffect.None)
         .sticky(StickyStyle.Header)
+        .scrollBar(BarState.Off)
       } else {
         Text($r('app.string.no_recommend_menu_available'))
           .width('100%')

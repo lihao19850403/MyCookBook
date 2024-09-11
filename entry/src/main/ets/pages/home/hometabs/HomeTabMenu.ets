@@ -101,6 +101,7 @@ export struct HomeTabMenu {
       }
       .edgeEffect(EdgeEffect.None)
       .sticky(StickyStyle.Header)
+      .scrollBar(BarState.Off)
       .layoutWeight(1)
     }
     .width('100%')

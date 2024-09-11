@@ -53,6 +53,7 @@ export struct HomeTabMenuRecommend {
           .columnsGap(4)
           .rowsGap(4)
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .scrollBar(BarState.Off)
         } else {
           Text($r('app.string.no_recommend_menu_available'))
             .width('100%')

@@ -49,6 +49,7 @@ struct MenuDetailPage {
         })
       }
       .width('100%')
+      .scrollBar(BarState.Off)
       .padding({ bottom: px2vp(getScreenBottomSafeZoneHeightPx()) })
     }
     .width('100%')
