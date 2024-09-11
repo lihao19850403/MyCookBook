@@ -1,4 +1,9 @@
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
+import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
+import { LHWebView } from '../../../views/common/LHWebView';
+
+/** 网页资源链接。 */
+const URL_SOCIALIZE: string = 'https://www.xiangha.com/quan';
 
 /**
  * 首页 - 美食圈。
@@ -26,7 +31,11 @@ export struct HomeTabSocialize {
   @Builder
   Content() {
     Column() {
-
+      LHCommonTitleBar({
+        centerTitleText: $r('app.string.home_tab_socialize')
+      })
+      LHWebView({ src: URL_SOCIALIZE })
+        .layoutWeight(1)
     }
     .width('100%')
     .height('100%')
