@@ -1,5 +1,6 @@
 import { firstNotVoid } from '../../utils/common/Utils';
 import { webview } from '@kit.ArkWeb';
+import { OnLoadInterceptEvent } from '@kit.ArkUI';
 
 /** 默认属性。 */
 interface DefaultAttributes {
@@ -26,6 +27,9 @@ export struct LHWebView {
   /** 网页资源。 */
   private src?: ResourceStr;
 
+  /** 页面加载事件拦截回调。 */
+  private onLoadInterceptCallback?: (data: WebResourceRequest, webViewController: webview.WebviewController) => boolean;
+
   aboutToAppear(): void {
     webview.WebviewController.setWebDebuggingAccess(true);
   }
@@ -41,5 +45,11 @@ export struct LHWebView {
       .mixedMode(MixedMode.All)
       .onControllerAttached(() => {})
       .onProgressChange((event: OnProgressChangeEvent) => {})
+      .onLoadIntercept((event: OnLoadInterceptEvent) => {
+        if (this.onLoadInterceptCallback !== undefined) {
+          return this.onLoadInterceptCallback(event.data, this.controller);
+        }
+        return false;
+      })
   }
 }

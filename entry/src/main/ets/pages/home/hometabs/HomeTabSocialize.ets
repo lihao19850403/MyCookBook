@@ -1,6 +1,7 @@
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { LHWebView } from '../../../views/common/LHWebView';
+import { webview } from '@kit.ArkWeb';
 
 /** 网页资源链接。 */
 const URL_SOCIALIZE: string = 'https://www.xiangha.com/quan';
@@ -34,7 +35,10 @@ export struct HomeTabSocialize {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.home_tab_socialize')
       })
-      LHWebView({ src: URL_SOCIALIZE })
+      LHWebView({
+        src: URL_SOCIALIZE,
+        onLoadInterceptCallback: this.onLoadInterceptCallback
+      })
         .layoutWeight(1)
     }
     .width('100%')
@@ -56,6 +60,21 @@ export struct HomeTabSocialize {
     }
     .padding({ top: 6, bottom: 6 })
     .alignItems(HorizontalAlign.Center)
+  }
+
+  /**
+   * 页面加载事件拦截回调。
+   * @param data 页面加载事件数据。
+   * @param webViewController WebView控制器。
+   * @returns 是否停止WebView进行页面加载。
+   */
+  private onLoadInterceptCallback(data: WebResourceRequest, webViewController: webview.WebviewController): boolean {
+    let requestUrl: string = data.getRequestUrl();
+    if (requestUrl !== undefined && requestUrl.indexOf('https://m.xiangha.com/download') != -1) {
+
+      return true;
+    }
+    return false;
   }
 }
 
