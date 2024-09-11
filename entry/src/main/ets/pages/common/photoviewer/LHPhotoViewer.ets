@@ -1,7 +1,7 @@
 import { PhotoView } from '@ohos/photoview';
-import { RouterUtils } from '../../utils/common/RouterUtils';
-import { firstNotVoid } from '../../utils/common/Utils';
-import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../views/common/LHCommonTitleBar';
+import { RouterUtils } from '../../../utils/common/RouterUtils';
+import { firstNotVoid } from '../../../utils/common/Utils';
+import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../../views/common/LHCommonTitleBar';
 
 /** 图片阅览需要的参数。 */
 export interface PhotoViewerParams {
