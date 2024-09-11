@@ -2,6 +2,8 @@ import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { LHWebView } from '../../../views/common/LHWebView';
 import { webview } from '@kit.ArkWeb';
+import { GlobalConfig } from '../../../utils/common/GlobalConfig';
+import { GLOBAL_CONFIG_BACK_KEY_EVENT } from '../HomeMain';
 
 /** 网页资源链接。 */
 const URL_SOCIALIZE: string = 'https://www.xiangha.com/quan';
@@ -37,6 +39,7 @@ export struct HomeTabSocialize {
       })
       LHWebView({
         src: URL_SOCIALIZE,
+        onControllerAttachedCallback: this.onControllerAttachedCallback.bind(this),
         onLoadInterceptCallback: this.onLoadInterceptCallback
       })
         .layoutWeight(1)
@@ -60,6 +63,25 @@ export struct HomeTabSocialize {
     }
     .padding({ top: 6, bottom: 6 })
     .alignItems(HorizontalAlign.Center)
+  }
+
+  /**
+   * 控制器绑定完毕回调。
+   * @param webViewController WebView控制器。
+   */
+  private onControllerAttachedCallback(webViewController: webview.WebviewController) {
+    let callbacks: Array<() => boolean> | undefined = GlobalConfig.get(GLOBAL_CONFIG_BACK_KEY_EVENT);
+    if (callbacks === undefined) {
+      callbacks = [];
+    }
+    callbacks.push(() => {
+      if (this.selectedIndex === this.thisIndex && webViewController.accessBackward()) {
+        webViewController.backward();
+        return true;
+      }
+      return false;
+    });
+    GlobalConfig.set(GLOBAL_CONFIG_BACK_KEY_EVENT, callbacks);
   }
 
   /**

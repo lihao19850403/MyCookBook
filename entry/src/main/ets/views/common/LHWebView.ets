@@ -27,6 +27,9 @@ export struct LHWebView {
   /** 网页资源。 */
   private src?: ResourceStr;
 
+  /** 控制器绑定完毕回调。 */
+  private onControllerAttachedCallback?: (webViewController: webview.WebviewController) => void;
+
   /** 页面加载事件拦截回调。 */
   private onLoadInterceptCallback?: (data: WebResourceRequest, webViewController: webview.WebviewController) => boolean;
 
@@ -43,8 +46,12 @@ export struct LHWebView {
       .domStorageAccess(true)
       .javaScriptAccess(true)
       .mixedMode(MixedMode.All)
-      .onControllerAttached(() => {})
       .onProgressChange((event: OnProgressChangeEvent) => {})
+      .onControllerAttached(() => {
+        if (this.onControllerAttachedCallback !== undefined) {
+          this.onControllerAttachedCallback(this.controller);
+        }
+      })
       .onLoadIntercept((event: OnLoadInterceptEvent) => {
         if (this.onLoadInterceptCallback !== undefined) {
           return this.onLoadInterceptCallback(event.data, this.controller);

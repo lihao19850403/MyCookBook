@@ -16,8 +16,8 @@ export class GlobalConfig {
    * @param key 关键字。
    * @param value 值。
    */
-  public static set(key: string, value: Object) {
-    GlobalConfig.mMap[key] = value;
+  public static set<T>(key: string, value: T) {
+    GlobalConfig.mMap[key] = value as object;
   }
 
   /**
@@ -25,7 +25,7 @@ export class GlobalConfig {
    * @param key 关键字。
    * @returns 值。
    */
-  public static get(key: string): Object {
-    return GlobalConfig.mMap[key];
+  public static get<T>(key: string): T {
+    return GlobalConfig.mMap[key] as T;
   }
 }
