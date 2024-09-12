@@ -7,11 +7,15 @@ interface DefaultAttributes {
 
   /** 网页资源。 */
   src: string;
+
+  /** 支持网页缩放？ */
+  supportZoom: boolean;
 }
 
 /** 默认属性。 */
 const DEFAULT_ATTRIBUTES: DefaultAttributes = {
-  src: ''
+  src: '',
+  supportZoom: false
 }
 
 /**
@@ -26,6 +30,12 @@ export struct LHWebView {
 
   /** 网页资源。 */
   private src?: ResourceStr;
+
+  /** 支持网页缩放？ */
+  private supportZoom?: boolean;
+
+  /** 网页加载进度回调。 */
+  private OnProgressChangeCallback?: (newProgress: number, webViewController: webview.WebviewController) => void;
 
   /** 控制器绑定完毕回调。 */
   private onControllerAttachedCallback?: (webViewController: webview.WebviewController) => void;
@@ -47,8 +57,13 @@ export struct LHWebView {
       .fileAccess(true)
       .domStorageAccess(true)
       .javaScriptAccess(true)
+      .zoomAccess(firstNotVoid(this.supportZoom, DEFAULT_ATTRIBUTES.supportZoom))
       .mixedMode(MixedMode.All)
-      .onProgressChange((event: OnProgressChangeEvent) => {})
+      .onProgressChange((event: OnProgressChangeEvent) => {
+        if (this.OnProgressChangeCallback !== undefined) {
+          this.OnProgressChangeCallback(event.newProgress, this.controller);
+        }
+      })
       .onControllerAttached(() => {
         if (this.onControllerAttachedCallback !== undefined) {
           this.onControllerAttachedCallback(this.controller);
