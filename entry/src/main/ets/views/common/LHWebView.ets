@@ -60,5 +60,9 @@ export struct LHWebView {
         }
         return false;
       })
+      .nestedScroll({
+        scrollForward: NestedScrollMode.SELF_FIRST,
+        scrollBackward: NestedScrollMode.SELF_FIRST,
+      })
   }
 }

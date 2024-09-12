@@ -103,6 +103,10 @@ export struct HomeTabMenu {
       .sticky(StickyStyle.Header)
       .scrollBar(BarState.Off)
       .layoutWeight(1)
+      .nestedScroll({
+        scrollForward: NestedScrollMode.SELF_FIRST,
+        scrollBackward: NestedScrollMode.SELF_FIRST,
+      })
     }
     .width('100%')
     .height('100%')
