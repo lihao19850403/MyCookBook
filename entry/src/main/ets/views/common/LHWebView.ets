@@ -42,6 +42,8 @@ export struct LHWebView {
       src: firstNotVoid(this.src, DEFAULT_ATTRIBUTES.src),
       controller: this.controller
     })
+      .horizontalScrollBarAccess(false)
+      .verticalScrollBarAccess(false)
       .fileAccess(true)
       .domStorageAccess(true)
       .javaScriptAccess(true)
