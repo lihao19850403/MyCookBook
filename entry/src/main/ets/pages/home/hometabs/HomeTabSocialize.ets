@@ -6,7 +6,7 @@ import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_BACK_KEY_EVENT } from '../HomeMain';
 
 /** 网页资源链接。 */
-const URL_SOCIALIZE: string = 'https://www.xiangha.com/quan';
+const URL_SOCIALIZE: string = 'https://m.xiangha.com/quan';
 
 /**
  * 首页 - 美食圈。
@@ -92,9 +92,15 @@ export struct HomeTabSocialize {
    */
   private onLoadInterceptCallback(data: WebResourceRequest, webViewController: webview.WebviewController): boolean {
     let requestUrl: string = data.getRequestUrl();
-    if (requestUrl !== undefined && requestUrl.indexOf('https://m.xiangha.com/download') != -1) {
+    if (requestUrl !== undefined) {
+      if (requestUrl.indexOf('https://m.xiangha.com/download') !== -1) {
 
-      return true;
+        return true;
+      }
+      if (requestUrl.indexOf('https://m.xiangha.com/entry') !== -1 ) {
+
+        return true;
+      }
     }
     return false;
   }
