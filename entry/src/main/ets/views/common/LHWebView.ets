@@ -25,6 +25,15 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct LHWebView {
 
+  /** 当前页面加载进度。 */
+  @State @Watch('onProgressChanged') curProgress: number = 0;
+
+  /** 进度条可见性。 */
+  @State progressVisible: boolean = false;
+
+  /** 进度条可见性更新事件ID。 */
+  private progressVisibleTask: number = -1;
+
   /** 控制器。 */
   private controller: webview.WebviewController = new webview.WebviewController();
 
@@ -48,36 +57,60 @@ export struct LHWebView {
   }
 
   build() {
-    Web({
-      src: firstNotVoid(this.src, DEFAULT_ATTRIBUTES.src),
-      controller: this.controller
-    })
-      .horizontalScrollBarAccess(false)
-      .verticalScrollBarAccess(false)
-      .fileAccess(true)
-      .domStorageAccess(true)
-      .javaScriptAccess(true)
-      .zoomAccess(firstNotVoid(this.supportZoom, DEFAULT_ATTRIBUTES.supportZoom))
-      .mixedMode(MixedMode.All)
-      .onProgressChange((event: OnProgressChangeEvent) => {
-        if (this.OnProgressChangeCallback !== undefined) {
-          this.OnProgressChangeCallback(event.newProgress, this.controller);
-        }
+    RelativeContainer() {
+      Web({
+        src: firstNotVoid(this.src, DEFAULT_ATTRIBUTES.src),
+        controller: this.controller
       })
-      .onControllerAttached(() => {
-        if (this.onControllerAttachedCallback !== undefined) {
-          this.onControllerAttachedCallback(this.controller);
-        }
+        .horizontalScrollBarAccess(false)
+        .verticalScrollBarAccess(false)
+        .fileAccess(true)
+        .domStorageAccess(true)
+        .javaScriptAccess(true)
+        .zoomAccess(firstNotVoid(this.supportZoom, DEFAULT_ATTRIBUTES.supportZoom))
+        .mixedMode(MixedMode.All)
+        .onProgressChange((event: OnProgressChangeEvent) => {
+          this.curProgress = event.newProgress;
+          if (this.OnProgressChangeCallback !== undefined) {
+            this.OnProgressChangeCallback(event.newProgress, this.controller);
+          }
+        })
+        .onControllerAttached(() => {
+          if (this.onControllerAttachedCallback !== undefined) {
+            this.onControllerAttachedCallback(this.controller);
+          }
+        })
+        .onLoadIntercept((event: OnLoadInterceptEvent) => {
+          if (this.onLoadInterceptCallback !== undefined) {
+            return this.onLoadInterceptCallback(event.data, this.controller);
+          }
+          return false;
+        })
+        .nestedScroll({
+          scrollForward: NestedScrollMode.SELF_FIRST,
+          scrollBackward: NestedScrollMode.SELF_FIRST,
+        })
+      Progress({
+        value: this.curProgress,
+        total: 100,
+        type: ProgressType.Linear
       })
-      .onLoadIntercept((event: OnLoadInterceptEvent) => {
-        if (this.onLoadInterceptCallback !== undefined) {
-          return this.onLoadInterceptCallback(event.data, this.controller);
-        }
-        return false;
-      })
-      .nestedScroll({
-        scrollForward: NestedScrollMode.SELF_FIRST,
-        scrollBackward: NestedScrollMode.SELF_FIRST,
-      })
+        .width('100%')
+        .height(1.3)
+        .value(this.curProgress)
+        .color($r('app.color.main_selected_color'))
+        .backgroundColor($r('app.color.main_bg_gray_color'))
+        .visibility(this.progressVisible ? Visibility.Visible : Visibility.None)
+    }
+  }
+
+  /**
+   * 进度条数值改变默认监听。
+   * 每次进度条改变后，都设定1000ms后隐藏进度条。
+   */
+  private onProgressChanged() {
+    clearTimeout(this.progressVisibleTask);
+    this.progressVisible = true;
+    this.progressVisibleTask = setTimeout(() => this.progressVisible = false, 1000);
   }
 }

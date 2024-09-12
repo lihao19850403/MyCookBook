@@ -39,7 +39,6 @@ export struct HomeTabSocialize {
       })
       LHWebView({
         src: URL_SOCIALIZE,
-        OnProgressChangeCallback: this.OnProgressChangeCallback.bind(this),
         onControllerAttachedCallback: this.onControllerAttachedCallback.bind(this),
         onLoadInterceptCallback: this.onLoadInterceptCallback
       })
@@ -64,15 +63,6 @@ export struct HomeTabSocialize {
     }
     .padding({ top: 6, bottom: 6 })
     .alignItems(HorizontalAlign.Center)
-  }
-
-  /**
-   * 网页加载进度回调。
-   * @param newProgress 新的进度信息，0~100。
-   * @param webViewController WebView控制器。
-   */
-  private OnProgressChangeCallback(newProgress: number, webViewController: webview.WebviewController) {
-
   }
 
   /**
