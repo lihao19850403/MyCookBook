@@ -9,18 +9,18 @@ interface DefaultAttributes {
   /** 网页资源。 */
   src: string;
 
-  /** 支持网页缩放？ */
-  supportZoom: boolean;
+  /** 支持网页缩放手势。 */
+  supportZoomGesture: boolean;
 
-  /** 瘦长浏览器模式。 */
-  thinMode: boolean;
+  /** 强制使用手机模式。 */
+  mobileMode: boolean;
 }
 
 /** 默认属性。 */
 const DEFAULT_ATTRIBUTES: DefaultAttributes = {
   src: '',
-  supportZoom: false,
-  thinMode: false
+  supportZoomGesture: false,
+  mobileMode: false
 }
 
 /**
@@ -29,9 +29,6 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
  */
 @Component
 export struct LHWebView {
-
-  /** 平板设备上浏览器组件的宽度。 */
-  @State padWebViewWidthVp: number | string = '100%';
 
   /** 当前页面加载进度。 */
   @State @Watch('onProgressChanged') curProgress: number = 0;
@@ -42,7 +39,7 @@ export struct LHWebView {
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
 
-  /** 进度条可见性更新事件ID。 */
+  /** 事件ID：进度条可见性更新。 */
   private progressVisibleTask: number = -1;
 
   /** 控制器。 */
@@ -51,11 +48,11 @@ export struct LHWebView {
   /** 网页资源。 */
   private src?: ResourceStr;
 
-  /** 支持网页缩放？ */
-  private supportZoom?: boolean;
+  /** 支持网页缩放手势。 */
+  private supportZoomGesture?: boolean;
 
-  /** 瘦长浏览器模式。 */
-  private thinMode?: boolean;
+  /** 强制使用手机模式。 */
+  private mobileMode?: boolean;
 
   /** 网页加载进度回调。 */
   private OnProgressChangeCallback?: (newProgress: number, webViewController: webview.WebviewController) => void;
@@ -76,13 +73,12 @@ export struct LHWebView {
         src: firstNotVoid(this.src, DEFAULT_ATTRIBUTES.src),
         controller: this.controller
       })
-        .width(this.screenUIType === ScreenUIType.PAD && firstNotVoid(this.thinMode, DEFAULT_ATTRIBUTES.thinMode) ? this.padWebViewWidthVp : '100%')
         .horizontalScrollBarAccess(false)
         .verticalScrollBarAccess(false)
         .fileAccess(true)
         .domStorageAccess(true)
         .javaScriptAccess(true)
-        .zoomAccess(firstNotVoid(this.supportZoom, DEFAULT_ATTRIBUTES.supportZoom))
+        .zoomAccess(firstNotVoid(this.supportZoomGesture, DEFAULT_ATTRIBUTES.supportZoomGesture))
         .mixedMode(MixedMode.All)
         .nestedScroll({
           scrollForward: NestedScrollMode.SELF_FIRST,
@@ -101,10 +97,12 @@ export struct LHWebView {
           }
         })
         .onControllerAttached(() => {
-          let defaultUserAgent: string = this.controller.getUserAgent();
-          if (defaultUserAgent.indexOf('Mobile') === -1) {
-            let customUserAgent: string = defaultUserAgent.concat('Mobile');
-            this.controller.setCustomUserAgent(customUserAgent);
+          if (firstNotVoid(this.mobileMode, DEFAULT_ATTRIBUTES.mobileMode)) {
+            let defaultUserAgent: string = this.controller.getUserAgent();
+            if (defaultUserAgent.indexOf('Mobile') === -1) {
+              let customUserAgent: string = defaultUserAgent.concat('Mobile');
+              this.controller.setCustomUserAgent(customUserAgent);
+            }
           }
           if (this.onControllerAttachedCallback !== undefined) {
             this.onControllerAttachedCallback(this.controller);
@@ -128,20 +126,6 @@ export struct LHWebView {
         .backgroundColor($r('app.color.main_bg_gray_color'))
         .visibility(this.progressVisible ? Visibility.Visible : Visibility.None)
     }
-    .onSizeChange((_, newSize: SizeOptions) => {
-      this.padWebViewWidthVp = this.calcPadWebViewWidthVp(newSize.width as number, newSize.height as number);
-    })
-  }
-
-  /**
-   * 平板设备中浏览器组件的宽度。
-   * @param frameWidth 组件整体宽度。
-   * @param frameHeight 组件整体高度。
-   * @returns 平板设备中浏览器组件的宽度。
-   */
-  private calcPadWebViewWidthVp(frameWidth: number, frameHeight: number): number {
-    let shortSide: number = Math.min(frameWidth, frameHeight);
-    return shortSide;
   }
 
   /**

@@ -38,11 +38,10 @@ export struct HomeTabSocialize {
         centerTitleText: $r('app.string.home_tab_socialize')
       })
       LHWebView({
-        screenUIType: this.screenUIType,
         src: URL_SOCIALIZE,
+        mobileMode: true,
         onControllerAttachedCallback: this.onControllerAttachedCallback.bind(this),
         onLoadInterceptCallback: this.onLoadInterceptCallback,
-        thinMode: true
       })
         .layoutWeight(1)
     }
