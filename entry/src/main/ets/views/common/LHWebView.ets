@@ -1,6 +1,7 @@
 import { firstNotVoid } from '../../utils/common/Utils';
 import { webview } from '@kit.ArkWeb';
 import { OnLoadInterceptEvent } from '@kit.ArkUI';
+import { ScreenUIType } from '../../utils/common/ScreenUIAdapter';
 
 /** 默认属性。 */
 interface DefaultAttributes {
@@ -10,12 +11,16 @@ interface DefaultAttributes {
 
   /** 支持网页缩放？ */
   supportZoom: boolean;
+
+  /** 瘦长浏览器模式。 */
+  thinMode: boolean;
 }
 
 /** 默认属性。 */
 const DEFAULT_ATTRIBUTES: DefaultAttributes = {
   src: '',
-  supportZoom: false
+  supportZoom: false,
+  thinMode: false
 }
 
 /**
@@ -25,11 +30,17 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct LHWebView {
 
+  /** 平板设备上浏览器组件的宽度。 */
+  @State padWebViewWidthVp: number | string = '100%';
+
   /** 当前页面加载进度。 */
   @State @Watch('onProgressChanged') curProgress: number = 0;
 
   /** 进度条可见性。 */
   @State progressVisible: boolean = false;
+
+  /** 屏幕状态。 */
+  @Prop screenUIType: ScreenUIType;
 
   /** 进度条可见性更新事件ID。 */
   private progressVisibleTask: number = -1;
@@ -42,6 +53,9 @@ export struct LHWebView {
 
   /** 支持网页缩放？ */
   private supportZoom?: boolean;
+
+  /** 瘦长浏览器模式。 */
+  private thinMode?: boolean;
 
   /** 网页加载进度回调。 */
   private OnProgressChangeCallback?: (newProgress: number, webViewController: webview.WebviewController) => void;
@@ -62,6 +76,7 @@ export struct LHWebView {
         src: firstNotVoid(this.src, DEFAULT_ATTRIBUTES.src),
         controller: this.controller
       })
+        .width(this.screenUIType === ScreenUIType.PAD && firstNotVoid(this.thinMode, DEFAULT_ATTRIBUTES.thinMode) ? this.padWebViewWidthVp : '100%')
         .horizontalScrollBarAccess(false)
         .verticalScrollBarAccess(false)
         .fileAccess(true)
@@ -69,6 +84,16 @@ export struct LHWebView {
         .javaScriptAccess(true)
         .zoomAccess(firstNotVoid(this.supportZoom, DEFAULT_ATTRIBUTES.supportZoom))
         .mixedMode(MixedMode.All)
+        .nestedScroll({
+          scrollForward: NestedScrollMode.SELF_FIRST,
+          scrollBackward: NestedScrollMode.SELF_FIRST,
+        })
+        .alignRules({
+          middle: {
+            anchor: '__container__',
+            align: HorizontalAlign.Center
+          }
+        })
         .onProgressChange((event: OnProgressChangeEvent) => {
           this.curProgress = event.newProgress;
           if (this.OnProgressChangeCallback !== undefined) {
@@ -76,6 +101,11 @@ export struct LHWebView {
           }
         })
         .onControllerAttached(() => {
+          let defaultUserAgent: string = this.controller.getUserAgent();
+          if (defaultUserAgent.indexOf('Mobile') === -1) {
+            let customUserAgent: string = defaultUserAgent.concat('Mobile');
+            this.controller.setCustomUserAgent(customUserAgent);
+          }
           if (this.onControllerAttachedCallback !== undefined) {
             this.onControllerAttachedCallback(this.controller);
           }
@@ -85,10 +115,6 @@ export struct LHWebView {
             return this.onLoadInterceptCallback(event.data, this.controller);
           }
           return false;
-        })
-        .nestedScroll({
-          scrollForward: NestedScrollMode.SELF_FIRST,
-          scrollBackward: NestedScrollMode.SELF_FIRST,
         })
       Progress({
         value: this.curProgress,
@@ -102,6 +128,20 @@ export struct LHWebView {
         .backgroundColor($r('app.color.main_bg_gray_color'))
         .visibility(this.progressVisible ? Visibility.Visible : Visibility.None)
     }
+    .onSizeChange((_, newSize: SizeOptions) => {
+      this.padWebViewWidthVp = this.calcPadWebViewWidthVp(newSize.width as number, newSize.height as number);
+    })
+  }
+
+  /**
+   * 平板设备中浏览器组件的宽度。
+   * @param frameWidth 组件整体宽度。
+   * @param frameHeight 组件整体高度。
+   * @returns 平板设备中浏览器组件的宽度。
+   */
+  private calcPadWebViewWidthVp(frameWidth: number, frameHeight: number): number {
+    let shortSide: number = Math.min(frameWidth, frameHeight);
+    return shortSide;
   }
 
   /**
