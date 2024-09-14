@@ -1,5 +1,11 @@
 [
   {
+    "id": "home_tab_news_request",
+    "name": "新闻查询 - 接口调试",
+    "description": "https://www.tianapi.com/apiview/16#apiprice",
+    "value": "547a6ee4eb715809a37444d66be94a11"
+  },
+  {
     "id": "home_tab_menu_request",
     "name": "菜谱查询 - 接口调试",
     "description": "https://www.tianapi.com/apiview/23#apiprice",
