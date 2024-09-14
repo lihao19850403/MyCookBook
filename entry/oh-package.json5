@@ -5,6 +5,10 @@
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {}
+  "dependencies": {
+    "@ohos/photoview": "^2.0.0",
+    "@ohos/pulltorefresh": "^2.0.6"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
 }
-
