@@ -56,7 +56,7 @@ struct HomeMain {
   build() {
     RelativeContainer() {
       Tabs({
-        barPosition: this.screenUIType === ScreenUIType.NORMAL ? BarPosition.End : BarPosition.Start,
+        barPosition: this.screenUIType !== ScreenUIType.PAD ? BarPosition.End : BarPosition.Start,
         index: 0,
         controller: this.tabsController
       }) {
@@ -65,7 +65,7 @@ struct HomeMain {
         HomeTabSocialize({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
         HomeTabMine({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
       }
-      .vertical(this.screenUIType !== ScreenUIType.NORMAL)
+      .vertical(this.screenUIType === ScreenUIType.PAD)
       .edgeEffect(EdgeEffect.None)
       .onChange((newIndex: number) => this.curSelectedTabIndex = newIndex)
       .onTabBarClick((newIndex: number) => this.curSelectedTabIndex = newIndex)
