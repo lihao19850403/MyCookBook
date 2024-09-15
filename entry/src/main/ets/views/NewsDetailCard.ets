@@ -44,9 +44,6 @@ export struct NewsDetailCard {
   /** 新闻详情样式。 */
   private style?: NewsDetailCardStyle;
 
-  /** 随机新闻图片。 */
-  private tempPic: ResourceStr = this.randomNewsPic();
-
   build() {
     if (this.newsInfo !== undefined && this.newsInfo.title !== undefined && this.newsInfo.title !== '') {
       Column({
@@ -83,7 +80,7 @@ export struct NewsDetailCard {
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
         Row() {
-          Image(this.imageErrorHappened ? this.tempPic : firstNotVoid(this.newsInfo.picUrl, this.tempPic)!)
+          Image(this.newsInfo.picUrl)
             .width(this.cardWidth * 0.95)
             .constraintSize({
               minWidth: 224,
@@ -95,6 +92,7 @@ export struct NewsDetailCard {
         .width('100%')
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
+        .visibility(this.imageErrorHappened ? Visibility.None : Visibility.Visible)
         if (this.newsInfo.description !== undefined && this.newsInfo!.description !== '') {
           Text(this.newsInfo.description)
             .width('100%')
@@ -133,14 +131,5 @@ export struct NewsDetailCard {
         this.cardWidth = newSize.width as number;
       })
     }
-  }
-
-  /**
-   * 随机新闻缩略图。
-   * @returns 随机新闻缩略图。
-   */
-  private randomNewsPic(): ResourceStr {
-    let index: number = Math.floor(Math.random() * 10) % 3;
-    return $r(`app.media.pic_random_news_${index}`);
   }
 }

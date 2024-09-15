@@ -39,19 +39,17 @@ export struct NewsTipsCard {
   /** 新闻名片样式。 */
   private style?: NewsTipsCardStyle;
 
-  /** 随机新闻图片。s */
-  private tempPic: ResourceStr = this.randomNewsPic();
-
   build() {
     if (this.newsInfo !== undefined && this.newsInfo.title !== undefined && this.newsInfo.title !== '') {
       Row({
         space: 8
       }) {
-        Image(this.imageErrorHappened ? this.tempPic : firstNotVoid(this.newsInfo.picUrl, this.tempPic))
+        Image(this.newsInfo.picUrl)
           .width(112)
           .height(63)
           .objectFit(ImageFit.Contain)
           .onError((error: ImageError) => this.imageErrorHappened = true)
+          .visibility(this.imageErrorHappened ? Visibility.None : Visibility.Visible)
         Column({
           space: 8
         }) {
@@ -103,14 +101,5 @@ export struct NewsTipsCard {
       .backgroundColor(Color.White)
       .borderRadius(firstNotVoid(this.style, DEFAULT_ATTRIBUTES.style) === NewsTipsCardStyle.ROUND_CARD ? 4 : 0)
     }
-  }
-
-  /**
-   * 随机新闻缩略图。
-   * @returns 随机新闻缩略图。
-   */
-  private randomNewsPic(): ResourceStr {
-    let index: number = Math.floor(Math.random() * 10) % 3;
-    return $r(`app.media.pic_random_news_${index}`);
   }
 }
