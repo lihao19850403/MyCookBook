@@ -26,11 +26,6 @@ export struct HomeTabMenuFavorite {
   @State cardHeight: number = -1;
 
   build() {
-    this.Build()
-  }
-
-  @Builder
-  private Build() {
     ListItemGroup({
       header: this.MyFavoriteMenuHeader()
     }) {
@@ -57,6 +52,7 @@ export struct HomeTabMenuFavorite {
           .columnsGap(4)
           .rowsGap(4)
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .edgeEffect(EdgeEffect.None)
           .scrollBar(BarState.Off)
           .editMode(true)
           .supportAnimation(true)
@@ -104,7 +100,7 @@ export struct HomeTabMenuFavorite {
   }
 
   @Builder
-  MyFavoriteMenuHeader() {
+  private MyFavoriteMenuHeader() {
     Row() {
       Text($r('app.string.my_favorite'))
         .fontSize(14)
@@ -145,7 +141,7 @@ export struct HomeTabMenuFavorite {
    * 当收藏的菜谱内容发生变化(增加或删除)时，触发小卡片尺寸的重新计算。
    * 如果仅收藏的菜谱顺序改变，那么不需要重新计算小卡片尺寸。
    */
-  private onFavoriteMenuChanged() {
+  onFavoriteMenuChanged() {
     if (this.favoriteMenuChangeEventType === FavoriteMenuChangeEventType.ADD_ONE_FAVORITE_MENU
       || this.favoriteMenuChangeEventType === FavoriteMenuChangeEventType.REMOVE_ONE_FAVORITE_MENU) {
       this.cardHeight = -1;

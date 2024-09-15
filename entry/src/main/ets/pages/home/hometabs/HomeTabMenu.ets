@@ -82,7 +82,7 @@ export struct HomeTabMenu {
   }
 
   @Builder
-  Content() {
+  private Content() {
     Column() {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.home_tab_menu')
@@ -99,6 +99,8 @@ export struct HomeTabMenu {
           favoriteMenuChangeEventType: this.favoriteMenuChangeEventType
         })
       }
+      .width('100%')
+      .height('100%')
       .edgeEffect(EdgeEffect.None)
       .sticky(StickyStyle.Header)
       .scrollBar(BarState.Off)
@@ -114,7 +116,7 @@ export struct HomeTabMenu {
   }
 
   @Builder
-  TabBarBuilder() {
+  private TabBarBuilder() {
     Column() {
       Image(this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_menu_selected') : $r('app.media.ic_home_tab_menu_unselected'))
         .width(24)

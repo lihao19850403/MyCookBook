@@ -75,6 +75,10 @@
     {
       "name": "photo_viewer",
       "value": "图片阅览器"
+    },
+    {
+      "name": "loading",
+      "value": "加载中..."
     }
   ]
 }

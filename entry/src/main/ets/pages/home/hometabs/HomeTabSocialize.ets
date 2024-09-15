@@ -32,7 +32,7 @@ export struct HomeTabSocialize {
   }
 
   @Builder
-  Content() {
+  private Content() {
     Column() {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.home_tab_socialize')
@@ -51,7 +51,7 @@ export struct HomeTabSocialize {
   }
 
   @Builder
-  TabBarBuilder() {
+  private TabBarBuilder() {
     Column() {
       Image(this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_socialize_selected') : $r('app.media.ic_home_tab_socialize_unselected'))
         .width(24)
@@ -94,11 +94,11 @@ export struct HomeTabSocialize {
   private onLoadInterceptCallback(data: WebResourceRequest, webViewController: webview.WebviewController): boolean {
     let requestUrl: string = data.getRequestUrl();
     if (requestUrl !== undefined) {
-      if (requestUrl.indexOf('xiangha.com/download') !== -1) {
+      if (requestUrl.includes('xiangha.com/download')) {
 
         return true;
       }
-      if (requestUrl.indexOf('xiangha.com/entry') !== -1 ) {
+      if (requestUrl.includes('xiangha.com/entry')) {
 
         return true;
       }

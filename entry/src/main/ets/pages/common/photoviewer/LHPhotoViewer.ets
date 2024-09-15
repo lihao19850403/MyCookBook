@@ -13,7 +13,7 @@ export interface PhotoViewerParams {
   uri: ResourceStr;
 
   /** 是否允许图片缩放。默认允许。 */
-  zoomable?: boolean;
+  supportZoom?: boolean;
 
   /**
    * 图片缩放范围。格式：长为2的数字数组，表示起始范围。
@@ -30,7 +30,7 @@ export interface PhotoViewerParams {
  */
 @Entry
 @Component
-export struct LHPhotoViewer {
+struct LHPhotoViewer {
 
   /** 图片阅览器。 */
   private title: ResourceStr = $r('app.string.photo_viewer');
@@ -46,7 +46,7 @@ export struct LHPhotoViewer {
     } else {
       this.data.setImageResource(params.uri as Resource);
     }
-    this.data.setZoomable(firstNotVoid(params.zoomable, true));
+    this.data.setZoomable(firstNotVoid(params.supportZoom, true));
     if (params.scaleRange !== undefined && params.scaleRange.length >= 2 && params.scaleRange[0] <= params.scaleRange[1]) {
       this.data.setMinimumScale(Math.max(params.scaleRange[0], 1.0));
       this.data.setMaximumScale(Math.min(params.scaleRange[1], 5.0));

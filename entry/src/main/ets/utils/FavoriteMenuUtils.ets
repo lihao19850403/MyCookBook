@@ -42,7 +42,7 @@ export class FavoriteMenuUtils {
       return false;
     }
     try {
-      return (favoriteOrder as Array<number>).indexOf(id) !== -1;
+      return (favoriteOrder as Array<number>).includes(id);
     } catch (error) {
     }
     return false;
@@ -109,7 +109,7 @@ export class FavoriteMenuUtils {
       favoriteOrder = [];
     }
     try {
-      if ((favoriteOrder as Array<number>).indexOf(menu.id) !== -1) {
+      if ((favoriteOrder as Array<number>).includes(menu.id)) {
         return;
       }
       (favoriteOrder as Array<number>).unshift(menu.id);

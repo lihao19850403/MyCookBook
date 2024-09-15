@@ -99,7 +99,7 @@ export struct LHWebView {
         .onControllerAttached(() => {
           if (firstNotVoid(this.mobileMode, DEFAULT_ATTRIBUTES.mobileMode)) {
             let defaultUserAgent: string = this.controller.getUserAgent();
-            if (defaultUserAgent.indexOf('Mobile') === -1) {
+            if (!defaultUserAgent.includes('Mobile')) {
               let customUserAgent: string = defaultUserAgent.concat('Mobile');
               this.controller.setCustomUserAgent(customUserAgent);
             }
@@ -132,7 +132,7 @@ export struct LHWebView {
    * 进度条数值改变默认监听。
    * 每次进度条改变后，都设定1000ms后隐藏进度条。
    */
-  private onProgressChanged() {
+  onProgressChanged() {
     clearTimeout(this.progressVisibleTask);
     this.progressVisible = true;
     this.progressVisibleTask = setTimeout(() => this.progressVisible = false, 1000);

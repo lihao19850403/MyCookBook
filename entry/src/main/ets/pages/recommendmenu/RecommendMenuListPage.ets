@@ -95,6 +95,8 @@ struct RecommendMenuListPage {
               .backgroundColor($r('app.color.main_bg_gray_color'))
           }
         }
+        .width('100%')
+        .height('100%')
         .edgeEffect(EdgeEffect.None)
         .sticky(StickyStyle.Header)
         .scrollBar(BarState.Off)

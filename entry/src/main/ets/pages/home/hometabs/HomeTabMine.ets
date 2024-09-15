@@ -24,7 +24,7 @@ export struct HomeTabMine {
   }
 
   @Builder
-  Content() {
+  private Content() {
     Column() {
 
     }
@@ -34,7 +34,7 @@ export struct HomeTabMine {
   }
 
   @Builder
-  TabBarBuilder() {
+  private TabBarBuilder() {
     Column() {
       Image(this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_mine_selected') : $r('app.media.ic_home_tab_mine_unselected'))
         .width(24)

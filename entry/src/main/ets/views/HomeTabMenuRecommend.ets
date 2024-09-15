@@ -23,11 +23,6 @@ export struct HomeTabMenuRecommend {
   @State cardHeight: number = -1;
 
   build() {
-    this.Build()
-  }
-
-  @Builder
-  private Build() {
     ListItemGroup({
       header: this.RecommendMenuHeader()
     }) {
@@ -53,6 +48,7 @@ export struct HomeTabMenuRecommend {
           .columnsGap(4)
           .rowsGap(4)
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .edgeEffect(EdgeEffect.None)
           .scrollBar(BarState.Off)
         } else {
           Text($r('app.string.no_recommend_menu_available'))
@@ -67,7 +63,7 @@ export struct HomeTabMenuRecommend {
   }
 
   @Builder
-  RecommendMenuHeader() {
+  private RecommendMenuHeader() {
     Row() {
       Text($r('app.string.today_s_recommend'))
         .fontSize(14)
