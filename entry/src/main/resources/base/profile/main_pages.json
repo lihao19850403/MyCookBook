@@ -3,6 +3,7 @@
     "pages/home/HomeMain",
     "pages/recommendmenu/RecommendMenuListPage",
     "pages/menudetail/MenuDetailPage",
+    "pages/newsdetail/NewsDetailPage",
     "pages/common/photoviewer/LHPhotoViewer"
   ]
 }

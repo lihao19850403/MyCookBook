@@ -25,6 +25,14 @@
       "value": "#FFEDFFED"
     },
     {
+      "name": "main_link_text_heavy_color",
+      "value": "#FF2B4E75"
+    },
+    {
+      "name": "main_link_text_color",
+      "value": "#FF4175B0"
+    },
+    {
       "name": "menu_type_name_bg_color",
       "value": "#FFCBDFAE"
     },

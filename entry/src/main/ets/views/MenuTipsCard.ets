@@ -42,7 +42,7 @@ export struct MenuTipsCard {
   /** 菜谱名片样式。 */
   private style?: MenuTipsCardStyle;
 
-  /** 随机菜谱图片。s */
+  /** 随机菜谱图片。 */
   private tempPic: ResourceStr = this.randomMenuPic();
 
   build() {

@@ -8,9 +8,10 @@ import { KVUtils } from '../utils/common/KVUtils';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { util } from '@kit.ArkTS';
 import { NewsTipsCard } from './NewsTipsCard';
+import { RouterUtils } from '../utils/common/RouterUtils';
 
 /** 今日新闻请求key。 */
-const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_news_request';
+const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
 
 /** 网络请求接口。 */
 const API_PATH: string = 'https://apis.tianapi.com/health/index';
@@ -22,7 +23,7 @@ const API_PARAM_NEWS_PAGE_SIZE: number = 20;
 const FILE_NAME_TODAY_NEWS: string = 'today_news';
 
 /** 今日新闻拟数据文件名。 */
-const FILE_NAME_MOCK_DATA: string = 'home_tab_news_mock.json5';
+const FILE_NAME_MOCK_DATA: string = 'home_tab_top_news_mock.json5';
 
 /**
  * 首页 - 头条 - 今日新闻列表。
@@ -103,7 +104,7 @@ export struct HomeTabNewsList {
           NewsTipsCard({
             newsInfo: newsItem
           })
-            // .onClick((event: ClickEvent) => RouterUtils.go('pages/menudetail/MenuDetailPage', menuItem))
+            .onClick((event: ClickEvent) => RouterUtils.go('pages/newsdetail/NewsDetailPage', newsItem))
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)
     }

@@ -13,7 +13,7 @@
       "value": "$string:app_name"
     },
     {
-      "name": "home_tab_news",
+      "name": "home_tab_top_news",
       "value": "头条"
     },
     {
@@ -79,6 +79,14 @@
     {
       "name": "loading",
       "value": "加载中..."
+    },
+    {
+      "name": "original_link",
+      "value": "原文链接"
+    },
+    {
+      "name": "news",
+      "value": "新闻"
     }
   ]
 }

@@ -53,32 +53,30 @@ export struct MenuDetailCard {
   /** 无标题模式，适合嵌入单页显示。 */
   private noTitleMode?: boolean;
 
-  /** 随机菜谱图片。s */
+  /** 随机菜谱图片。 */
   private tempPic: ResourceStr = this.randomMenuPic();
 
   build() {
     if (this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined && this.menuInfo.cp_name !== '') {
-      Stack() {
-        if (this.screenUIType === ScreenUIType.NORMAL) {
-          Column() {
-            this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
-            this.Detail(this.menuInfo.cp_name)
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.Start)
-          .padding({ left: 8, right: 8, top: 24, bottom: 24 })
-          .backgroundColor(Color.White)
-          .borderRadius(firstNotVoid(this.style, DEFAULT_ATTRIBUTES.style) === MenuDetailCardStyle.ROUND_CARD ? 4 : 0)
-        } else {
-          Row() {
-            this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
-            this.Detail(this.menuInfo.cp_name)
-          }
-          .width('100%')
-          .padding({ left: 8, right: 8, top: 24, bottom: 24 })
-          .backgroundColor(Color.White)
-          .borderRadius(firstNotVoid(this.style, DEFAULT_ATTRIBUTES.style) === MenuDetailCardStyle.ROUND_CARD ? 4 : 0)
+      if (this.screenUIType === ScreenUIType.NORMAL) {
+        Column() {
+          this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
+          this.Detail(this.menuInfo.cp_name)
         }
+        .width('100%')
+        .justifyContent(FlexAlign.Start)
+        .padding({ left: 8, right: 8, top: 24, bottom: 24 })
+        .backgroundColor(Color.White)
+        .borderRadius(firstNotVoid(this.style, DEFAULT_ATTRIBUTES.style) === MenuDetailCardStyle.ROUND_CARD ? 4 : 0)
+      } else {
+        Row() {
+          this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
+          this.Detail(this.menuInfo.cp_name)
+        }
+        .width('100%')
+        .padding({ left: 8, right: 8, top: 24, bottom: 24 })
+        .backgroundColor(Color.White)
+        .borderRadius(firstNotVoid(this.style, DEFAULT_ATTRIBUTES.style) === MenuDetailCardStyle.ROUND_CARD ? 4 : 0)
       }
     }
   }

@@ -29,7 +29,7 @@ export struct HomeTabNews {
   private Content() {
     Column() {
       LHCommonTitleBar({
-        centerTitleText: $r('app.string.home_tab_news')
+        centerTitleText: $r("app.string.home_tab_top_news")
       })
       HomeTabNewsList({
         screenUIType: this.screenUIType
@@ -45,11 +45,11 @@ export struct HomeTabNews {
   @Builder
   private TabBarBuilder() {
     Column() {
-      Image(this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_news_selected') : $r('app.media.ic_home_tab_news_unselected'))
+      Image(this.selectedIndex === this.thisIndex ? $r("app.media.ic_home_tab_top_news_selected") : $r("app.media.ic_home_tab_top_news_unselected"))
         .width(24)
         .height(24)
         .margin({ bottom: 4 })
-      Text($r('app.string.home_tab_news'))
+      Text($r("app.string.home_tab_top_news"))
         .fontSize(10)
         .fontFamily('HarmonyHeiTi-Medium')
         .fontColor(this.selectedIndex === this.thisIndex ? $r('app.color.main_selected_color') : $r('app.color.main_unselected_color'))
