@@ -30,6 +30,9 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct MenuTipsCard {
 
+  /** 图片加载失败。 */
+  @State imageErrorHappened: boolean = false;
+
   /** 动态指定小卡片的高。 */
   @Prop cardHeight: number;
 
@@ -47,10 +50,11 @@ export struct MenuTipsCard {
       Row({
         space: 8
       }) {
-        Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic))
+        Image(this.imageErrorHappened ? this.tempPic : firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic))
           .width(112)
           .height(63)
           .objectFit(ImageFit.Contain)
+          .onError((error: ImageError) => this.imageErrorHappened = true)
         Column({
           space: 8
         }) {

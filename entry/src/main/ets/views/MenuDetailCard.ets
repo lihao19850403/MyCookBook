@@ -38,6 +38,9 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct MenuDetailCard {
 
+  /** 图片加载失败。 */
+  @State imageErrorHappened: boolean = false;
+
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
 
@@ -82,10 +85,11 @@ export struct MenuDetailCard {
 
   @Builder
   private Image(src: ResourceStr) {
-    Image(src)
+    Image(this.imageErrorHappened ? this.tempPic : src)
       .width(224)
       .height(126)
       .objectFit(ImageFit.Contain)
+      .onError((error: ImageError) => this.imageErrorHappened = true)
       .onClick((event: ClickEvent) => {
         let params: PhotoViewerParams = {
           title: this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined ? this.menuInfo.cp_name : $r('app.string.photo_viewer'),
