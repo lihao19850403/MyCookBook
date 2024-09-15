@@ -13,11 +13,8 @@ import { RouterUtils } from '../utils/common/RouterUtils';
 /** 今日新闻请求key。 */
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
 
-/** 网络请求接口。 */
-const API_PATH: string = 'https://apis.tianapi.com/health/index';
-
 /** 网络请求参数：每页请求的新闻数量。 */
-const API_PARAM_NEWS_PAGE_SIZE: number = 20;
+const API_PARAM_NEWS_PAGE_SIZE: number = 18;
 
 /** 今日新闻配置文件名。 */
 const FILE_NAME_TODAY_NEWS: string = 'today_news';
@@ -127,13 +124,14 @@ export struct HomeTabNewsList {
    * 获取今日新闻。
    */
   private async apiLoadTodayNews(): Promise<boolean> {
+    let apiPath: string = await KeysUtils.getServerUrlForID(KEY_HOME_TAB_TODAY_NEWS_REQUEST);
     let reqKey: string = await KeysUtils.getKeyForID(KEY_HOME_TAB_TODAY_NEWS_REQUEST);
     let page: number = this.todayNewsDataSource.totalCount() === 0 ? 1 :
       this.todayNewsDataSource.totalCount() < API_PARAM_NEWS_PAGE_SIZE ? 2 :
         Math.ceil(this.todayNewsDataSource.totalCount() / API_PARAM_NEWS_PAGE_SIZE) + 1;
     let num: number = API_PARAM_NEWS_PAGE_SIZE;
     let rand: number = 1;
-    return HttpUtils.get<TodayNewsModel>(`${API_PATH}?key=${reqKey}&page=${page}&num=${num}&rand=${rand}`)
+    return HttpUtils.get<TodayNewsModel>(`${apiPath}?key=${reqKey}&page=${page}&num=${num}&rand=${rand}`)
       .then((response: CallResult<TodayNewsModel>) => {
         let isReachEnd: boolean = false;
         if (response !== undefined && response.data !== undefined && response.data.result !== undefined && response.data.result.newslist !== undefined) {

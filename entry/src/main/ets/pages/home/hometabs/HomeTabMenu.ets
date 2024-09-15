@@ -17,9 +17,6 @@ import {
 /** 菜谱页面网络请求key。 */
 const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
 
-/** 网络请求接口。 */
-const API_PATH: string = 'https://apis.tianapi.com/caipu/index';
-
 /** 推荐菜谱配置文件名。 */
 const FILE_NAME_RECOMMEND_MENU: string = 'recommend_menu';
 
@@ -135,10 +132,11 @@ export struct HomeTabMenu {
    * 获取今日推荐菜谱。
    */
   private async apiLoadRecommendMenus() {
+    let apiPath: string = await KeysUtils.getServerUrlForID(KEY_HOME_TAB_MENU_REQUEST);
     let reqKey: string = await KeysUtils.getKeyForID(KEY_HOME_TAB_MENU_REQUEST);
     let page: number = Math.floor(Math.random() * 10) % 2 + 1;
     let num: number = Math.floor(Math.random() * 10) + 3;
-    HttpUtils.get<RecommendMenuModel>(`${API_PATH}?key=${reqKey}&word=家常&page=${page}&num=${num}`)
+    HttpUtils.get<RecommendMenuModel>(`${apiPath}?key=${reqKey}&word=家常&page=${page}&num=${num}`)
       .then((response: CallResult<RecommendMenuModel>) => {
         if (response !== undefined && response.data !== undefined && response.data.result !== undefined) {
           KVUtils.setKV(FILE_NAME_RECOMMEND_MENU, this.today, JSON.stringify(response.data.result));

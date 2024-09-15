@@ -13,6 +13,9 @@ export interface KeyInfo {
   /** 密钥描述。 */
   description: string;
 
+  /** 对应后端地址。 */
+  serverUrl: string;
+
   /** 密钥值。 */
   value: string;
 }
@@ -41,6 +44,20 @@ export class KeysUtils {
     }
     let keyInfo: KeyInfo = KeysUtils.mMap[id];
     return keyInfo ? keyInfo.value : '';
+  }
+
+  /**
+   * 获取对应服务端接口地址。
+   * @param id 密钥ID。
+   * @returns 对应服务端接口地址。
+   */
+  public static async getServerUrlForID(id: string): Promise<string> {
+    let ids: string[] = Object.keys(KeysUtils.mMap);
+    if (ids.length === 0) {
+      await KeysUtils.initKeyInfos();
+    }
+    let keyInfo: KeyInfo = KeysUtils.mMap[id];
+    return keyInfo ? keyInfo.serverUrl : '';
   }
 
   /**
