@@ -1,6 +1,7 @@
 import { firstNotVoid } from '../utils/common/Utils';
 import { TodayNewsItem } from '../models/TodayNewsModel';
 import { LengthMetrics } from '@kit.ArkUI';
+import { RouterUtils } from '../utils/common/RouterUtils';
 
 /** 新闻详情样式。 */
 export enum NewsDetailCardStyle {
@@ -102,16 +103,24 @@ export struct NewsDetailCard {
             .lineSpacing(LengthMetrics.vp(4))
         }
         if (this.newsInfo.url !== undefined && this.newsInfo.url !== '') {
-          Text($r('app.string.original_link'))
-            .fontSize(14)
-            .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.main_link_text_heavy_color'))
-            .margin({ top: 24 })
-          Text(this.newsInfo.url)
-            .fontSize(14)
-            .fontWeight(FontWeight.Normal)
-            .fontColor($r('app.color.main_link_text_color'))
-            .lineSpacing(LengthMetrics.vp(4))
+          Column({
+            space: 8
+          }) {
+            Text($r('app.string.original_link'))
+              .fontSize(14)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.main_link_text_heavy_color'))
+            Text(this.newsInfo.url)
+              .fontSize(14)
+              .fontWeight(FontWeight.Normal)
+              .fontColor($r('app.color.main_link_text_color'))
+              .lineSpacing(LengthMetrics.vp(4))
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Start)
+          .alignItems(HorizontalAlign.Start)
+          .margin({ top: 24 })
+          .onClick((event: ClickEvent) => RouterUtils.go('pages/common/webbrowser/LHWebBrowser', { "url": this.newsInfo?.url }))
         }
       }
       .width('100%')

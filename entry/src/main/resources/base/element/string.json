@@ -87,6 +87,10 @@
     {
       "name": "news",
       "value": "新闻"
+    },
+    {
+      "name": "browser",
+      "value": "浏览器"
     }
   ]
 }
