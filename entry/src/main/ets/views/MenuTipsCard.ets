@@ -3,12 +3,8 @@ import { firstNotVoid } from '../utils/common/Utils';
 
 /** 菜谱名片样式。 */
 export enum MenuTipsCardStyle {
-
-  /** 圆角卡片。 */
-  ROUND_CARD,
-
-  /** 矩形卡片。 */
-  SQUARE_BANNER
+  /** 圆角卡片。 */ ROUND_CARD,
+  /** 矩形卡片。 */ SQUARE_BANNER
 }
 
 /** 默认属性。 */

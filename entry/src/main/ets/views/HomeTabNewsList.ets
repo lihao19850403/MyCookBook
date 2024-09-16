@@ -1,4 +1,4 @@
-import { PullToRefresh } from '@ohos/pulltorefresh';
+import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import { TodayNewsDataSource } from '../models/TodayNewsDataSource';
 import { TodayNewsItem, TodayNewsModel } from '../models/TodayNewsModel';
 import { GlobalContext } from '../utils/common/GlobalContext';
@@ -14,13 +14,24 @@ import { RouterUtils } from '../utils/common/RouterUtils';
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
 
 /** 网络请求参数：每页请求的新闻数量。 */
-const API_PARAM_NEWS_PAGE_SIZE: number = 18;
+const API_PARAM_NEWS_PAGE_SIZE: number = 24;
 
 /** 今日新闻配置文件名。 */
 const FILE_NAME_TODAY_NEWS: string = 'today_news';
 
 /** 今日新闻拟数据文件名。 */
 const FILE_NAME_MOCK_DATA: string = 'home_tab_top_news_mock.json5';
+
+/** 上拉加载更多的状态。 */
+const enum LOAD_MORE_STATUS {
+  /** 未开始。 */ NONE,
+  /** 上拉加载更多1阶段 - 刚刚出现。 */ TIPS_STEP_1,
+  /** 上拉加载更多2阶段 - 继续上拉。 */ TIPS_STEP_2,
+  /** 已到达可加载更多的滑动距离 */ READY_TO_LOAD_MORE,
+  /** 正在加载中。 */ LOADING,
+  /** 已完成加载 - 正常结束。 */ FINISHED_SUCCESS,
+  /** 已完成加载 - 未拿到更多信息(已到底部或发生了异常)。 */ FINISHED_NO_MORE
+}
 
 /**
  * 首页 - 头条 - 今日新闻列表。
@@ -35,6 +46,9 @@ export struct HomeTabNewsList {
   /** 正在加载今日新闻。 */
   @State isLoadingTodayNews: boolean = true;
 
+  /** 上拉加载更多的状态。 */
+  @State loadingMoreStatus: LOAD_MORE_STATUS = LOAD_MORE_STATUS.NONE;
+
   /** 今日新闻数据。 */
   @State todayNews: TodayNewsItem[] | undefined = undefined;
 
@@ -47,7 +61,12 @@ export struct HomeTabNewsList {
   /** 拖动拉取组件控制器。 */
   private scroller: Scroller = new Scroller();
 
+  /** 拖动拉取组件配置工具。 */
+  private refreshConfigurator: PullToRefreshConfigurator = new PullToRefreshConfigurator();
+
   aboutToAppear(): void {
+    this.refreshConfigurator.setHasRefresh(false);
+    this.refreshConfigurator.setAnimDuration(2000);
     if (!KVUtils.hasKV(FILE_NAME_TODAY_NEWS, this.today)) { // 每日新闻。
       this.apiLoadTodayNews();
     } else { // 今日已有新闻，使用已保存的数据。
@@ -61,7 +80,9 @@ export struct HomeTabNewsList {
 
   build() {
     if (this.isLoadingTodayNews) {
-      Row() {
+      Row({
+        space: 4
+      }) {
         LoadingProgress()
           .height(24)
         Text($r('app.string.loading'))
@@ -77,14 +98,20 @@ export struct HomeTabNewsList {
       PullToRefresh({
         data: this.todayNews,
         scroller: this.scroller,
+        refreshConfigurator: this.refreshConfigurator,
         customList: this.NewsList.bind(this),
+        onAnimPullUp: this.onAnimPullUp.bind(this),
+        onAnimLoading: this.onAnimLoading.bind(this),
+        customLoad: this.LoadMore.bind(this),
         onLoadMore: () => new Promise<string>((resolve, reject) => {
           this.apiLoadTodayNews()
             .then((isReachEnd: boolean) => {
-              resolve(`state ${isReachEnd}`)
+              this.loadingMoreStatus = isReachEnd ? LOAD_MORE_STATUS.FINISHED_NO_MORE : LOAD_MORE_STATUS.FINISHED_SUCCESS;
+              resolve(`${isReachEnd}`);
             })
             .catch((isReachEnd: boolean) => {
-              reject(`state ${isReachEnd}`)
+              this.loadingMoreStatus = isReachEnd ? LOAD_MORE_STATUS.FINISHED_NO_MORE : LOAD_MORE_STATUS.FINISHED_SUCCESS;
+              reject(`${isReachEnd}`);
             })
         })
       })
@@ -118,6 +145,49 @@ export struct HomeTabNewsList {
       scrollBackward: NestedScrollMode.SELF_FIRST,
     })
     .cachedCount(4)
+  }
+
+  @Builder
+  private LoadMore() {
+    if (this.loadingMoreStatus !== LOAD_MORE_STATUS.NONE) {
+      Row({
+        space: 4
+      }) {
+        if (this.loadingMoreStatus === LOAD_MORE_STATUS.TIPS_STEP_1 || this.loadingMoreStatus === LOAD_MORE_STATUS.TIPS_STEP_2) {
+          Image($r('app.media.ic_load_more_arrow_up'))
+            .width(24)
+            .height(24)
+        } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.READY_TO_LOAD_MORE) {
+          Image($r('app.media.ic_load_more_arrow_down'))
+            .width(24)
+            .height(24)
+        } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.LOADING) {
+          LoadingProgress()
+            .height(24)
+        } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_SUCCESS) {
+          Image($r('app.media.ic_load_more_finished_success'))
+            .width(24)
+            .height(24)
+        } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_NO_MORE) {
+          Image($r('app.media.ic_load_more_finished_no_more'))
+            .width(24)
+            .height(24)
+        }
+        Text(this.loadingMoreStatus === LOAD_MORE_STATUS.TIPS_STEP_1 ? $r('app.string.load_more_tips_step_1') :
+          this.loadingMoreStatus === LOAD_MORE_STATUS.TIPS_STEP_2 ? $r('app.string.load_more_tips_step_2') :
+          this.loadingMoreStatus === LOAD_MORE_STATUS.READY_TO_LOAD_MORE ? $r('app.string.load_more_ready_to_load_more') :
+          this.loadingMoreStatus === LOAD_MORE_STATUS.LOADING ? $r('app.string.load_more_loading') :
+          this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_SUCCESS ? $r('app.string.load_more_finished_success') :
+          this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_NO_MORE ? $r('app.string.load_more_finished_no_more') : '')
+          .fontSize(16)
+          .fontColor($r('app.color.main_unselected_color'))
+          .textAlign(TextAlign.Center)
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .layoutWeight(1)
+    }
   }
 
   /**
@@ -176,5 +246,37 @@ export struct HomeTabNewsList {
     let todayNewsArray = JSON.parse(fileContent) as TodayNewsItem[];
     this.todayNewsDataSource.deleteAllNews();
     this.todayNewsDataSource.appendNewsArray(todayNewsArray);
+  }
+
+  /**
+   * 上拉过程回调。
+   * @param value 上拉距离与最大上拉距离的比值，一般达到0.75就可以加载了。
+   * @param width loading组件的宽。
+   * @param height loading组件的高。
+   */
+  private onAnimPullUp(value?: number, width?: number, height?: number) {
+    let loadImgHeight = this.refreshConfigurator.getLoadImgHeight();
+    if (value === undefined) {
+      return;
+    }
+    if (value < 0.75) {
+      if (height === undefined || height < loadImgHeight) {
+        this.loadingMoreStatus = LOAD_MORE_STATUS.TIPS_STEP_1;
+      } else {
+        this.loadingMoreStatus = LOAD_MORE_STATUS.TIPS_STEP_2;
+      }
+    } else {
+      this.loadingMoreStatus = LOAD_MORE_STATUS.READY_TO_LOAD_MORE;
+    }
+  }
+
+  /**
+   * 加载过程回调。
+   * @param value 上拉距离与最大上拉距离的比值，一般达到0.75就可以加载了。
+   * @param width loading组件的宽。
+   * @param height loading组件的高。
+   */
+  private onAnimLoading(value?: number, width?: number, height?: number) {
+    this.loadingMoreStatus = LOAD_MORE_STATUS.LOADING;
   }
 }

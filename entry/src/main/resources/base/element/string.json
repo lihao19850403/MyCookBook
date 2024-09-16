@@ -91,6 +91,30 @@
     {
       "name": "browser",
       "value": "浏览器"
+    },
+    {
+      "name": "load_more_tips_step_1",
+      "value": "上拉加载更多"
+    },
+    {
+      "name": "load_more_tips_step_2",
+      "value": "继续上拉..."
+    },
+    {
+      "name": "load_more_ready_to_load_more",
+      "value": "松开可加载更多..."
+    },
+    {
+      "name": "load_more_loading",
+      "value": "正在加载..."
+    },
+    {
+      "name": "load_more_finished_success",
+      "value": "加载完成"
+    },
+    {
+      "name": "load_more_finished_no_more",
+      "value": "已经到底了"
     }
   ]
 }

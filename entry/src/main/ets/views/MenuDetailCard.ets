@@ -7,12 +7,8 @@ import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 
 /** 菜谱详情样式。 */
 export enum MenuDetailCardStyle {
-
-  /** 圆角卡片。 */
-  ROUND_CARD,
-
-  /** 矩形卡片。 */
-  SQUARE_BANNER
+  /** 圆角卡片。 */ ROUND_CARD,
+  /** 矩形卡片。 */ SQUARE_BANNER
 }
 
 /** 默认属性。 */
