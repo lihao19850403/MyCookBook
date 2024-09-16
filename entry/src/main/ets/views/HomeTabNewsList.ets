@@ -66,7 +66,6 @@ export struct HomeTabNewsList {
 
   aboutToAppear(): void {
     this.refreshConfigurator.setHasRefresh(false);
-    this.refreshConfigurator.setAnimDuration(2000);
     if (!KVUtils.hasKV(FILE_NAME_TODAY_NEWS, this.today)) { // 每日新闻。
       this.apiLoadTodayNews();
     } else { // 今日已有新闻，使用已保存的数据。
@@ -91,6 +90,7 @@ export struct HomeTabNewsList {
           .textAlign(TextAlign.Center)
       }
       .width('100%')
+      .height('100%')
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .layoutWeight(1)
@@ -208,6 +208,9 @@ export struct HomeTabNewsList {
           if (response.data.result.newslist.length === 0) { // 已经拉取完毕，没有新数据了。
             isReachEnd = true;
           } else { // 追加新数据。
+            if (!KVUtils.hasKV(FILE_NAME_TODAY_NEWS, this.today) && this.todayNewsDataSource.totalCount() > 0) {
+              this.todayNewsDataSource.deleteAllNews();
+            }
             this.todayNewsDataSource.appendNewsArray(response.data.result.newslist);
             KVUtils.setKV(FILE_NAME_TODAY_NEWS, this.today, JSON.stringify(this.todayNewsDataSource.getAllData()));
             isReachEnd = false;
