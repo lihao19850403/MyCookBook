@@ -2,6 +2,7 @@ import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { LHDivider } from '../../../views/common/LHDivider';
 import { HomeTabMineFavorite } from '../../../views/HomeTabMineFavorite';
+import { HomeTabMineSettings } from '../../../views/HomeTabMineSettings';
 import { HomeTabMineTips } from '../../../views/HomeTabMineTips';
 
 /**
@@ -42,7 +43,9 @@ export struct HomeTabMine {
         HomeTabMineTips({
           screenUIType: this.screenUIType
         })
-
+        HomeTabMineSettings({
+          screenUIType: this.screenUIType
+        })
         HomeTabMineFavorite({
           screenUIType: this.screenUIType,
           mainPageTabsController: this.mainPageTabsController

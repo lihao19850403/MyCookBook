@@ -165,11 +165,11 @@ export struct HomeTabNewsList {
           LoadingProgress()
             .height(24)
         } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_SUCCESS) {
-          Image($r('app.media.ic_load_more_finished_success'))
+          Image($r("app.media.ic_main_selected_green"))
             .width(24)
             .height(24)
         } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_NO_MORE) {
-          Image($r('app.media.ic_load_more_finished_no_more'))
+          Image($r("app.media.ic_main_selected_yellow"))
             .width(24)
             .height(24)
         }

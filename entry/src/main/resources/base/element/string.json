@@ -127,6 +127,18 @@
     {
       "name": "home_tab_mine_favorite_menu_tips",
       "value": "菜谱收藏夹"
+    },
+    {
+      "name": "home_tab_mine_settings",
+      "value": "应用设置"
+    },
+    {
+      "name": "home_tab_mine_settings_first_page",
+      "value": "选择首页"
+    },
+    {
+      "name": "home_tab_mine_settings_first_page_tips",
+      "value": "下次启动应用将首先显示："
     }
   ]
 }

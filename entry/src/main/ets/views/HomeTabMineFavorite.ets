@@ -38,7 +38,7 @@ export struct HomeTabMineFavorite {
 
   build() {
     ListItemGroup({
-      header: this.TipsHeader()
+      header: this.FavoriteHeader()
     }) {
       ListItem() {
         Grid() {
@@ -57,7 +57,7 @@ export struct HomeTabMineFavorite {
   }
 
   @Builder
-  private TipsHeader() {
+  private FavoriteHeader() {
     Text($r('app.string.home_tab_mine_favorite'))
       .width('100%')
       .height(40)
@@ -69,19 +69,30 @@ export struct HomeTabMineFavorite {
   @Builder
   private FavoriteMenu() {
     RelativeContainer() {
-      Image($r('app.media.ic_home_tab_mine_favorite_menu'))
-        .width(36)
-        .height(36)
-        .alignRules({
-          center: {
-            anchor: '__container__',
-            align: VerticalAlign.Center
-          },
-          middle: {
-            anchor: '__container__',
-            align: HorizontalAlign.Center
-          }
-        })
+      Stack({
+        alignContent: Alignment.Center
+      }) {
+        Image($r('app.media.ic_home_tab_menu_selected'))
+          .width(32)
+          .height(32)
+          .margin({ top: 4, right: 4 })
+        Image($r('app.media.ic_star_gold'))
+          .width(18)
+          .height(18)
+          .margin({ left: 18, bottom: 18 })
+      }
+      .width(36)
+      .height(36)
+      .alignRules({
+        center: {
+          anchor: '__container__',
+          align: VerticalAlign.Center
+        },
+        middle: {
+          anchor: '__container__',
+          align: HorizontalAlign.Center
+        }
+      })
       Text(`${this.favoriteMenuCount >= 1000 ? '999+' : this.favoriteMenuCount}`)
         .width('100%')
         .fontSize(12)

@@ -1,4 +1,5 @@
 import { emitter } from '@kit.BasicServicesKit';
+import { AppSettings } from '../../utils/AppSettings';
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
 import {
   getScreenUIType,
@@ -29,6 +30,7 @@ struct HomeMain {
   /** 当前选中的标签序号。 */
   @State curSelectedTabIndex: number = 0;
 
+  /** 标签页控制器。 */
   private tabsController: TabsController = new TabsController();
 
   aboutToAppear(): void {
@@ -38,6 +40,10 @@ struct HomeMain {
         this.screenUIType = newScreenUIType;
       }
     })
+    let firstPageIndex: number = AppSettings.firstPageIndex();
+    if (firstPageIndex > 0) {
+      this.tabsController.changeIndex(firstPageIndex);
+    }
   }
 
   onBackPress(): boolean | void {
