@@ -21,6 +21,13 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
   style: NewsDetailCardStyle.ROUND_CARD,
 }
 
+/** 图片加载状态。 */
+const enum IMAGE_LOADING_STATUS {
+  /** 加载中。 */ LOADING,
+/** 成功加载。 */ FINISHED_SUCCESS,
+/** 加载失败。 */ FINISHED_FAILURE
+}
+
 /**
  * 新闻详情。
  * @author li.hao85
@@ -28,8 +35,8 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct NewsDetailCard {
 
-  /** 图片加载失败。 */
-  @State imageErrorHappened: boolean = false;
+  /** 图片加载状态。 */
+  @State imageLoadingStatus: IMAGE_LOADING_STATUS = IMAGE_LOADING_STATUS.LOADING;
 
   /** 动态记录新闻详情卡片的宽度。 */
   @State cardWidth: number = -1;
@@ -75,20 +82,27 @@ export struct NewsDetailCard {
         .width('100%')
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
-        Row() {
-          Image(this.newsInfo.picUrl)
-            .width(this.cardWidth * 0.95)
-            .constraintSize({
-              minWidth: 224,
-              minHeight: 126
-            })
-            .objectFit(ImageFit.Contain)
-            .onError((error: ImageError) => this.imageErrorHappened = true)
+        if (this.imageLoadingStatus !== IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+          Stack({
+            alignContent: Alignment.Center
+          }) {
+            Image(this.newsInfo.picUrl)
+              .width(this.cardWidth * 0.95)
+              .constraintSize({
+                minWidth: 224,
+                minHeight: 126
+              })
+              .objectFit(ImageFit.Contain)
+              .onComplete(event => this.imageLoadingStatus = IMAGE_LOADING_STATUS.FINISHED_SUCCESS)
+              .onError((error: ImageError) => this.imageLoadingStatus = IMAGE_LOADING_STATUS.FINISHED_FAILURE)
+            if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING) {
+              LoadingProgress()
+                .height(24)
+            }
+          }
+          .width('100%')
+          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING ? $r("app.color.main_bg_gray_color") : undefined)
         }
-        .width('100%')
-        .justifyContent(FlexAlign.Center)
-        .alignItems(VerticalAlign.Center)
-        .visibility(this.imageErrorHappened ? Visibility.None : Visibility.Visible)
         if (this.newsInfo.description !== undefined && this.newsInfo!.description !== '') {
           Text(this.newsInfo.description)
             .width('100%')

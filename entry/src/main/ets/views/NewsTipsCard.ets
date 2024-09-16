@@ -19,6 +19,13 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
   style: NewsTipsCardStyle.ROUND_CARD
 }
 
+/** 图片加载状态。 */
+const enum IMAGE_LOADING_STATUS {
+  /** 加载中。 */ LOADING,
+  /** 成功加载。 */ FINISHED_SUCCESS,
+  /** 加载失败。 */ FINISHED_FAILURE
+}
+
 /**
  * 新闻名片。
  * @author li.hao85
@@ -26,8 +33,8 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct NewsTipsCard {
 
-  /** 图片加载失败。 */
-  @State imageErrorHappened: boolean = false;
+  /** 图片加载状态。 */
+  @State imageLoadingStatus: IMAGE_LOADING_STATUS = IMAGE_LOADING_STATUS.LOADING;
 
   /** 新闻信息。 */
   private newsInfo?: TodayNewsItem;
@@ -40,12 +47,23 @@ export struct NewsTipsCard {
       Row({
         space: 8
       }) {
-        Image(this.newsInfo.picUrl)
+        if (this.imageLoadingStatus !== IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+          Stack({
+            alignContent: Alignment.Center
+          }) {
+            Image(this.newsInfo.picUrl)
+              .objectFit(ImageFit.Contain)
+              .onComplete(event => this.imageLoadingStatus = IMAGE_LOADING_STATUS.FINISHED_SUCCESS)
+              .onError((error: ImageError) => this.imageLoadingStatus = IMAGE_LOADING_STATUS.FINISHED_FAILURE)
+            if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING) {
+              LoadingProgress()
+                .height(24)
+            }
+          }
           .width(112)
           .height(63)
-          .objectFit(ImageFit.Contain)
-          .onError((error: ImageError) => this.imageErrorHappened = true)
-          .visibility(this.imageErrorHappened ? Visibility.None : Visibility.Visible)
+          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING ? $r("app.color.main_bg_gray_color") : undefined)
+        }
         Column({
           space: 8
         }) {
