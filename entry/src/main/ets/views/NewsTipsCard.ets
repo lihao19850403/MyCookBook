@@ -1,4 +1,6 @@
 import { TodayNewsItem } from '../models/TodayNewsModel';
+import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
+import { RouterUtils } from '../utils/common/RouterUtils';
 import { firstNotVoid } from '../utils/common/Utils';
 
 /** 新闻名片样式。 */
@@ -36,33 +38,56 @@ export struct NewsTipsCard {
   /** 图片加载状态。 */
   @State imageLoadingStatus: IMAGE_LOADING_STATUS = IMAGE_LOADING_STATUS.LOADING;
 
+  /** 要加载的图片资源。 */
+  @State imageSrc: ResourceStr | undefined = undefined;
+
   /** 新闻信息。 */
   private newsInfo?: TodayNewsItem;
 
   /** 新闻名片样式。 */
   private style?: NewsTipsCardStyle;
 
+  aboutToAppear(): void {
+    this.imageSrc = this.newsInfo?.picUrl;
+  }
+
   build() {
     if (this.newsInfo !== undefined && this.newsInfo.title !== undefined && this.newsInfo.title !== '') {
       Row({
         space: 8
       }) {
-        if (this.imageLoadingStatus !== IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+        if (this.newsInfo.picUrl !== undefined && this.newsInfo.picUrl.length > 0) {
           Stack({
             alignContent: Alignment.Center
           }) {
-            Image(this.newsInfo.picUrl)
+            Image(this.imageSrc)
               .objectFit(ImageFit.Contain)
               .onComplete(event => this.imageLoadingStatus = IMAGE_LOADING_STATUS.FINISHED_SUCCESS)
               .onError((error: ImageError) => this.imageLoadingStatus = IMAGE_LOADING_STATUS.FINISHED_FAILURE)
             if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING) {
               LoadingProgress()
                 .height(24)
+            } else if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+              Image($r('app.media.ic_reload_heavy_gray'))
+                .width(24)
+                .height(24)
             }
           }
           .width(112)
           .height(63)
-          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING ? $r("app.color.main_bg_gray_color") : undefined)
+          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS ? undefined : $r("app.color.main_bg_gray_color"))
+          .onClick((event: ClickEvent) => {
+            if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+              this.imageLoadingStatus = IMAGE_LOADING_STATUS.LOADING;
+              this.imageSrc = this.newsInfo?.picUrl?.concat(`&lh_retry_time=${new Date().getTime()}`);
+            } else if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS) {
+              let params: PhotoViewerParams = {
+                title: $r('app.string.photo_viewer'),
+                uri: this.newsInfo?.picUrl!
+              };
+              RouterUtils.go('pages/common/photoviewer/LHPhotoViewer', params);
+            }
+          })
         }
         Column({
           space: 8

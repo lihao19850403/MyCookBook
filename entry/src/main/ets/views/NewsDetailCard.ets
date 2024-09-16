@@ -2,6 +2,7 @@ import { firstNotVoid } from '../utils/common/Utils';
 import { TodayNewsItem } from '../models/TodayNewsModel';
 import { LengthMetrics } from '@kit.ArkUI';
 import { RouterUtils } from '../utils/common/RouterUtils';
+import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 
 /** 新闻详情样式。 */
 export enum NewsDetailCardStyle {
@@ -38,6 +39,9 @@ export struct NewsDetailCard {
   /** 图片加载状态。 */
   @State imageLoadingStatus: IMAGE_LOADING_STATUS = IMAGE_LOADING_STATUS.LOADING;
 
+  /** 要加载的图片资源。 */
+  @State imageSrc: ResourceStr | undefined = undefined;
+
   /** 动态记录新闻详情卡片的宽度。 */
   @State cardWidth: number = -1;
 
@@ -46,6 +50,10 @@ export struct NewsDetailCard {
 
   /** 新闻详情样式。 */
   private style?: NewsDetailCardStyle;
+
+  aboutToAppear(): void {
+    this.imageSrc = this.newsInfo?.picUrl;
+  }
 
   build() {
     if (this.newsInfo !== undefined && this.newsInfo.title !== undefined && this.newsInfo.title !== '') {
@@ -82,11 +90,11 @@ export struct NewsDetailCard {
         .width('100%')
         .justifyContent(FlexAlign.Center)
         .alignItems(VerticalAlign.Center)
-        if (this.imageLoadingStatus !== IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+        if (this.newsInfo.picUrl !== undefined && this.newsInfo.picUrl.length > 0) {
           Stack({
             alignContent: Alignment.Center
           }) {
-            Image(this.newsInfo.picUrl)
+            Image(this.imageSrc)
               .width(this.cardWidth * 0.95)
               .constraintSize({
                 minWidth: 224,
@@ -98,10 +106,26 @@ export struct NewsDetailCard {
             if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING) {
               LoadingProgress()
                 .height(24)
+            } else if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+              Image($r('app.media.ic_reload_heavy_gray'))
+                .width(24)
+                .height(24)
             }
           }
           .width('100%')
-          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.LOADING ? $r("app.color.main_bg_gray_color") : undefined)
+          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS ? undefined : $r("app.color.main_bg_gray_color"))
+          .onClick((event: ClickEvent) => {
+            if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
+              this.imageLoadingStatus = IMAGE_LOADING_STATUS.LOADING;
+              this.imageSrc = this.newsInfo?.picUrl?.concat(`&lh_retry_time=${new Date().getTime()}`);
+            } else if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS) {
+              let params: PhotoViewerParams = {
+                title: $r('app.string.photo_viewer'),
+                uri: this.newsInfo?.picUrl!
+              };
+              RouterUtils.go('pages/common/photoviewer/LHPhotoViewer', params);
+            }
+          })
         }
         if (this.newsInfo.description !== undefined && this.newsInfo!.description !== '') {
           Text(this.newsInfo.description)
