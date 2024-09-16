@@ -115,6 +115,18 @@
     {
       "name": "load_more_finished_no_more",
       "value": "已经到底了"
+    },
+    {
+      "name": "home_tab_mine_tips",
+      "value": "每日养生"
+    },
+    {
+      "name": "home_tab_mine_favorite",
+      "value": "我的最爱"
+    },
+    {
+      "name": "home_tab_mine_favorite_menu_tips",
+      "value": "菜谱收藏夹"
     }
   ]
 }

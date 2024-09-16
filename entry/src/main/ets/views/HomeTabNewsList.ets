@@ -19,7 +19,7 @@ const API_PARAM_NEWS_PAGE_SIZE: number = 24;
 /** 今日新闻配置文件名。 */
 const FILE_NAME_TODAY_NEWS: string = 'today_news';
 
-/** 今日新闻拟数据文件名。 */
+/** 今日新闻模拟数据文件名。 */
 const FILE_NAME_MOCK_DATA: string = 'home_tab_top_news_mock.json5';
 
 /** 上拉加载更多的状态。 */

@@ -63,7 +63,7 @@ struct HomeMain {
         HomeTabNews({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
         HomeTabMenu({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
         HomeTabSocialize({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
-        HomeTabMine({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
+        HomeTabMine({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType, mainPageTabsController: this.tabsController })
       }
       .vertical(this.screenUIType === ScreenUIType.PAD)
       .edgeEffect(EdgeEffect.None)

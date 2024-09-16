@@ -13,6 +13,14 @@ import {
   FavoriteMenuChangeEventType,
   FavoriteMenuUtils, FAVORITE_MENU_CHANGE_EVENT,
   FAVORITE_MENU_CHANGE_EVENT_TYPE } from '../../../utils/FavoriteMenuUtils';
+import { GlobalConfig } from '../../../utils/common/GlobalConfig';
+
+/**
+ * 事件：锚定至“我的收藏”。
+ * 用在全局配置设置中，值设置为true表示进入菜谱Tab后马上锚定至“我的收藏”。
+ * 在“我的 - 我的最爱 - 菜谱收藏夹”点击动作中会增加此事件。
+ */
+export const GLOBAL_CONFIG_FOCUS_ON_FAVORITE_EVENT: string = 'GlobalConfigFocusOnFavoriteEvent';
 
 /** 菜谱页面网络请求key。 */
 const KEY_HOME_TAB_MENU_REQUEST: string = 'home_tab_menu_request';
@@ -31,7 +39,7 @@ const FILE_NAME_MOCK_DATA: string = 'home_tab_menu_mock.json5';
 export struct HomeTabMenu {
 
   /** 当前选中的Tab序号。 */
-  @Prop selectedIndex: number;
+  @Prop @Watch('onTabSelectChanged') selectedIndex: number;
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
@@ -53,6 +61,9 @@ export struct HomeTabMenu {
 
   /** 今日日期(作为key)。 */
   private today: string = new Date().toLocaleDateString();
+
+  /** 滚动视图控制器。 */
+  private scroller: Scroller = new Scroller();
 
   aboutToAppear(): void {
     if (!KVUtils.hasKV(FILE_NAME_RECOMMEND_MENU, this.today)) { // 每日拉取新推荐菜谱。
@@ -84,7 +95,9 @@ export struct HomeTabMenu {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.home_tab_menu')
       })
-      List() {
+      List({
+        scroller: this.scroller
+      }) {
         HomeTabMenuRecommend({
           screenUIType: this.screenUIType,
           isLoadingRecommendMenu: this.isLoadingRecommendMenu,
@@ -126,6 +139,16 @@ export struct HomeTabMenu {
     }
     .padding({ top: 6, bottom: 6 })
     .alignItems(HorizontalAlign.Center)
+  }
+
+  onTabSelectChanged() {
+    if (this.selectedIndex === this.thisIndex) {
+      let focusOnFavorite: boolean | undefined = GlobalConfig.get(GLOBAL_CONFIG_FOCUS_ON_FAVORITE_EVENT);
+      if (focusOnFavorite) {
+        GlobalConfig.set(GLOBAL_CONFIG_FOCUS_ON_FAVORITE_EVENT, false);
+        this.scroller.scrollToIndex(1, true);
+      }
+    }
   }
 
   /**

@@ -1,4 +1,8 @@
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
+import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
+import { LHDivider } from '../../../views/common/LHDivider';
+import { HomeTabMineFavorite } from '../../../views/HomeTabMineFavorite';
+import { HomeTabMineTips } from '../../../views/HomeTabMineTips';
 
 /**
  * 首页 - 个人主页。
@@ -16,6 +20,9 @@ export struct HomeTabMine {
   /** 此Tab序号。 */
   private thisIndex: number = 3;
 
+  /** 首页标签控制器。 */
+  private mainPageTabsController?: TabsController;
+
   build() {
     TabContent() {
       this.Content()
@@ -26,11 +33,36 @@ export struct HomeTabMine {
   @Builder
   private Content() {
     Column() {
+      LHCommonTitleBar({
+        centerTitleText: $r("app.string.home_tab_mine")
+      })
+      List({
+        space: 24
+      }) {
+        HomeTabMineTips({
+          screenUIType: this.screenUIType
+        })
 
+        HomeTabMineFavorite({
+          screenUIType: this.screenUIType,
+          mainPageTabsController: this.mainPageTabsController
+        })
+      }
+      .width('100%')
+      .height('100%')
+      .edgeEffect(EdgeEffect.None)
+      .sticky(StickyStyle.Header)
+      .scrollBar(BarState.Off)
+      .layoutWeight(1)
+      .nestedScroll({
+        scrollForward: NestedScrollMode.SELF_FIRST,
+        scrollBackward: NestedScrollMode.SELF_FIRST,
+      })
+      LHDivider()
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.main_bg_gray_color'))
+    .backgroundColor(Color.White)
   }
 
   @Builder
