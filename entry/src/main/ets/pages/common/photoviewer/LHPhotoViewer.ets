@@ -1,7 +1,11 @@
 import { PhotoView } from '@ohos/photoview';
+import { LHAppSettingsTextSizePlanModel } from '../../../models/common/LHAppSettingsTextSizePlanModel';
+import { LHAppSettingsTextSizePlans } from '../../../models/common/LHAppSettingsTextSizePlans';
+import { GlobalAppSettings, GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
 import { RouterUtils } from '../../../utils/common/RouterUtils';
 import { firstNotVoid } from '../../../utils/common/Utils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../../views/common/LHCommonTitleBar';
+import { emitter } from '@kit.BasicServicesKit';
 
 /** 图片阅览需要的参数。 */
 export interface PhotoViewerParams {
@@ -38,6 +42,9 @@ struct LHPhotoViewer {
   /** 图片数据。 */
   @State data: PhotoView.Model = new PhotoView.Model();
 
+  /** 应用文字字号方案。 */
+  @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
+
   aboutToAppear(): void {
     let params: PhotoViewerParams = RouterUtils.getParams();
     this.title = params.title;
@@ -54,12 +61,17 @@ struct LHPhotoViewer {
       this.data.setMinimumScale(1.0);
       this.data.setMaximumScale(3.0);
     }
+    this.appTextSizePlan = GlobalAppSettings.textSizePlan();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+      this.appTextSizePlan = GlobalAppSettings.textSizePlan();
+    });
   }
 
   build() {
     Column() {
       LHCommonTitleBar({
         centerTitleText: this.title,
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
         leftAction: LHCommonTitleBarLeftBack,
       })
       PhotoView({

@@ -1,3 +1,4 @@
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { RecommendMenuItem, RecommendMenuResult } from '../models/RecommendMenuModel';
 import { RouterUtils } from '../utils/common/RouterUtils';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
@@ -12,6 +13,9 @@ export struct HomeTabMenuRecommend {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop @Watch('onAppTextSizePlanChanged') appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 正在加载今日推荐菜谱。 */
   @Prop isLoadingRecommendMenu: boolean;
@@ -32,6 +36,7 @@ export struct HomeTabMenuRecommend {
             ForEach(this.recommendMenu.list.slice(0, this.screenUIType === ScreenUIType.FOLD_OPENED ? 4 : 3), (menuItem: RecommendMenuItem, index: number) => {
               GridItem() {
                 MenuTipsCard({
+                  appTextSizePlan: this.appTextSizePlan,
                   cardHeight: this.cardHeight,
                   menuInfo: menuItem
                 })
@@ -55,7 +60,7 @@ export struct HomeTabMenuRecommend {
             .width('100%')
             .height('100')
             .textAlign(TextAlign.Center)
-            .fontSize(16)
+            .fontSize(this.appTextSizePlan.homeTabMenuGrayTextSize)
             .fontColor($r('app.color.main_unselected_color'))
         }
       }
@@ -66,14 +71,14 @@ export struct HomeTabMenuRecommend {
   private RecommendMenuHeader() {
     Row() {
       Text($r('app.string.today_s_recommend'))
-        .fontSize(14)
+        .fontSize(this.appTextSizePlan.homeTabMenuSubTitleTextSize)
       LoadingProgress()
         .visibility(this.isLoadingRecommendMenu ? Visibility.Visible : Visibility.None)
       Blank()
         .layoutWeight(1)
       Text($r('app.string.check_all'))
         .fontColor($r('app.color.main_selected_color'))
-        .fontSize(14)
+        .fontSize(this.appTextSizePlan.homeTabMenuSubTitleTextSize)
         .visibility(this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0 ? Visibility.Visible : Visibility.None)
     }
     .width('100%')
@@ -87,5 +92,10 @@ export struct HomeTabMenuRecommend {
         RouterUtils.go('pages/recommendmenu/RecommendMenuListPage', this.recommendMenu);
       }
     })
+  }
+
+  /** 当字号设置方案变化时，设置cardHeight为-1，重新计算卡片的高度。 */
+  onAppTextSizePlanChanged() {
+    this.cardHeight = -1;
   }
 }

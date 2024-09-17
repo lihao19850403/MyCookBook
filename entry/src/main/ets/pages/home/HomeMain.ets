@@ -1,5 +1,8 @@
 import { emitter } from '@kit.BasicServicesKit';
+import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
+import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../utils/common/GlobalAppSettings';
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
 import {
   getScreenUIType,
@@ -27,6 +30,9 @@ struct HomeMain {
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();
 
+  /** 应用文字字号方案。 */
+  @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
+
   /** 当前选中的标签序号。 */
   @State curSelectedTabIndex: number = 0;
 
@@ -40,6 +46,10 @@ struct HomeMain {
         this.screenUIType = newScreenUIType;
       }
     })
+    this.appTextSizePlan = AppSettings.textSizePlan();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+      this.appTextSizePlan = AppSettings.textSizePlan();
+    });
     setTimeout(() => {
       this.curSelectedTabIndex = AppSettings.firstPageIndex();
     }, 0);
@@ -65,10 +75,27 @@ struct HomeMain {
         index: this.curSelectedTabIndex,
         controller: this.tabsController
       }) {
-        HomeTabNews({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
-        HomeTabMenu({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
-        HomeTabSocialize({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
-        HomeTabMine({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType, mainPageTabsController: this.tabsController })
+        HomeTabNews({
+          selectedIndex: this.curSelectedTabIndex,
+          screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan
+        })
+        HomeTabMenu({
+          selectedIndex: this.curSelectedTabIndex,
+          screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan
+        })
+        HomeTabSocialize({
+          selectedIndex: this.curSelectedTabIndex,
+          screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan
+        })
+        HomeTabMine({
+          selectedIndex: this.curSelectedTabIndex,
+          screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan,
+          mainPageTabsController: this.tabsController
+        })
       }
       .vertical(this.screenUIType === ScreenUIType.PAD)
       .edgeEffect(EdgeEffect.None)

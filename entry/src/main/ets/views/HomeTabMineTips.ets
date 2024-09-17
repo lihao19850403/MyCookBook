@@ -6,6 +6,7 @@ import { util } from '@kit.ArkTS';
 import { TodayTipsModel, TodayTipsResult } from '../models/TodayTipsModel';
 import { KVUtils } from '../utils/common/KVUtils';
 import { LengthMetrics } from '@ohos.arkui.node';
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /** 每日养生请求key。 */
 const KEY_HOME_TAB_MINE_TIPS_REQUEST: string = 'home_tab_mine_tips_request';
@@ -25,6 +26,9 @@ export struct HomeTabMineTips {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否正在加载每日养生。 */
   @State isLoadingTips: boolean = true;
@@ -62,7 +66,7 @@ export struct HomeTabMineTips {
               minHeight: 100
             })
             .textAlign(TextAlign.Start)
-            .fontSize(18)
+            .fontSize(this.appTextSizePlan.homeTabMineHealthTipsTextSize)
             .lineSpacing(LengthMetrics.vp(4))
             .fontWeight(FontWeight.Medium)
             .padding(12)
@@ -87,7 +91,7 @@ export struct HomeTabMineTips {
     Text($r('app.string.home_tab_mine_tips'))
       .width('100%')
       .height(40)
-      .fontSize(16)
+      .fontSize(this.appTextSizePlan.homeTabMineSubTitleTextSize)
       .textAlign(TextAlign.Start)
       .padding({ left: 12, right: 12, top: 4, bottom: 4 })
       .backgroundColor(Color.White)

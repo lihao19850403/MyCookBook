@@ -1,3 +1,4 @@
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { RecommendMenuItem } from '../models/RecommendMenuModel';
 import { firstNotVoid } from '../utils/common/Utils';
 
@@ -25,6 +26,9 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
  */
 @Component
 export struct MenuTipsCard {
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 图片加载失败。 */
   @State imageErrorHappened: boolean = false;
@@ -55,14 +59,14 @@ export struct MenuTipsCard {
           space: 8
         }) {
           Text(this.menuInfo.cp_name)
-            .fontSize(18)
+            .fontSize(this.appTextSizePlan.menuTipsCardNameTextSize)
             .fontWeight(FontWeight.Regular)
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .ellipsisMode(EllipsisMode.END)
           if (this.menuInfo.type_name !== undefined && this.menuInfo.type_name !== '') {
             Text(this.menuInfo.type_name)
-              .fontSize(12)
+              .fontSize(this.appTextSizePlan.menuTipsCardTypeTextSize)
               .fontWeight(FontWeight.Normal)
               .fontColor($r('app.color.menu_type_name_text_color'))
               .maxLines(1)
@@ -74,7 +78,7 @@ export struct MenuTipsCard {
           }
           if (this.menuInfo.texing !== undefined && this.menuInfo.texing !== '') {
             Text(this.menuInfo.texing)
-              .fontSize(12)
+              .fontSize(this.appTextSizePlan.menuTipsCardTexingTextSize)
               .fontWeight(FontWeight.Normal)
               .fontColor($r('app.color.menu_feature_text_color'))
               .maxLines(1)
@@ -86,7 +90,7 @@ export struct MenuTipsCard {
           }
           if (this.menuInfo.zuofa !== undefined && this.menuInfo.zuofa !== '') {
             Text(`做法：${this.menuInfo.zuofa}`)
-              .fontSize(13)
+              .fontSize(this.appTextSizePlan.menuTipsCardZuofaTextSize)
               .fontWeight(FontWeight.Normal)
               .maxLines(3)
               .textOverflow({ overflow: TextOverflow.Ellipsis })

@@ -14,6 +14,7 @@ import {
   FavoriteMenuUtils, FAVORITE_MENU_CHANGE_EVENT,
   FAVORITE_MENU_CHANGE_EVENT_TYPE } from '../../../utils/FavoriteMenuUtils';
 import { GlobalConfig } from '../../../utils/common/GlobalConfig';
+import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 
 /**
  * 事件：锚定至“我的收藏”。
@@ -43,6 +44,9 @@ export struct HomeTabMenu {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 今日推荐菜谱。 */
   @State recommendMenu: RecommendMenuResult | undefined = undefined;
@@ -93,7 +97,8 @@ export struct HomeTabMenu {
   private Content() {
     Column() {
       LHCommonTitleBar({
-        centerTitleText: $r('app.string.home_tab_menu')
+        centerTitleText: $r('app.string.home_tab_menu'),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
       })
       List({
         scroller: this.scroller
@@ -101,11 +106,13 @@ export struct HomeTabMenu {
         HomeTabMenuRecommend({
           screenUIType: this.screenUIType,
           isLoadingRecommendMenu: this.isLoadingRecommendMenu,
+          appTextSizePlan: this.appTextSizePlan,
           recommendMenu: this.recommendMenu
         })
         HomeTabMenuFavorite({
           screenUIType: this.screenUIType,
           favoriteMenu: this.favoriteMenu,
+          appTextSizePlan: this.appTextSizePlan,
           favoriteMenuChangeEventType: this.favoriteMenuChangeEventType
         })
       }
@@ -133,7 +140,7 @@ export struct HomeTabMenu {
         .height(24)
         .margin({ bottom: 4 })
       Text($r('app.string.home_tab_menu'))
-        .fontSize(10)
+        .fontSize(this.appTextSizePlan.unifiedTabBarTextSize)
         .fontFamily('HarmonyHeiTi-Medium')
         .fontColor(this.selectedIndex === this.thisIndex ? $r('app.color.main_selected_color') : $r('app.color.main_unselected_color'))
     }

@@ -8,6 +8,10 @@ import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../views/common/L
 import { MenuDetailCard, MenuDetailCardStyle } from '../../views/MenuDetailCard';
 import { LHMarkedStar } from '../../views/common/LHMarkedStar';
 import { FavoriteMenuUtils } from '../../utils/FavoriteMenuUtils';
+import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
+import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
+import { AppSettings } from '../../utils/AppSettings';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../utils/common/GlobalAppSettings';
 
 /**
  * 菜谱详情页。
@@ -20,6 +24,9 @@ struct MenuDetailPage {
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();
 
+  /** 应用文字字号方案。 */
+  @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
+
   /** 菜谱详情。 */
   private menuItem?: RecommendMenuItem;
 
@@ -31,18 +38,24 @@ struct MenuDetailPage {
       }
     })
     this.menuItem = RouterUtils.getParams();
+    this.appTextSizePlan = AppSettings.textSizePlan();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+      this.appTextSizePlan = AppSettings.textSizePlan();
+    });
   }
 
   build() {
     Column() {
       LHCommonTitleBar({
         centerTitleText: this.menuItem !== undefined && this.menuItem.cp_name !== undefined && this.menuItem.cp_name.length > 0 ? this.menuItem.cp_name : $r('app.string.home_tab_menu'),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
         leftAction: LHCommonTitleBarLeftBack,
         rightAction: this.FavoriteStar.bind(this)
       })
       Scroll() {
         MenuDetailCard({
           screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan,
           menuInfo: this.menuItem,
           style: MenuDetailCardStyle.SQUARE_BANNER,
           noTitleMode: true

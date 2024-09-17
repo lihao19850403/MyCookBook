@@ -10,6 +10,10 @@ import { res2string } from '../../utils/common/Utils';
 import { LengthMetrics } from '@kit.ArkUI';
 import { LHMarkedStar } from '../../views/common/LHMarkedStar';
 import { FavoriteMenuUtils } from '../../utils/FavoriteMenuUtils';
+import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
+import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
+import { AppSettings } from '../../utils/AppSettings';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../utils/common/GlobalAppSettings';
 
 /**
  * 今日推荐菜谱页。
@@ -22,6 +26,9 @@ struct RecommendMenuListPage {
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();
 
+  /** 应用文字字号方案。 */
+  @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
+
   /** 今日推荐菜谱数据。 */
   private recommendMenu?: RecommendMenuResult;
 
@@ -33,12 +40,17 @@ struct RecommendMenuListPage {
       }
     })
     this.recommendMenu = RouterUtils.getParams();
+    this.appTextSizePlan = AppSettings.textSizePlan();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+      this.appTextSizePlan = AppSettings.textSizePlan();
+    });
   }
 
   build() {
     Column() {
       LHCommonTitleBar({
         centerTitleText: this.hasRecommendMenu() ? `${res2string($r('app.string.today_s_recommend'))}(${this.recommendMenu?.list?.length})` : $r('app.string.today_s_recommend'),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
         leftAction: LHCommonTitleBarLeftBack
       })
       if (this.hasRecommendMenu()) {
@@ -52,6 +64,7 @@ struct RecommendMenuListPage {
               }) {
                 MenuDetailCard({
                   screenUIType: this.screenUIType,
+                  appTextSizePlan: this.appTextSizePlan,
                   menuInfo: menuItem,
                   style: MenuDetailCardStyle.SQUARE_BANNER
                 })
@@ -90,7 +103,7 @@ struct RecommendMenuListPage {
               .width('100%')
               .height(`${px2vp(getScreenBottomSafeZoneHeightPx()) + 100}`)
               .textAlign(TextAlign.Center)
-              .fontSize(16)
+              .fontSize(this.appTextSizePlan.homeTabMenuGrayTextSize)
               .fontColor($r('app.color.main_unselected_color'))
               .backgroundColor($r('app.color.main_bg_gray_color'))
           }
@@ -105,7 +118,7 @@ struct RecommendMenuListPage {
           .width('100%')
           .height('100')
           .textAlign(TextAlign.Center)
-          .fontSize(16)
+          .fontSize(this.appTextSizePlan.homeTabMenuGrayTextSize)
           .fontColor($r('app.color.main_unselected_color'))
       }
     }

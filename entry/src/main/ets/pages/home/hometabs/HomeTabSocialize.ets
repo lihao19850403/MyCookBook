@@ -4,6 +4,7 @@ import { LHWebView } from '../../../views/common/LHWebView';
 import { webview } from '@kit.ArkWeb';
 import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_BACK_KEY_EVENT } from '../HomeMain';
+import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 
 /** 网页资源链接。 */
 const URL_SOCIALIZE: string = 'https://www.xiangha.com/quan';
@@ -21,6 +22,9 @@ export struct HomeTabSocialize {
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
 
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
+
   /** 此Tab序号。 */
   private thisIndex: number = 2;
 
@@ -35,7 +39,8 @@ export struct HomeTabSocialize {
   private Content() {
     Column() {
       LHCommonTitleBar({
-        centerTitleText: $r('app.string.home_tab_socialize')
+        centerTitleText: $r('app.string.home_tab_socialize'),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
       })
       LHWebView({
         src: URL_SOCIALIZE,
@@ -58,7 +63,7 @@ export struct HomeTabSocialize {
         .height(24)
         .margin({ bottom: 4 })
       Text($r('app.string.home_tab_socialize'))
-        .fontSize(10)
+        .fontSize(this.appTextSizePlan.unifiedTabBarTextSize)
         .fontFamily('HarmonyHeiTi-Medium')
         .fontColor(this.selectedIndex === this.thisIndex ? $r('app.color.main_selected_color') : $r('app.color.main_unselected_color'))
     }

@@ -3,6 +3,11 @@ import { RouterUtils } from '../../utils/common/RouterUtils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../views/common/LHCommonTitleBar';
 import { TodayNewsItem } from '../../models/TodayNewsModel';
 import { NewsDetailCard, NewsDetailCardStyle } from '../../views/NewsDetailCard';
+import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
+import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
+import { AppSettings } from '../../utils/AppSettings';
+import { emitter } from '@kit.BasicServicesKit';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../utils/common/GlobalAppSettings';
 
 /**
  * 新闻详情页。
@@ -11,23 +16,33 @@ import { NewsDetailCard, NewsDetailCardStyle } from '../../views/NewsDetailCard'
 @Entry
 @Component
 struct NewsDetailPage {
+
+  /** 应用文字字号方案。 */
+  @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
+
   /** 新闻详情。 */
   private newsItem?: TodayNewsItem;
 
   aboutToAppear(): void {
     this.newsItem = RouterUtils.getParams();
+    this.appTextSizePlan = AppSettings.textSizePlan();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+      this.appTextSizePlan = AppSettings.textSizePlan();
+    });
   }
 
   build() {
     Column() {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.news'),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
         leftAction: LHCommonTitleBarLeftBack
       })
       Scroll() {
         NewsDetailCard({
           newsInfo: this.newsItem,
-          style: NewsDetailCardStyle.SQUARE_BANNER
+          style: NewsDetailCardStyle.SQUARE_BANNER,
+          appTextSizePlan: this.appTextSizePlan
         })
       }
       .width('100%')

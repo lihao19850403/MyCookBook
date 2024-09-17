@@ -1,3 +1,4 @@
+import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { LHDivider } from '../../../views/common/LHDivider';
@@ -18,6 +19,9 @@ export struct HomeTabMine {
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
 
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
+
   /** 此Tab序号。 */
   private thisIndex: number = 3;
 
@@ -35,19 +39,23 @@ export struct HomeTabMine {
   private Content() {
     Column() {
       LHCommonTitleBar({
-        centerTitleText: $r("app.string.home_tab_mine")
+        centerTitleText: $r("app.string.home_tab_mine"),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
       })
       List({
         space: 24
       }) {
         HomeTabMineTips({
-          screenUIType: this.screenUIType
+          screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan
         })
         HomeTabMineSettings({
-          screenUIType: this.screenUIType
+          screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan
         })
         HomeTabMineFavorite({
           screenUIType: this.screenUIType,
+          appTextSizePlan: this.appTextSizePlan,
           mainPageTabsController: this.mainPageTabsController
         })
       }
@@ -76,7 +84,7 @@ export struct HomeTabMine {
         .height(24)
         .margin({ bottom: 4 })
       Text($r('app.string.home_tab_mine'))
-        .fontSize(10)
+        .fontSize(this.appTextSizePlan.unifiedTabBarTextSize)
         .fontFamily('HarmonyHeiTi-Medium')
         .fontColor(this.selectedIndex === this.thisIndex ? $r('app.color.main_selected_color') : $r('app.color.main_unselected_color'))
     }

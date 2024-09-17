@@ -5,6 +5,7 @@ import { FavoriteMenuChangeEventType, FavoriteMenuUtils } from '../utils/Favorit
 import { LHMarkedStar } from './common/LHMarkedStar';
 import { MenuTipsCard } from './MenuTipsCard';
 import { componentUtils } from '@kit.ArkUI';
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /**
  * 首页 - 菜谱 - 我的收藏。
@@ -15,6 +16,9 @@ export struct HomeTabMenuFavorite {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop @Watch('onAppTextSizePlanChanged') appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 已收藏的菜谱。 */
   @Prop favoriteMenu: RecommendMenuItem[] | undefined;
@@ -35,6 +39,7 @@ export struct HomeTabMenuFavorite {
             ForEach(this.favoriteMenu, (menuItem: RecommendMenuItem, index: number) => {
               GridItem() {
                 MenuTipsCard({
+                  appTextSizePlan: this.appTextSizePlan,
                   cardHeight: this.cardHeight,
                   menuInfo: menuItem
                 })
@@ -85,7 +90,7 @@ export struct HomeTabMenuFavorite {
           Row() {
             LHMarkedStar({ isSelected: false })
             Text($r('app.string.no_favorite_tips'))
-              .fontSize(16)
+              .fontSize(this.appTextSizePlan.homeTabMenuGrayTextSize)
               .fontColor($r('app.color.main_unselected_color'))
               .textAlign(TextAlign.Center)
             LHMarkedStar({ isSelected: true })
@@ -103,12 +108,12 @@ export struct HomeTabMenuFavorite {
   private MyFavoriteMenuHeader() {
     Row() {
       Text($r('app.string.my_favorite'))
-        .fontSize(14)
+        .fontSize(this.appTextSizePlan.homeTabMenuSubTitleTextSize)
       Blank()
         .layoutWeight(1)
       Text($r('app.string.can_reorder_by_drag'))
         .fontColor($r('app.color.main_selected_color'))
-        .fontSize(14)
+        .fontSize(this.appTextSizePlan.homeTabMenuSubTitleTextSize)
         .visibility(this.favoriteMenu !== undefined && this.favoriteMenu.length > 0 ? Visibility.Visible : Visibility.None)
     }
     .width('100%')
@@ -122,6 +127,7 @@ export struct HomeTabMenuFavorite {
   @Builder
   private DragThumbnail(menuItem: RecommendMenuItem) {
     MenuTipsCard({
+      appTextSizePlan: this.appTextSizePlan,
       cardHeight: this.cardHeight,
       menuInfo: menuItem
     })
@@ -146,5 +152,10 @@ export struct HomeTabMenuFavorite {
       || this.favoriteMenuChangeEventType === FavoriteMenuChangeEventType.REMOVE_ONE_FAVORITE_MENU) {
       this.cardHeight = -1;
     }
+  }
+
+  /** 当字号设置方案变化时，设置cardHeight为-1，重新计算卡片的高度。 */
+  onAppTextSizePlanChanged() {
+    this.cardHeight = -1;
   }
 }

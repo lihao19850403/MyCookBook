@@ -3,6 +3,7 @@ import { TodayNewsItem } from '../models/TodayNewsModel';
 import { LengthMetrics } from '@kit.ArkUI';
 import { RouterUtils } from '../utils/common/RouterUtils';
 import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /** 新闻详情样式。 */
 export enum NewsDetailCardStyle {
@@ -45,6 +46,9 @@ export struct NewsDetailCard {
   /** 动态记录新闻详情卡片的宽度。 */
   @State cardWidth: number = -1;
 
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
+
   /** 信息。 */
   private newsInfo?: TodayNewsItem;
 
@@ -62,7 +66,7 @@ export struct NewsDetailCard {
       }) {
         Text(this.newsInfo.title)
           .width('100%')
-          .fontSize(18)
+          .fontSize(this.appTextSizePlan.newsDetailCardTitleTextSize)
           .fontWeight(FontWeight.Medium)
           .textAlign(TextAlign.Center)
         Row({
@@ -70,7 +74,7 @@ export struct NewsDetailCard {
         }) {
           if (this.newsInfo.ctime !== undefined && this.newsInfo.ctime !== '') {
             Text(this.newsInfo.ctime)
-              .fontSize(12)
+              .fontSize(this.appTextSizePlan.newsDetailCardSourceTextSize)
               .fontWeight(FontWeight.Normal)
               .fontColor($r('app.color.main_unselected_color'))
               .maxLines(1)
@@ -79,7 +83,7 @@ export struct NewsDetailCard {
           }
           if (this.newsInfo.source !== undefined && this.newsInfo.source !== '') {
             Text(this.newsInfo.source)
-              .fontSize(12)
+              .fontSize(this.appTextSizePlan.newsDetailCardSourceTextSize)
               .fontWeight(FontWeight.Normal)
               .fontColor($r('app.color.main_unselected_color'))
               .maxLines(1)
@@ -130,7 +134,7 @@ export struct NewsDetailCard {
         if (this.newsInfo.description !== undefined && this.newsInfo!.description !== '') {
           Text(this.newsInfo.description)
             .width('100%')
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.newsDetailCardDescriptionTextSize)
             .fontWeight(FontWeight.Normal)
             .lineSpacing(LengthMetrics.vp(4))
         }
@@ -139,11 +143,11 @@ export struct NewsDetailCard {
             space: 8
           }) {
             Text($r('app.string.original_link'))
-              .fontSize(14)
+              .fontSize(this.appTextSizePlan.newsDetailCardLinkTextSize)
               .fontWeight(FontWeight.Medium)
               .fontColor($r('app.color.main_link_text_heavy_color'))
             Text(this.newsInfo.url)
-              .fontSize(14)
+              .fontSize(this.appTextSizePlan.newsDetailCardLinkTextSize)
               .fontWeight(FontWeight.Normal)
               .fontColor($r('app.color.main_link_text_color'))
               .lineSpacing(LengthMetrics.vp(4))

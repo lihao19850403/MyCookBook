@@ -6,6 +6,7 @@ import {
   FAVORITE_MENU_CHANGE_EVENT, FAVORITE_MENU_CHANGE_EVENT_TYPE } from '../utils/FavoriteMenuUtils';
 import { GlobalConfig } from '../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_FOCUS_ON_FAVORITE_EVENT } from '../pages/home/hometabs/HomeTabMenu';
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /**
  * 首页 - 我的 - 我的收藏。
@@ -16,6 +17,9 @@ export struct HomeTabMineFavorite {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 已收藏的菜谱数量。 */
   @State favoriteMenuCount: number = 0;
@@ -61,7 +65,7 @@ export struct HomeTabMineFavorite {
     Text($r('app.string.home_tab_mine_favorite'))
       .width('100%')
       .height(40)
-      .fontSize(16)
+      .fontSize(this.appTextSizePlan.homeTabMineSubTitleTextSize)
       .textAlign(TextAlign.Start)
       .padding({ left: 12, right: 12, top: 4, bottom: 4 })
   }
@@ -95,7 +99,7 @@ export struct HomeTabMineFavorite {
       })
       Text(`${this.favoriteMenuCount >= 1000 ? '999+' : this.favoriteMenuCount}`)
         .width('100%')
-        .fontSize(12)
+        .fontSize(this.appTextSizePlan.homeTabMineSettingsTipsTextSize)
         .fontColor($r('app.color.main_selected_color'))
         .textAlign(TextAlign.End)
         .padding({ left: 24, right: 24 })
@@ -107,7 +111,7 @@ export struct HomeTabMineFavorite {
         })
       Text($r('app.string.home_tab_mine_favorite_menu_tips'))
         .width('100%')
-        .fontSize(12)
+        .fontSize(this.appTextSizePlan.homeTabMineSettingsTitleTextSize)
         .textAlign(TextAlign.Center)
         .alignRules({
           bottom: {

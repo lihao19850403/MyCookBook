@@ -133,12 +133,36 @@
       "value": "应用设置"
     },
     {
-      "name": "home_tab_mine_settings_first_page",
+      "name": "home_tab_mine_settings_first_page_tips",
       "value": "应用首页"
     },
     {
-      "name": "home_tab_mine_settings_first_page_tips",
+      "name": "home_tab_mine_settings_first_page_toast",
       "value": "下次启动应用将首先显示："
+    },
+    {
+      "name": "home_tab_mine_settings_text_size_tips",
+      "value": "调整字号"
+    },
+    {
+      "name": "home_tab_mine_settings_text_size_small_tips",
+      "value": "小"
+    },
+    {
+      "name": "home_tab_mine_settings_text_size_normal_tips",
+      "value": "中"
+    },
+    {
+      "name": "home_tab_mine_settings_text_size_big_tips",
+      "value": "大"
+    },
+    {
+      "name": "home_tab_mine_settings_text_size_huge_tips",
+      "value": "特大"
+    },
+    {
+      "name": "home_tab_mine_settings_text_size_huge_pic",
+      "value": "特"
     }
   ]
 }

@@ -9,6 +9,7 @@ import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { util } from '@kit.ArkTS';
 import { NewsTipsCard } from './NewsTipsCard';
 import { RouterUtils } from '../utils/common/RouterUtils';
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /** 今日新闻请求key。 */
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
@@ -42,6 +43,9 @@ export struct HomeTabNewsList {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 正在加载今日新闻。 */
   @State isLoadingTodayNews: boolean = true;
@@ -85,7 +89,7 @@ export struct HomeTabNewsList {
         LoadingProgress()
           .height(24)
         Text($r('app.string.loading'))
-          .fontSize(16)
+          .fontSize(this.appTextSizePlan.homeTabNewsListLoadingTextSize)
           .fontColor($r('app.color.main_unselected_color'))
           .textAlign(TextAlign.Center)
       }
@@ -126,7 +130,8 @@ export struct HomeTabNewsList {
       LazyForEach(this.todayNewsDataSource, (newsItem: TodayNewsItem, index: number) => {
         FlowItem() {
           NewsTipsCard({
-            newsInfo: newsItem
+            newsInfo: newsItem,
+            appTextSizePlan: this.appTextSizePlan
           })
             .onClick((event: ClickEvent) => RouterUtils.go('pages/newsdetail/NewsDetailPage', newsItem))
         }
@@ -179,7 +184,7 @@ export struct HomeTabNewsList {
           this.loadingMoreStatus === LOAD_MORE_STATUS.LOADING ? $r('app.string.load_more_loading') :
           this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_SUCCESS ? $r('app.string.load_more_finished_success') :
           this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_NO_MORE ? $r('app.string.load_more_finished_no_more') : '')
-          .fontSize(16)
+          .fontSize(this.appTextSizePlan.unifiedPullUpTipsTextSize)
           .fontColor($r('app.color.main_unselected_color'))
           .textAlign(TextAlign.Center)
       }

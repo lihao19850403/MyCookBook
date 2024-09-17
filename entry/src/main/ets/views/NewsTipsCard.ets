@@ -1,3 +1,4 @@
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { TodayNewsItem } from '../models/TodayNewsModel';
 import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { RouterUtils } from '../utils/common/RouterUtils';
@@ -34,6 +35,9 @@ const enum IMAGE_LOADING_STATUS {
  */
 @Component
 export struct NewsTipsCard {
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 图片加载状态。 */
   @State imageLoadingStatus: IMAGE_LOADING_STATUS = IMAGE_LOADING_STATUS.LOADING;
@@ -93,7 +97,7 @@ export struct NewsTipsCard {
           space: 8
         }) {
           Text(this.newsInfo.title)
-            .fontSize(18)
+            .fontSize(this.appTextSizePlan.newsTipsCardTitleTextSize)
             .fontWeight(FontWeight.Regular)
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -103,7 +107,7 @@ export struct NewsTipsCard {
           }) {
             if (this.newsInfo.ctime !== undefined && this.newsInfo.ctime !== '') {
               Text(this.newsInfo.ctime)
-                .fontSize(12)
+                .fontSize(this.appTextSizePlan.newsTipsCardSourceTextSize)
                 .fontWeight(FontWeight.Normal)
                 .fontColor($r('app.color.main_unselected_color'))
                 .maxLines(1)
@@ -112,7 +116,7 @@ export struct NewsTipsCard {
             }
             if (this.newsInfo.source !== undefined && this.newsInfo.source !== '') {
               Text(this.newsInfo.source)
-                .fontSize(12)
+                .fontSize(this.appTextSizePlan.newsTipsCardSourceTextSize)
                 .fontWeight(FontWeight.Normal)
                 .fontColor($r('app.color.main_unselected_color'))
                 .maxLines(1)
@@ -122,7 +126,7 @@ export struct NewsTipsCard {
           }
           if (this.newsInfo.description !== undefined && this.newsInfo.description !== '') {
             Text(this.newsInfo.description)
-              .fontSize(13)
+              .fontSize(this.appTextSizePlan.newsTipsCardDescriptionTextSize)
               .fontWeight(FontWeight.Normal)
               .maxLines(3)
               .textOverflow({ overflow: TextOverflow.Ellipsis })

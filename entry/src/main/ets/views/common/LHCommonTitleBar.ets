@@ -1,3 +1,4 @@
+import { LHAppSettingsTextSizePlans } from '../../models/common/LHAppSettingsTextSizePlans';
 import { RouterUtils } from '../../utils/common/RouterUtils';
 import { firstNotVoid } from '../../utils/common/Utils';
 import { LHDivider } from './LHDivider';
@@ -40,6 +41,9 @@ export function LHCommonTitleBarLeftBack() {
 @Component
 export struct LHCommonTitleBar {
 
+  /** 中间标题内容字号。 */
+  @Prop centerTitleTextSize: number = LHAppSettingsTextSizePlans.SMALL.unifiedTitleCenterTextSize;
+
   /** 中间标题内容。 */
   private centerTitleText?: ResourceStr;
 
@@ -64,7 +68,7 @@ export struct LHCommonTitleBar {
     }) {
       Text(firstNotVoid(this.centerTitleText, ''))
         .height('100%')
-        .fontSize(18)
+        .fontSize(this.centerTitleTextSize)
         .fontWeight(FontWeight.Medium)
       Row() {
         Stack({

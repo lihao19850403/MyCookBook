@@ -4,6 +4,7 @@ import { firstNotVoid } from '../utils/common/Utils';
 import { LengthMetrics } from '@ohos.arkui.node';
 import { RouterUtils } from '../utils/common/RouterUtils';
 import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
+import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /** 菜谱详情样式。 */
 export enum MenuDetailCardStyle {
@@ -39,6 +40,9 @@ export struct MenuDetailCard {
 
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
+
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 菜谱信息。 */
   private menuInfo?: RecommendMenuItem;
@@ -101,13 +105,13 @@ export struct MenuDetailCard {
       if (!firstNotVoid(this.noTitleMode, DEFAULT_ATTRIBUTES.noTitleMode)) {
         Text(menuName)
           .width('100%')
-          .fontSize(18)
+          .fontSize(this.appTextSizePlan.menuDetailCardNameTextSize)
           .fontWeight(FontWeight.Medium)
           .textAlign(this.screenUIType === ScreenUIType.NORMAL ? TextAlign.Center : TextAlign.Start)
       }
       if (this.menuInfo!.type_name !== undefined && this.menuInfo!.type_name !== '') {
         Text(this.menuInfo!.type_name)
-          .fontSize(12)
+          .fontSize(this.appTextSizePlan.menuDetailCardTypeTextSize)
           .fontWeight(FontWeight.Normal)
           .fontColor($r('app.color.menu_type_name_text_color'))
           .backgroundColor($r('app.color.menu_type_name_bg_color'))
@@ -116,7 +120,7 @@ export struct MenuDetailCard {
       }
       if (this.menuInfo!.texing !== undefined && this.menuInfo!.texing !== '') {
         Text(this.menuInfo!.texing)
-          .fontSize(12)
+          .fontSize(this.appTextSizePlan.menuDetailCardTexingTextSize)
           .fontWeight(FontWeight.Normal)
           .fontColor($r('app.color.menu_feature_text_color'))
           .backgroundColor($r('app.color.menu_feature_bg_color'))
@@ -128,10 +132,10 @@ export struct MenuDetailCard {
           space: 8
         }) {
           Text($r('app.string.material'))
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardYuanliaoTextSize)
             .fontWeight(FontWeight.Medium)
           Text(this.menuInfo!.yuanliao)
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardYuanliaoTextSize)
             .fontWeight(FontWeight.Normal)
             .lineSpacing(LengthMetrics.vp(4))
             .layoutWeight(1)
@@ -145,10 +149,10 @@ export struct MenuDetailCard {
           space: 8
         }) {
           Text($r('app.string.seasoning'))
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardTiaoliaoTextSize)
             .fontWeight(FontWeight.Medium)
           Text(this.menuInfo!.tiaoliao)
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardTiaoliaoTextSize)
             .fontWeight(FontWeight.Normal)
             .lineSpacing(LengthMetrics.vp(4))
             .layoutWeight(1)
@@ -162,10 +166,10 @@ export struct MenuDetailCard {
           space: 8
         }) {
           Text($r('app.string.practice'))
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardZuofaTextSize)
             .fontWeight(FontWeight.Medium)
           Text(this.menuInfo!.zuofa)
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardZuofaTextSize)
             .fontWeight(FontWeight.Normal)
             .lineSpacing(LengthMetrics.vp(4))
             .layoutWeight(1)
@@ -177,12 +181,12 @@ export struct MenuDetailCard {
       if (this.menuInfo!.tishi !== undefined && this.menuInfo!.tishi !== '') {
         Row() {
           Text($r('app.string.tips'))
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardTipsSize)
             .fontWeight(FontWeight.Medium)
             .fontColor($r('app.color.menu_tips_title_color'))
             .padding(4)
           Text(this.menuInfo!.tishi)
-            .fontSize(14)
+            .fontSize(this.appTextSizePlan.menuDetailCardTipsSize)
             .fontWeight(FontWeight.Normal)
             .fontColor($r('app.color.menu_tips_content_color'))
             .padding(4)

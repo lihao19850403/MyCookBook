@@ -1,3 +1,4 @@
+import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { HomeTabNewsList } from '../../../views/HomeTabNewsList';
@@ -15,6 +16,9 @@ export struct HomeTabNews {
   /** 屏幕状态。 */
   @Prop screenUIType: ScreenUIType;
 
+  /** 应用文字字号方案。 */
+  @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
+
   /** 此Tab序号。 */
   private thisIndex: number = 0;
 
@@ -29,10 +33,12 @@ export struct HomeTabNews {
   private Content() {
     Column() {
       LHCommonTitleBar({
-        centerTitleText: $r("app.string.home_tab_top_news")
+        centerTitleText: $r("app.string.home_tab_top_news"),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
       })
       HomeTabNewsList({
-        screenUIType: this.screenUIType
+        screenUIType: this.screenUIType,
+        appTextSizePlan: this.appTextSizePlan
       })
         .width('100%')
         .layoutWeight(1)
@@ -50,7 +56,7 @@ export struct HomeTabNews {
         .height(24)
         .margin({ bottom: 4 })
       Text($r("app.string.home_tab_top_news"))
-        .fontSize(10)
+        .fontSize(this.appTextSizePlan.unifiedTabBarTextSize)
         .fontFamily('HarmonyHeiTi-Medium')
         .fontColor(this.selectedIndex === this.thisIndex ? $r('app.color.main_selected_color') : $r('app.color.main_unselected_color'))
     }

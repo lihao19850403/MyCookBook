@@ -2,6 +2,11 @@ import { RouterUtils } from '../../../utils/common/RouterUtils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../../views/common/LHCommonTitleBar';
 import { LHWebView } from '../../../views/common/LHWebView';
 import { webview } from '@kit.ArkWeb';
+import { LHAppSettingsTextSizePlanModel } from '../../../models/common/LHAppSettingsTextSizePlanModel';
+import { LHAppSettingsTextSizePlans } from '../../../models/common/LHAppSettingsTextSizePlans';
+import { GlobalAppSettings } from '../../../utils/common/GlobalAppSettings';
+import { emitter } from '@kit.BasicServicesKit';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
 
 /**
  * 网页浏览器，基于原生Web组件实现。
@@ -10,6 +15,9 @@ import { webview } from '@kit.ArkWeb';
 @Entry
 @Component
 struct LHWebBrowser {
+
+  /** 应用文字字号方案。 */
+  @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
 
   /** 地址信息。 */
   private url?: string;
@@ -20,6 +28,10 @@ struct LHWebBrowser {
   aboutToAppear(): void {
     let urlParams: Record<string, string> = RouterUtils.getParams();
     this.url = urlParams['url'];
+    this.appTextSizePlan = GlobalAppSettings.textSizePlan();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+      this.appTextSizePlan = GlobalAppSettings.textSizePlan();
+    });
   }
 
   onBackPress(): boolean | void {
@@ -34,6 +46,7 @@ struct LHWebBrowser {
     Column() {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.browser'),
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
         leftAction: LHCommonTitleBarLeftBack,
       })
       LHWebView({
