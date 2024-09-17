@@ -40,10 +40,9 @@ struct HomeMain {
         this.screenUIType = newScreenUIType;
       }
     })
-    let firstPageIndex: number = AppSettings.firstPageIndex();
-    if (firstPageIndex > 0) {
-      this.tabsController.changeIndex(firstPageIndex);
-    }
+    setTimeout(() => {
+      this.curSelectedTabIndex = AppSettings.firstPageIndex();
+    }, 0);
   }
 
   onBackPress(): boolean | void {
@@ -63,7 +62,7 @@ struct HomeMain {
     RelativeContainer() {
       Tabs({
         barPosition: this.screenUIType !== ScreenUIType.PAD ? BarPosition.End : BarPosition.Start,
-        index: 0,
+        index: this.curSelectedTabIndex,
         controller: this.tabsController
       }) {
         HomeTabNews({ selectedIndex: this.curSelectedTabIndex, screenUIType: this.screenUIType })
@@ -73,8 +72,9 @@ struct HomeMain {
       }
       .vertical(this.screenUIType === ScreenUIType.PAD)
       .edgeEffect(EdgeEffect.None)
+      .scrollable(this.screenUIType !== ScreenUIType.PAD)
       .onChange((newIndex: number) => this.curSelectedTabIndex = newIndex)
-      .onTabBarClick((newIndex: number) => this.curSelectedTabIndex = newIndex)
+      .onTabBarClick((newIndex: number) => this.tabsController.changeIndex(newIndex))
     }
     .height('100%')
     .width('100%')
