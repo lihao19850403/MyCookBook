@@ -50,9 +50,7 @@ struct HomeMain {
     emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
       this.appTextSizePlan = AppSettings.textSizePlan();
     });
-    setTimeout(() => {
-      this.curSelectedTabIndex = AppSettings.firstPageIndex();
-    }, 0);
+    setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
   }
 
   onBackPress(): boolean | void {

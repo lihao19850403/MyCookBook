@@ -28,6 +28,9 @@ export struct HomeTabSocialize {
   /** 此Tab序号。 */
   private thisIndex: number = 2;
 
+  /** Web组件控制器。 */
+  private controller?: webview.WebviewController;
+
   build() {
     TabContent() {
       this.Content()
@@ -40,7 +43,8 @@ export struct HomeTabSocialize {
     Column() {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.home_tab_socialize'),
-        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
+        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
+        rightAction: this.Reload.bind(this)
       })
       LHWebView({
         src: URL_SOCIALIZE,
@@ -71,11 +75,26 @@ export struct HomeTabSocialize {
     .alignItems(HorizontalAlign.Center)
   }
 
+  @Builder
+  private Reload() {
+    Image($r('app.media.ic_reload_heavy_gray'))
+      .width(48)
+      .height(48)
+      .padding(12)
+      .objectFit(ImageFit.Contain)
+      .onClick((event: ClickEvent) => {
+        if (this.controller !== undefined) {
+          this.controller.refresh();
+        }
+      })
+  }
+
   /**
    * 控制器绑定完毕回调。
    * @param webViewController WebView控制器。
    */
   private onControllerAttachedCallback(webViewController: webview.WebviewController) {
+    this.controller = webViewController;
     let callbacks: Array<() => boolean> | undefined = GlobalConfig.get(GLOBAL_CONFIG_BACK_KEY_EVENT);
     if (callbacks === undefined) {
       callbacks = [];
