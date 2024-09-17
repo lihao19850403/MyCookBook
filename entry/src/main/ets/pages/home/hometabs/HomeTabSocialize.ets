@@ -100,12 +100,12 @@ export struct HomeTabSocialize {
     let requestUrl: string = data.getRequestUrl();
     if (requestUrl !== undefined) {
       if (requestUrl.includes('xiangha.com/download')) {
-
-        return true;
+        /* 此处可以进行自定义操作。 */
+        // return true; // 不再继续加载页面。
       }
       if (requestUrl.includes('xiangha.com/entry')) {
-
-        return true;
+        /* 此处可以进行自定义操作。 */
+        // return true; // 不再继续加载页面。
       }
     }
     return false;
