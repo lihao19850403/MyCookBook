@@ -24,7 +24,7 @@ export struct HomeTabMenuFavorite {
   @Prop favoriteMenu: RecommendMenuItem[] | undefined;
 
   /** 已收藏菜谱内容发生了怎样的改变。 */
-  @Prop @Watch('onFavoriteMenuChanged') favoriteMenuChangeEventType: FavoriteMenuChangeEventType | undefined;
+  @Link @Watch('onFavoriteMenuChanged') favoriteMenuChangeEventType: FavoriteMenuChangeEventType | undefined;
 
   /** 每个小卡片的高。 */
   @State cardHeight: number = -1;
@@ -151,6 +151,7 @@ export struct HomeTabMenuFavorite {
     if (this.favoriteMenuChangeEventType === FavoriteMenuChangeEventType.ADD_ONE_FAVORITE_MENU
       || this.favoriteMenuChangeEventType === FavoriteMenuChangeEventType.REMOVE_ONE_FAVORITE_MENU) {
       this.cardHeight = -1;
+      this.favoriteMenuChangeEventType = undefined; // 重新计算小卡片尺寸后，将此事件类型置为undefined，以便下次继续更新。
     }
   }
 
