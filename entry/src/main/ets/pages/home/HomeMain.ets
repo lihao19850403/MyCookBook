@@ -4,6 +4,7 @@ import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
 import {
@@ -35,6 +36,9 @@ struct HomeMain {
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
 
+  /** 是否使用分屏显示。 */
+  @State isSplitScreen: boolean = false;
+
   /** 当前选中的标签序号。 */
   @State curSelectedTabIndex: number = 0;
 
@@ -49,16 +53,21 @@ struct HomeMain {
       }
     })
     this.appTextSizePlan = AppSettings.textSizePlan();
+    this.isSplitScreen = AppSettings.isSplitScreen();
     emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
       if (dataWrap.data) {
         let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
         switch (eventType) {
-          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: {
+            this.appTextSizePlan = AppSettings.textSizePlan();
+            setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
+          }
+            break;
+          case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
           default: break;
         }
       }
     });
-    setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
   }
 
   onBackPress(): boolean | void {
@@ -114,7 +123,10 @@ struct HomeMain {
     .hideTitleBar(true)
     .hideToolBar(true)
     .hideBackButton(true)
-    // .navBarWidth('33%')
-    .mode(NavigationMode.Stack)
+    .navBarWidth(!this.isSplitScreen ? '100%' :
+      this.screenUIType === ScreenUIType.PAD ? '33%' :
+      this.screenUIType === ScreenUIType.FOLD_OPENED ? '50%' :
+      '100%')
+    .mode(this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack)
   }
 }

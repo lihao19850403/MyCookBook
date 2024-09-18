@@ -14,6 +14,9 @@ export const GLOBAL_APP_SETTINGS_EVENT_TYPE: string = 'GLOBAL_APP_SETTINGS_EVENT
 /** 配置项：文字大小设置。 */
 export const GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: string = 'global_app_settings_key_text_size_plan';
 
+/** 配置项：应用分屏设置。 */
+export const GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: string = 'global_app_settings_key_split_screen';
+
 /**
  * 应用细节配置。
  * @author li.hao85
@@ -52,5 +55,24 @@ export class GlobalAppSettings {
    */
   public static setTextSizePlanByID(newSizePlanID: number) {
     KVUtils.setKV(FILE_NAME_GLOBAL_APP_SETTINGS, GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN, newSizePlanID);
+  }
+
+  /**
+   * 查询应用是否使用了分屏显示设置。
+   * @returns 查询结果。
+   */
+  public static isSplitScreen(): boolean {
+    if (!KVUtils.hasKV(FILE_NAME_GLOBAL_APP_SETTINGS, GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN)) {
+      KVUtils.setKV(FILE_NAME_GLOBAL_APP_SETTINGS, GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN, false);
+    }
+    return KVUtils.queryKV(FILE_NAME_GLOBAL_APP_SETTINGS, GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN) as boolean;
+  }
+
+  /**
+   * 设置应用是否使用了分屏显示功能。
+   * @param flag 分屏显示设置开关。
+   */
+  public static setIsSplitScreen(flag: boolean) {
+    KVUtils.setKV(FILE_NAME_GLOBAL_APP_SETTINGS, GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN, flag);
   }
 }

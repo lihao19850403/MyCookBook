@@ -163,6 +163,18 @@
     {
       "name": "home_tab_mine_settings_text_size_huge_pic",
       "value": "特"
+    },
+    {
+      "name": "home_tab_mine_settings_split_screen_tips",
+      "value": "分屏设置"
+    },
+    {
+      "name": "home_tab_mine_settings_split_screen_on_tips",
+      "value": "打开"
+    },
+    {
+      "name": "home_tab_mine_settings_split_screen_off_tips",
+      "value": "关闭"
     }
   ]
 }

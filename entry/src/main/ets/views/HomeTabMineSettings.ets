@@ -4,7 +4,9 @@ import { res2string } from '../utils/common/Utils';
 import { AppSettings } from '../utils/AppSettings';
 import { AppSettingsTextSizePlans } from '../models/AppSettingsTextSizePlan';
 import { emitter } from '@kit.BasicServicesKit';
-import { GLOBAL_APP_SETTINGS_CHANGED_EVENT, GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../utils/common/GlobalAppSettings';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
+  GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../utils/common/GlobalAppSettings';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /**
@@ -26,9 +28,13 @@ export struct HomeTabMineSettings {
   /** 应用字号方案ID。 */
   @State textSizePlanID: number = AppSettingsTextSizePlans.SMALL.id;
 
+  /** 是否使用分屏显示。 */
+  @State isSplitScreen: boolean = false;
+
   aboutToAppear(): void {
     this.firstPage = AppSettings.firstPageIndex();
     this.textSizePlanID = AppSettings.textSizePlan().id;
+    this.isSplitScreen = AppSettings.isSplitScreen();
   }
 
   build() {
@@ -39,6 +45,7 @@ export struct HomeTabMineSettings {
         Grid() {
           GridItem() { this.FirstPage() }.height(84)
           GridItem() { this.TextSize() }.height(84)
+          GridItem() { this.SplitScreen() }.height(84)
         }
         .columnsTemplate(this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr'
           : this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr'
@@ -190,6 +197,65 @@ export struct HomeTabMineSettings {
       let dataWrap: emitter.EventData = {};
       dataWrap.data = {
         GLOBAL_APP_SETTINGS_EVENT_TYPE: GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN
+      };
+      emitter.emit(GLOBAL_APP_SETTINGS_CHANGED_EVENT, dataWrap);
+    })
+  }
+
+  @Builder
+  private SplitScreen() {
+    RelativeContainer() {
+      Stack({
+        alignContent: Alignment.Center
+      }) {
+        Image(this.isSplitScreen ?
+          (this.screenUIType === ScreenUIType.PAD ? $r('app.media.ic_screen_ui_type_pad') : $r('app.media.ic_screen_ui_type_fold_opened')) :
+          $r('app.media.ic_screen_ui_type_normal'))
+          .width(34)
+          .height(34)
+      }
+      .width(36)
+      .height(36)
+      .alignRules({
+        center: {
+          anchor: '__container__',
+          align: VerticalAlign.Center
+        },
+        middle: {
+          anchor: '__container__',
+          align: HorizontalAlign.Center
+        }
+      })
+      Text(this.isSplitScreen ? $r('app.string.home_tab_mine_settings_split_screen_on_tips') :
+          $r('app.string.home_tab_mine_settings_split_screen_off_tips'))
+        .width('100%')
+        .fontSize(this.appTextSizePlan.homeTabMineSettingsTitleTextSize)
+        .fontColor($r('app.color.main_selected_color'))
+        .textAlign(TextAlign.End)
+        .padding({ left: 24, right: 24 })
+        .alignRules({
+          top: {
+            anchor: '__container__',
+            align: VerticalAlign.Top
+          }
+        })
+      Text($r("app.string.home_tab_mine_settings_split_screen_tips"))
+        .width('100%')
+        .fontSize(this.appTextSizePlan.homeTabMineSettingsTitleTextSize)
+        .textAlign(TextAlign.Center)
+        .alignRules({
+          bottom: {
+            anchor: '__container__',
+            align: VerticalAlign.Bottom
+          }
+        })
+    }
+    .onClick((event: ClickEvent) => {
+      this.isSplitScreen = !this.isSplitScreen;
+      AppSettings.setIsSplitScreen(this.isSplitScreen);
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        GLOBAL_APP_SETTINGS_EVENT_TYPE: GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN
       };
       emitter.emit(GLOBAL_APP_SETTINGS_CHANGED_EVENT, dataWrap);
     })

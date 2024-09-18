@@ -61,4 +61,20 @@ export class AppSettings {
   public static setTextSizePlanByID(newSizePlanID: number) {
     GlobalAppSettings.setTextSizePlanByID(newSizePlanID);
   }
+
+  /**
+   * 查询应用是否使用了分屏显示设置。
+   * @returns 查询结果。
+   */
+  public static isSplitScreen(): boolean {
+    return GlobalAppSettings.isSplitScreen();
+  }
+
+  /**
+   * 设置应用是否使用了分屏显示功能。
+   * @param flag 分屏显示设置开关。
+   */
+  public static setIsSplitScreen(flag: boolean) {
+    GlobalAppSettings.setIsSplitScreen(flag);
+  }
 }
