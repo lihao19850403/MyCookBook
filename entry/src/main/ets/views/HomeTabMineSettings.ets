@@ -123,6 +123,10 @@ export struct HomeTabMineSettings {
           }
         })
     }
+    .border({
+      width: { right: 0.3 },
+      color: $r('app.color.main_selected_color')
+    })
     .onClick((event: ClickEvent) => {
       this.firstPage = (this.firstPage + 1) % 3;
       AppSettings.setFirstPageIndex(this.firstPage);
