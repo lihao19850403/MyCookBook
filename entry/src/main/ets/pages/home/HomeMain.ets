@@ -67,7 +67,7 @@ struct HomeMain {
   }
 
   build() {
-    RelativeContainer() {
+    Navigation() {
       Tabs({
         barPosition: this.screenUIType !== ScreenUIType.PAD ? BarPosition.End : BarPosition.Start,
         index: this.curSelectedTabIndex,
@@ -103,5 +103,10 @@ struct HomeMain {
     }
     .height('100%')
     .width('100%')
+    .hideTitleBar(true)
+    .hideToolBar(true)
+    .hideBackButton(true)
+    // .navBarWidth('33%')
+    // .mode(NavigationMode.Stack)
   }
 }
