@@ -4,7 +4,7 @@ import { res2string } from '../utils/common/Utils';
 import { AppSettings } from '../utils/AppSettings';
 import { AppSettingsTextSizePlans } from '../models/AppSettingsTextSizePlan';
 import { emitter } from '@kit.BasicServicesKit';
-import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../utils/common/GlobalAppSettings';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT, GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../utils/common/GlobalAppSettings';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /**
@@ -187,7 +187,11 @@ export struct HomeTabMineSettings {
     .onClick((event: ClickEvent) => {
       this.textSizePlanID = (this.textSizePlanID + 1) % 4;
       AppSettings.setTextSizePlanByID(this.textSizePlanID);
-      emitter.emit(GLOBAL_APP_SETTINGS_CHANGED_EVENT);
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        GLOBAL_APP_SETTINGS_EVENT_TYPE: GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN
+      };
+      emitter.emit(GLOBAL_APP_SETTINGS_CHANGED_EVENT, dataWrap);
     })
   }
 }

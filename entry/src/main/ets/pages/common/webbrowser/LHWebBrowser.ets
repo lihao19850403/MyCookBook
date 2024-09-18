@@ -4,7 +4,8 @@ import { LHWebView } from '../../../views/common/LHWebView';
 import { webview } from '@kit.ArkWeb';
 import { LHAppSettingsTextSizePlanModel } from '../../../models/common/LHAppSettingsTextSizePlanModel';
 import { LHAppSettingsTextSizePlans } from '../../../models/common/LHAppSettingsTextSizePlans';
-import { GlobalAppSettings } from '../../../utils/common/GlobalAppSettings';
+import { GlobalAppSettings, GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../../../utils/common/GlobalAppSettings';
 import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
 
@@ -30,7 +31,13 @@ struct LHWebBrowser {
     this.url = urlParams['url'];
     this.appTextSizePlan = GlobalAppSettings.textSizePlan();
     emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-      this.appTextSizePlan = GlobalAppSettings.textSizePlan();
+      if (dataWrap.data) {
+        let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+        switch (eventType) {
+          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
+          default: break;
+        }
+      }
     });
   }
 

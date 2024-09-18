@@ -5,11 +5,14 @@ import { KVUtils } from './KVUtils';
 /** 应用配置文件名。 */
 export const FILE_NAME_GLOBAL_APP_SETTINGS: string = 'global_app_settings';
 
-/** 事件：应用配置方案方案发生了变化。 */
+/** 事件：应用配置方案发生了变化。 */
 export const GLOBAL_APP_SETTINGS_CHANGED_EVENT: string = 'global_app_settings_changed_event';
 
+/** 参数：应用配置方案变化类型(哪个配置项发生了变化)。 */
+export const GLOBAL_APP_SETTINGS_EVENT_TYPE: string = 'GLOBAL_APP_SETTINGS_EVENT_TYPE';
+
 /** 配置项：文字大小设置。 */
-const GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: string = 'global_app_settings_key_text_size_plan';
+export const GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: string = 'global_app_settings_key_text_size_plan';
 
 /**
  * 应用细节配置。

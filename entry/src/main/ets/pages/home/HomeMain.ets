@@ -2,7 +2,9 @@ import { emitter } from '@kit.BasicServicesKit';
 import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
 import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
-import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../utils/common/GlobalAppSettings';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
 import {
   getScreenUIType,
@@ -48,7 +50,13 @@ struct HomeMain {
     })
     this.appTextSizePlan = AppSettings.textSizePlan();
     emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-      this.appTextSizePlan = AppSettings.textSizePlan();
+      if (dataWrap.data) {
+        let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+        switch (eventType) {
+          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+          default: break;
+        }
+      }
     });
     setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
   }
@@ -107,6 +115,6 @@ struct HomeMain {
     .hideToolBar(true)
     .hideBackButton(true)
     // .navBarWidth('33%')
-    // .mode(NavigationMode.Stack)
+    .mode(NavigationMode.Stack)
   }
 }
