@@ -23,17 +23,6 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
   needBottomDivider: true
 }
 
-/** 一个默认的标题栏返回按钮。 */
-@Builder
-export function LHCommonTitleBarLeftBack() {
-  Image($r('app.media.ic_main_back_arrow'))
-    .width(48)
-    .height(48)
-    .padding(12)
-    .objectFit(ImageFit.Contain)
-    .onClick((event: ClickEvent) => RouterUtils.back())
-}
-
 /** 一个默认的Navigation组件标题栏返回按钮。 */
 @Builder
 export function LHCommonTitleBarLeftNavBack() {
