@@ -46,7 +46,7 @@ export struct HomeTabMenuRecommend {
                   .onSizeChange((_, newSize: SizeOptions) => {
                     this.cardHeight = Math.max(this.cardHeight, newSize.height as number);
                   })
-                  .onClick((event: ClickEvent) => RouterUtils.go('pages/menudetail/MenuDetailPage', menuItem))
+                  .onClick((event: ClickEvent) => RouterUtils.navPushPath('MenuDetailPage', menuItem))
               }
             })
           }
