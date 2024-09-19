@@ -21,6 +21,9 @@ export struct HomeTabMineFavorite {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 已收藏的菜谱数量。 */
   @State favoriteMenuCount: number = 0;
 
@@ -48,9 +51,10 @@ export struct HomeTabMineFavorite {
         Grid() {
           GridItem() { this.FavoriteMenu() }.height(84)
         }
-        .columnsTemplate(this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr'
-          : this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr'
-            : '1fr 1fr 1fr')
+        .columnsTemplate(this.isSplitScreen ? '1fr 1fr 1fr' :
+          this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr' :
+          this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
+          '1fr 1fr 1fr')
         .columnsGap(4)
         .rowsGap(4)
         .padding({ left: 8, right: 8, top: 4, bottom: 4 })

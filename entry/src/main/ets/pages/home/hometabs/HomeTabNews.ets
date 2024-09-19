@@ -19,6 +19,9 @@ export struct HomeTabNews {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 此Tab序号。 */
   private thisIndex: number = 0;
 
@@ -38,7 +41,8 @@ export struct HomeTabNews {
       })
       HomeTabNewsList({
         screenUIType: this.screenUIType,
-        appTextSizePlan: this.appTextSizePlan
+        appTextSizePlan: this.appTextSizePlan,
+        isSplitScreen: this.isSplitScreen
       })
         .width('100%')
         .layoutWeight(1)

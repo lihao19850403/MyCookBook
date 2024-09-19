@@ -20,6 +20,9 @@ export struct HomeTabMenuFavorite {
   /** 应用文字字号方案。 */
   @Prop @Watch('onAppTextSizePlanChanged') appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 已收藏的菜谱。 */
   @Prop favoriteMenu: RecommendMenuItem[] | undefined;
 
@@ -51,9 +54,10 @@ export struct HomeTabMenuFavorite {
               }
             })
           }
-          .columnsTemplate(this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr'
-            : this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr'
-              : '1fr')
+          .columnsTemplate(this.isSplitScreen ? '1fr' :
+            this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr' :
+            this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr' :
+            '1fr')
           .columnsGap(4)
           .rowsGap(4)
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })

@@ -58,16 +58,13 @@ struct HomeMain {
       if (dataWrap.data) {
         let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
         switch (eventType) {
-          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: {
-            this.appTextSizePlan = AppSettings.textSizePlan();
-            setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
-          }
-            break;
+          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
           case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
           default: break;
         }
       }
     });
+    setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
   }
 
   onBackPress(): boolean | void {
@@ -93,22 +90,26 @@ struct HomeMain {
         HomeTabNews({
           selectedIndex: this.curSelectedTabIndex,
           screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan
+          appTextSizePlan: this.appTextSizePlan,
+          isSplitScreen: this.isSplitScreen
         })
         HomeTabMenu({
           selectedIndex: this.curSelectedTabIndex,
           screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan
+          appTextSizePlan: this.appTextSizePlan,
+          isSplitScreen: this.isSplitScreen
         })
         HomeTabSocialize({
           selectedIndex: this.curSelectedTabIndex,
           screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan
+          appTextSizePlan: this.appTextSizePlan,
+          isSplitScreen: this.isSplitScreen
         })
         HomeTabMine({
           selectedIndex: this.curSelectedTabIndex,
           screenUIType: this.screenUIType,
           appTextSizePlan: this.appTextSizePlan,
+          isSplitScreen: this.isSplitScreen,
           mainPageTabsController: this.tabsController
         })
       }
@@ -124,7 +125,7 @@ struct HomeMain {
     .hideToolBar(true)
     .hideBackButton(true)
     .navBarWidth(!this.isSplitScreen ? '100%' :
-      this.screenUIType === ScreenUIType.PAD ? '33%' :
+      this.screenUIType === ScreenUIType.PAD ? '35%' :
       this.screenUIType === ScreenUIType.FOLD_OPENED ? '50%' :
       '100%')
     .mode(this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack)

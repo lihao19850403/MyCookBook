@@ -1,7 +1,6 @@
 import { firstNotVoid } from '../../utils/common/Utils';
 import { webview } from '@kit.ArkWeb';
 import { OnLoadInterceptEvent } from '@kit.ArkUI';
-import { ScreenUIType } from '../../utils/common/ScreenUIAdapter';
 
 /** 默认属性。 */
 interface DefaultAttributes {
@@ -35,9 +34,6 @@ export struct LHWebView {
 
   /** 进度条可见性。 */
   @State progressVisible: boolean = false;
-
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
 
   /** 事件ID：进度条可见性更新。 */
   private progressVisibleTask: number = -1;

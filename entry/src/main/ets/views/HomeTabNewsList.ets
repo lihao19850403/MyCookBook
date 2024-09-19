@@ -47,6 +47,9 @@ export struct HomeTabNewsList {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 正在加载今日新闻。 */
   @State isLoadingTodayNews: boolean = true;
 
@@ -137,9 +140,10 @@ export struct HomeTabNewsList {
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)
     }
-    .columnsTemplate(this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr'
-      : this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr'
-        : '1fr')
+    .columnsTemplate(this.isSplitScreen ? '1fr' :
+      this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr' :
+      this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr' :
+      '1fr')
     .columnsGap(4)
     .rowsGap(4)
     .padding({ left: 8, right: 8, top: 4, bottom: 4 })

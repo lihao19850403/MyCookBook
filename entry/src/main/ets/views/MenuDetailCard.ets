@@ -44,6 +44,9 @@ export struct MenuDetailCard {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 菜谱信息。 */
   private menuInfo?: RecommendMenuItem;
 
@@ -58,7 +61,7 @@ export struct MenuDetailCard {
 
   build() {
     if (this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined && this.menuInfo.cp_name !== '') {
-      if (this.screenUIType === ScreenUIType.NORMAL) {
+      if (this.screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && this.screenUIType === ScreenUIType.FOLD_OPENED)) {
         Column() {
           this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
           this.Detail(this.menuInfo.cp_name)
@@ -107,7 +110,8 @@ export struct MenuDetailCard {
           .width('100%')
           .fontSize(this.appTextSizePlan.menuDetailCardNameTextSize)
           .fontWeight(FontWeight.Medium)
-          .textAlign(this.screenUIType === ScreenUIType.NORMAL ? TextAlign.Center : TextAlign.Start)
+          .textAlign((this.screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && this.screenUIType === ScreenUIType.FOLD_OPENED)) ?
+            TextAlign.Center : TextAlign.Start)
       }
       if (this.menuInfo!.type_name !== undefined && this.menuInfo!.type_name !== '') {
         Text(this.menuInfo!.type_name)
@@ -205,7 +209,8 @@ export struct MenuDetailCard {
     .flexShrink(1)
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Start)
-    .margin(this.screenUIType === ScreenUIType.NORMAL ? { top: 8 } : { left: 8 })
+    .margin((this.screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && this.screenUIType === ScreenUIType.FOLD_OPENED)) ?
+      { top: 8 } : { left: 8 })
   }
 
   /**

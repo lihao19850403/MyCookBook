@@ -22,14 +22,14 @@ export struct HomeTabMineSettings {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 首页序号。 */
   @State firstPage: number = 0;
 
   /** 应用字号方案ID。 */
   @State textSizePlanID: number = AppSettingsTextSizePlans.SMALL.id;
-
-  /** 是否使用分屏显示。 */
-  @State isSplitScreen: boolean = false;
 
   aboutToAppear(): void {
     this.firstPage = AppSettings.firstPageIndex();
@@ -47,9 +47,10 @@ export struct HomeTabMineSettings {
           GridItem() { this.TextSize() }.height(84)
           GridItem() { this.SplitScreen() }.height(84)
         }
-        .columnsTemplate(this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr'
-          : this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr'
-            : '1fr 1fr 1fr')
+        .columnsTemplate(this.isSplitScreen ? '1fr 1fr 1fr' :
+          this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr' :
+          this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
+          '1fr 1fr 1fr')
         .columnsGap(4)
         .rowsGap(4)
         .padding({ left: 8, right: 8, top: 4, bottom: 4 })
@@ -195,6 +196,10 @@ export struct HomeTabMineSettings {
           }
         })
     }
+    .border({
+      width: { right: 0.3 },
+      color: $r('app.color.main_selected_color')
+    })
     .onClick((event: ClickEvent) => {
       this.textSizePlanID = (this.textSizePlanID + 1) % 4;
       AppSettings.setTextSizePlanByID(this.textSizePlanID);

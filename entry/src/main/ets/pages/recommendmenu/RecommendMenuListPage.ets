@@ -15,6 +15,7 @@ import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
 /**
@@ -31,6 +32,9 @@ struct RecommendMenuListPage {
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
 
+  /** 是否使用分屏显示。 */
+  @State isSplitScreen: boolean = false;
+
   /** 今日推荐菜谱数据。 */
   private recommendMenu?: RecommendMenuResult;
 
@@ -43,11 +47,13 @@ struct RecommendMenuListPage {
     })
     this.recommendMenu = RouterUtils.getParams();
     this.appTextSizePlan = AppSettings.textSizePlan();
+    this.isSplitScreen = AppSettings.isSplitScreen();
     emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
       if (dataWrap.data) {
         let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
         switch (eventType) {
           case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+          case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
           default: break;
         }
       }
@@ -73,6 +79,7 @@ struct RecommendMenuListPage {
                 MenuDetailCard({
                   screenUIType: this.screenUIType,
                   appTextSizePlan: this.appTextSizePlan,
+                  isSplitScreen: this.isSplitScreen,
                   menuInfo: menuItem,
                   style: MenuDetailCardStyle.SQUARE_BANNER
                 })

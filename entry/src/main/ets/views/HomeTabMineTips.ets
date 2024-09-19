@@ -30,6 +30,9 @@ export struct HomeTabMineTips {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 是否正在加载每日养生。 */
   @State isLoadingTips: boolean = true;
 
@@ -59,9 +62,10 @@ export struct HomeTabMineTips {
           alignContent: Alignment.Center
         }) {
           Text(this.todayTips)
-            .width(this.screenUIType === ScreenUIType.FOLD_OPENED ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
+            .width(this.isSplitScreen ? '95%' :
+              this.screenUIType === ScreenUIType.FOLD_OPENED ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
               this.screenUIType === ScreenUIType.PAD ? px2vp(getScreenWidthPx()) / 3 * 0.95 :
-                '95%')
+              '95%')
             .constraintSize({
               minHeight: 100
             })

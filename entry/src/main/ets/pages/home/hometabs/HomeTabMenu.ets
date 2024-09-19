@@ -48,6 +48,9 @@ export struct HomeTabMenu {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 今日推荐菜谱。 */
   @State recommendMenu: RecommendMenuResult | undefined = undefined;
 
@@ -107,12 +110,14 @@ export struct HomeTabMenu {
           screenUIType: this.screenUIType,
           isLoadingRecommendMenu: this.isLoadingRecommendMenu,
           appTextSizePlan: this.appTextSizePlan,
+          isSplitScreen: this.isSplitScreen,
           recommendMenu: this.recommendMenu
         })
         HomeTabMenuFavorite({
           screenUIType: this.screenUIType,
           favoriteMenu: this.favoriteMenu,
           appTextSizePlan: this.appTextSizePlan,
+          isSplitScreen: this.isSplitScreen,
           favoriteMenuChangeEventType: this.favoriteMenuChangeEventType
         })
       }

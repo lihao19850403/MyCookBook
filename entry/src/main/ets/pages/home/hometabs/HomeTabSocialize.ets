@@ -25,6 +25,9 @@ export struct HomeTabSocialize {
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
+  /** 是否使用分屏显示。 */
+  @Prop isSplitScreen: boolean;
+
   /** 此Tab序号。 */
   private thisIndex: number = 2;
 
