@@ -5,9 +5,21 @@ import { webview } from '@kit.ArkWeb';
 import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_BACK_KEY_EVENT } from '../HomeMain';
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
+import { AppSettings } from '../../../utils/AppSettings';
+import { RouterUtils } from '../../../utils/common/RouterUtils';
 
 /** 网页资源链接。 */
 const URL_SOCIALIZE: string = 'https://www.xiangha.com/quan';
+
+/**
+ * 分屏显示链接白名单。
+ * 在白名单中的链接将仅在左侧屏幕显示，不会在右侧内容区显示。
+ */
+const URL_WHITE_LIST: string[] = [
+  URL_SOCIALIZE,
+  'https://m.xiangha.com/quan',
+  'https://m.xiangha.com/Index/iframe'
+];
 
 /**
  * 首页 - 美食圈。
@@ -121,13 +133,10 @@ export struct HomeTabSocialize {
   private onLoadInterceptCallback(data: WebResourceRequest, webViewController: webview.WebviewController): boolean {
     let requestUrl: string = data.getRequestUrl();
     if (requestUrl !== undefined) {
-      if (requestUrl.includes('xiangha.com/download')) {
-        /* 此处可以进行自定义操作。 */
-        // return true; // 不再继续加载页面。
-      }
-      if (requestUrl.includes('xiangha.com/entry')) {
-        /* 此处可以进行自定义操作。 */
-        // return true; // 不再继续加载页面。
+      // 分屏模式下在内容区打开新链接。
+      if (AppSettings.isSplitScreen() && !URL_WHITE_LIST.includes(requestUrl)) {
+        RouterUtils.navPushPath('LHWebBrowser', { "url": requestUrl });
+        return true;
       }
     }
     return false;
