@@ -73,6 +73,10 @@ struct HomeMain {
   }
 
   onBackPress(): boolean | void {
+    if (RouterUtils.getNavPathsCount() > 0) {
+      RouterUtils.navBack();
+      return true;
+    }
     let backKeyEvents: Array<() => boolean> | undefined = GlobalConfig.get(GLOBAL_CONFIG_BACK_KEY_EVENT);
     if (backKeyEvents !== undefined && backKeyEvents.length > 0) {
       for (let index = 0; index < backKeyEvents.length; index++) {
@@ -81,10 +85,6 @@ struct HomeMain {
           return true;
         }
       }
-    }
-    if (RouterUtils.getNavPathsCount() > 0) {
-      RouterUtils.navBack();
-      return true;
     }
     return false;
   }
