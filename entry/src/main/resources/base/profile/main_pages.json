@@ -2,7 +2,6 @@
   "src": [
     "pages/home/HomeMain",
     "pages/recommendmenu/RecommendMenuListPage",
-    "pages/menudetail/MenuDetailPage",
-    "pages/newsdetail/NewsDetailPage"
+    "pages/menudetail/MenuDetailPage"
   ]
 }

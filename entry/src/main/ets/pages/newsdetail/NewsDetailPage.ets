@@ -1,6 +1,6 @@
 import { getScreenBottomSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import { RouterUtils } from '../../utils/common/RouterUtils';
-import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../views/common/LHCommonTitleBar';
+import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../views/common/LHCommonTitleBar';
 import { TodayNewsItem } from '../../models/TodayNewsModel';
 import { NewsDetailCard, NewsDetailCardStyle } from '../../views/NewsDetailCard';
 import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
@@ -11,11 +11,15 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
+@Builder
+export function NewsDetailPageBuilder() {
+  NewsDetailPage()
+}
+
 /**
  * 新闻详情页。
  * @author li.hao85
  */
-@Entry
 @Component
 struct NewsDetailPage {
 
@@ -25,40 +29,43 @@ struct NewsDetailPage {
   /** 新闻详情。 */
   private newsItem?: TodayNewsItem;
 
-  aboutToAppear(): void {
-    this.newsItem = RouterUtils.getParams();
-    this.appTextSizePlan = AppSettings.textSizePlan();
-    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data) {
-        let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-        switch (eventType) {
-          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-          default: break;
-        }
-      }
-    });
-  }
-
   build() {
-    Column() {
-      LHCommonTitleBar({
-        centerTitleText: $r('app.string.news'),
-        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
-        leftAction: LHCommonTitleBarLeftBack
-      })
-      Scroll() {
-        NewsDetailCard({
-          newsInfo: this.newsItem,
-          style: NewsDetailCardStyle.SQUARE_BANNER,
-          appTextSizePlan: this.appTextSizePlan
+    NavDestination() {
+      Column() {
+        LHCommonTitleBar({
+          centerTitleText: $r('app.string.news'),
+          centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
+          leftAction: LHCommonTitleBarLeftNavBack
         })
+        Scroll() {
+          NewsDetailCard({
+            newsInfo: this.newsItem,
+            style: NewsDetailCardStyle.SQUARE_BANNER,
+            appTextSizePlan: this.appTextSizePlan
+          })
+        }
+        .width('100%')
+        .scrollBar(BarState.Off)
+        .padding({ bottom: px2vp(getScreenBottomSafeZoneHeightPx()) })
       }
       .width('100%')
-      .scrollBar(BarState.Off)
-      .padding({ bottom: px2vp(getScreenBottomSafeZoneHeightPx()) })
+      .height('100%')
+      .backgroundColor($r('app.color.main_bg_gray_color'))
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.main_bg_gray_color'))
+    .hideTitleBar(true)
+    .backButtonIcon(undefined)
+    .onReady((context: NavDestinationContext) => {
+      this.newsItem = RouterUtils.navGetParams(context) as TodayNewsItem;
+      this.appTextSizePlan = AppSettings.textSizePlan();
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+        if (dataWrap.data) {
+          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+          switch (eventType) {
+            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+            default: break;
+          }
+        }
+      });
+    })
   }
 }

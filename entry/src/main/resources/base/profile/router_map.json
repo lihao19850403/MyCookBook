@@ -9,6 +9,11 @@
       "name": "LHWebBrowser",
       "pageSourceFile": "src/main/ets/pages/common/webbrowser/LHWebBrowser.ets",
       "buildFunction": "LHWebBrowserBuilder"
+    },
+    {
+      "name": "NewsDetailPage",
+      "pageSourceFile": "src/main/ets/pages/newsdetail/NewsDetailPage.ets",
+      "buildFunction": "NewsDetailPageBuilder"
     }
   ]
 }
