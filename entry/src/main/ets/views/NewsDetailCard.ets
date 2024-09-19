@@ -156,7 +156,7 @@ export struct NewsDetailCard {
           .justifyContent(FlexAlign.Start)
           .alignItems(HorizontalAlign.Start)
           .margin({ top: 24 })
-          .onClick((event: ClickEvent) => RouterUtils.go('pages/common/webbrowser/LHWebBrowser', { "url": this.newsInfo?.url }))
+          .onClick((event: ClickEvent) => RouterUtils.navPushPath('LHWebBrowser', { "url": this.newsInfo?.url }))
         }
       }
       .width('100%')

@@ -3,7 +3,6 @@
     "pages/home/HomeMain",
     "pages/recommendmenu/RecommendMenuListPage",
     "pages/menudetail/MenuDetailPage",
-    "pages/newsdetail/NewsDetailPage",
-    "pages/common/webbrowser/LHWebBrowser"
+    "pages/newsdetail/NewsDetailPage"
   ]
 }
