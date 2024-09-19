@@ -19,6 +19,11 @@
       "name": "MenuDetailPage",
       "pageSourceFile": "src/main/ets/pages/menudetail/MenuDetailPage.ets",
       "buildFunction": "MenuDetailPageBuilder"
+    },
+    {
+      "name": "RecommendMenuListPage",
+      "pageSourceFile": "src/main/ets/pages/recommendmenu/RecommendMenuListPage.ets",
+      "buildFunction": "RecommendMenuListPageBuilder"
     }
   ]
 }

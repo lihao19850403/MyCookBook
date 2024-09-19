@@ -1,6 +1,5 @@
 {
   "src": [
-    "pages/home/HomeMain",
-    "pages/recommendmenu/RecommendMenuListPage"
+    "pages/home/HomeMain"
   ]
 }
