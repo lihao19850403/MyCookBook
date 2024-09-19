@@ -7,6 +7,7 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
+import { RouterUtils, ROUTER_CONFIG_KEY_ROUTER_STACK } from '../../utils/common/RouterUtils';
 import {
   getScreenUIType,
   ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
@@ -45,7 +46,11 @@ struct HomeMain {
   /** 标签页控制器。 */
   private tabsController: TabsController = new TabsController();
 
+  /** 页面栈控制器。 */
+  private routerStack: NavPathStack = new NavPathStack();
+
   aboutToAppear(): void {
+    GlobalConfig.set(ROUTER_CONFIG_KEY_ROUTER_STACK, this.routerStack);
     emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
       if (dataWrap.data) {
         let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
@@ -77,11 +82,15 @@ struct HomeMain {
         }
       }
     }
+    if (RouterUtils.getNavPathsCount() > 0) {
+      RouterUtils.navBack();
+      return true;
+    }
     return false;
   }
 
   build() {
-    Navigation() {
+    Navigation(this.routerStack) {
       Tabs({
         barPosition: this.screenUIType !== ScreenUIType.PAD ? BarPosition.End : BarPosition.Start,
         index: this.curSelectedTabIndex,

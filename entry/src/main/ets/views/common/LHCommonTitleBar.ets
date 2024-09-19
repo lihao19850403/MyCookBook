@@ -34,6 +34,17 @@ export function LHCommonTitleBarLeftBack() {
     .onClick((event: ClickEvent) => RouterUtils.back())
 }
 
+/** 一个默认的Navigation组件标题栏返回按钮。 */
+@Builder
+export function LHCommonTitleBarLeftNavBack() {
+  Image($r('app.media.ic_main_back_arrow'))
+    .width(48)
+    .height(48)
+    .padding(12)
+    .objectFit(ImageFit.Contain)
+    .onClick((event: ClickEvent) => RouterUtils.navBack())
+}
+
 /**
  * 自定义的标题栏。
  * @author li.hao85

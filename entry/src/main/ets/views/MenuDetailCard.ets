@@ -96,7 +96,7 @@ export struct MenuDetailCard {
           title: this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined ? this.menuInfo.cp_name : $r('app.string.photo_viewer'),
           uri: firstNotVoid(this.menuInfo?.cp_thumbnail, this.tempPic)!
         };
-        RouterUtils.go('pages/common/photoviewer/LHPhotoViewer', params);
+        RouterUtils.navPushPath('LHPhotoViewer', params);
       })
   }
 

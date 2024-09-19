@@ -1,0 +1,9 @@
+{
+  "routerMap": [
+    {
+      "name": "LHPhotoViewer",
+      "pageSourceFile": "src/main/ets/pages/common/photoviewer/LHPhotoViewer.ets",
+      "buildFunction": "LHPhotoViewerBuilder"
+    }
+  ]
+}

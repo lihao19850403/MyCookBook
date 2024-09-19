@@ -6,8 +6,13 @@ import { GlobalAppSettings, GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../../utils/common/GlobalAppSettings';
 import { RouterUtils } from '../../../utils/common/RouterUtils';
 import { firstNotVoid } from '../../../utils/common/Utils';
-import { LHCommonTitleBar, LHCommonTitleBarLeftBack } from '../../../views/common/LHCommonTitleBar';
+import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../../views/common/LHCommonTitleBar';
 import { emitter } from '@kit.BasicServicesKit';
+
+@Builder
+export function LHPhotoViewerBuilder() {
+  LHPhotoViewer()
+}
 
 /** 图片阅览需要的参数。 */
 export interface PhotoViewerParams {
@@ -34,7 +39,6 @@ export interface PhotoViewerParams {
  * 图片阅览器，基于PhotoView实现。
  * @author li.hao85
  */
-@Entry
 @Component
 struct LHPhotoViewer {
 
@@ -47,47 +51,50 @@ struct LHPhotoViewer {
   /** 应用文字字号方案。 */
   @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
 
-  aboutToAppear(): void {
-    let params: PhotoViewerParams = RouterUtils.getParams();
-    this.title = params.title;
-    if (params.uri instanceof String) {
-      this.data.setImageURI(params.uri as string);
-    } else {
-      this.data.setImageResource(params.uri as Resource);
-    }
-    this.data.setZoomable(firstNotVoid(params.supportZoom, true));
-    if (params.scaleRange !== undefined && params.scaleRange.length >= 2 && params.scaleRange[0] <= params.scaleRange[1]) {
-      this.data.setMinimumScale(Math.max(params.scaleRange[0], 1.0));
-      this.data.setMaximumScale(Math.min(params.scaleRange[1], 5.0));
-    } else {
-      this.data.setMinimumScale(1.0);
-      this.data.setMaximumScale(3.0);
-    }
-    this.appTextSizePlan = GlobalAppSettings.textSizePlan();
-    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data) {
-        let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-        switch (eventType) {
-          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
-          default: break;
-        }
-      }
-    });
-  }
-
   build() {
-    Column() {
-      LHCommonTitleBar({
-        centerTitleText: this.title,
-        centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
-        leftAction: LHCommonTitleBarLeftBack,
-      })
-      PhotoView({
-        model: this.data
-      })
+    NavDestination() {
+      Column() {
+        LHCommonTitleBar({
+          centerTitleText: this.title,
+          centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
+          leftAction: LHCommonTitleBarLeftNavBack,
+        })
+        PhotoView({
+          model: this.data
+        })
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor($r('app.color.main_bg_gray_color'))
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.main_bg_gray_color'))
+    .hideTitleBar(true)
+    .backButtonIcon(undefined)
+    .onReady((context: NavDestinationContext) => {
+      let params: PhotoViewerParams = RouterUtils.navGetParams(context) as PhotoViewerParams;
+      this.title = params.title;
+      if (params.uri instanceof String) {
+        this.data.setImageURI(params.uri as string);
+      } else {
+        this.data.setImageResource(params.uri as Resource);
+      }
+      this.data.setZoomable(firstNotVoid(params.supportZoom, true));
+      if (params.scaleRange !== undefined && params.scaleRange.length >= 2 && params.scaleRange[0] <= params.scaleRange[1]) {
+        this.data.setMinimumScale(Math.max(params.scaleRange[0], 1.0));
+        this.data.setMaximumScale(Math.min(params.scaleRange[1], 5.0));
+      } else {
+        this.data.setMinimumScale(1.0);
+        this.data.setMaximumScale(3.0);
+      }
+      this.appTextSizePlan = GlobalAppSettings.textSizePlan();
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+        if (dataWrap.data) {
+          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+          switch (eventType) {
+            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
+            default: break;
+          }
+        }
+      });
+    })
   }
 }

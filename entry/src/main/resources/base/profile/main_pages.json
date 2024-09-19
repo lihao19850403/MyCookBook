@@ -4,7 +4,6 @@
     "pages/recommendmenu/RecommendMenuListPage",
     "pages/menudetail/MenuDetailPage",
     "pages/newsdetail/NewsDetailPage",
-    "pages/common/photoviewer/LHPhotoViewer",
     "pages/common/webbrowser/LHWebBrowser"
   ]
 }
