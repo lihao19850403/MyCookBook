@@ -137,6 +137,7 @@ struct HomeMain {
       this.screenUIType === ScreenUIType.PAD ? '35%' :
       this.screenUIType === ScreenUIType.FOLD_OPENED ? '50%' :
       '100%')
-    .mode(this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack)
+    .mode(this.screenUIType === ScreenUIType.NORMAL ? NavigationMode.Stack :
+      this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack)
   }
 }
