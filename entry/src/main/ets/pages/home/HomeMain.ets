@@ -73,7 +73,7 @@ struct HomeMain {
   }
 
   onBackPress(): boolean | void {
-    if (RouterUtils.getNavPathsCount() > 0) {
+    if (RouterUtils.navGetPathsCount() > 0) {
       RouterUtils.navBack();
       return true;
     }

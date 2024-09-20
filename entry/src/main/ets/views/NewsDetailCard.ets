@@ -1,7 +1,6 @@
 import { firstNotVoid } from '../utils/common/Utils';
 import { TodayNewsItem } from '../models/TodayNewsModel';
 import { LengthMetrics } from '@kit.ArkUI';
-import { RouterUtils } from '../utils/common/RouterUtils';
 import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { LHWebBrowser, URL_PARAMS } from '../pages/common/webbrowser/LHWebBrowser';
@@ -128,7 +127,7 @@ export struct NewsDetailCard {
                 title: $r('app.string.photo_viewer'),
                 uri: this.newsInfo?.picUrl!
               };
-              RouterUtils.navPushPath(LHPhotoViewer.RouterName, params);
+              LHPhotoViewer.go(params);
             }
           })
         }
@@ -160,7 +159,7 @@ export struct NewsDetailCard {
           .onClick((event: ClickEvent) => {
             let urlParams: Record<string, string | undefined> = {};
             urlParams[URL_PARAMS] = this.newsInfo?.url;
-            RouterUtils.navPushPath(LHWebBrowser.RouterName, urlParams);
+            LHWebBrowser.go(urlParams);
           })
         }
       }

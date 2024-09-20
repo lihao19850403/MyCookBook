@@ -19,7 +19,7 @@ export class RouterUtils {
    * 获取Navigation组件页面栈中路由总数。
    * @returns Navigation组件页面栈中路由总数。
    */
-  public static getNavPathsCount(): number {
+  public static navGetPathsCount(): number {
     let routerStack: NavPathStack = GlobalConfig.get(ROUTER_CONFIG_KEY_ROUTER_STACK) as NavPathStack;
     if (routerStack === undefined) {
       return 0;

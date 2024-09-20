@@ -12,7 +12,9 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
 export namespace NewsDetailPage {
-  export const RouterName: string = 'NewsDetailPage';
+  export function go(params: TodayNewsItem) {
+    RouterUtils.navPushPath('NewsDetailPage', params);
+  }
 }
 
 @Builder

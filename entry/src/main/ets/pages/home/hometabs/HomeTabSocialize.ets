@@ -6,7 +6,6 @@ import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_BACK_KEY_EVENT } from '../HomeMain';
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 import { AppSettings } from '../../../utils/AppSettings';
-import { RouterUtils } from '../../../utils/common/RouterUtils';
 import { LHWebBrowser, URL_PARAMS } from '../../common/webbrowser/LHWebBrowser';
 
 /** 网页资源链接。 */
@@ -138,7 +137,7 @@ export struct HomeTabSocialize {
       if (AppSettings.isSplitScreen() && !URL_WHITE_LIST.includes(requestUrl)) {
         let urlParams: Record<string, string | undefined> = {};
         urlParams[URL_PARAMS] = requestUrl;
-        RouterUtils.navPushPath(LHWebBrowser.RouterName, urlParams);
+        LHWebBrowser.go(urlParams);
         return true;
       }
     }

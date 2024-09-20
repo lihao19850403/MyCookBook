@@ -17,7 +17,9 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
 export namespace MenuDetailPage {
-  export const RouterName: string = 'MenuDetailPage';
+  export function go(params: RecommendMenuItem) {
+    RouterUtils.navPushPath('MenuDetailPage', params);
+  }
 }
 
 @Builder

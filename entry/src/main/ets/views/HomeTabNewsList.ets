@@ -137,7 +137,7 @@ export struct HomeTabNewsList {
             newsInfo: newsItem,
             appTextSizePlan: this.appTextSizePlan
           })
-            .onClick((event: ClickEvent) => RouterUtils.navPushPath(NewsDetailPage.RouterName, newsItem))
+            .onClick((event: ClickEvent) => NewsDetailPage.go(newsItem))
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)
     }

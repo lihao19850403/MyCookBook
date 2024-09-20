@@ -10,7 +10,9 @@ import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
 
 export namespace LHWebBrowser {
-  export const RouterName: string = 'LHWebBrowser';
+  export function go(params: Record<string, string | undefined>) {
+    RouterUtils.navPushPath('LHWebBrowser', params);
+  }
 }
 
 @Builder

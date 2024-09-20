@@ -19,7 +19,9 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
 export namespace RecommendMenuListPage {
-  export const RouterName: string = 'RecommendMenuListPage';
+  export function go(params: RecommendMenuResult) {
+    RouterUtils.navPushPath('RecommendMenuListPage', params);
+  }
 }
 
 @Builder
@@ -45,10 +47,6 @@ struct RecommendMenuListPageComponent {
 
   /** 今日推荐菜谱数据。 */
   private recommendMenu?: RecommendMenuResult;
-
-  aboutToAppear(): void {
-
-  }
 
   build() {
     NavDestination() {

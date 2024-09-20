@@ -89,7 +89,7 @@ export struct NewsTipsCard {
                 title: $r('app.string.photo_viewer'),
                 uri: this.newsInfo?.picUrl!
               };
-              RouterUtils.navPushPath(LHPhotoViewer.RouterName, params);
+              LHPhotoViewer.go(params);
             }
           })
         }

@@ -10,7 +10,9 @@ import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../../views/co
 import { emitter } from '@kit.BasicServicesKit';
 
 export namespace LHPhotoViewer {
-  export const RouterName: string = 'LHPhotoViewer';
+  export function go(params: PhotoViewerParams) {
+    RouterUtils.navPushPath('LHPhotoViewer', params);
+  }
 }
 
 @Builder

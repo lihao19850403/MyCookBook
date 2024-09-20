@@ -1,5 +1,4 @@
 import { RecommendMenuItem } from '../models/RecommendMenuModel';
-import { RouterUtils } from '../utils/common/RouterUtils';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { FavoriteMenuChangeEventType, FavoriteMenuUtils } from '../utils/FavoriteMenuUtils';
 import { LHMarkedStar } from './common/LHMarkedStar';
@@ -51,7 +50,7 @@ export struct HomeTabMenuFavorite {
                   .onSizeChange((_, newSize: SizeOptions) => {
                     this.cardHeight = Math.max(this.cardHeight, newSize.height as number);
                   })
-                  .onClick((event: ClickEvent) => RouterUtils.navPushPath(MenuDetailPage.RouterName, menuItem))
+                  .onClick((event: ClickEvent) => MenuDetailPage.go(menuItem))
               }
             })
           }
