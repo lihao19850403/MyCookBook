@@ -10,6 +10,7 @@ import { util } from '@kit.ArkTS';
 import { NewsTipsCard } from './NewsTipsCard';
 import { RouterUtils } from '../utils/common/RouterUtils';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
+import { NewsDetailPage } from '../pages/newsdetail/NewsDetailPage';
 
 /** 今日新闻请求key。 */
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
@@ -136,7 +137,7 @@ export struct HomeTabNewsList {
             newsInfo: newsItem,
             appTextSizePlan: this.appTextSizePlan
           })
-            .onClick((event: ClickEvent) => RouterUtils.navPushPath('NewsDetailPage', newsItem))
+            .onClick((event: ClickEvent) => RouterUtils.navPushPath(NewsDetailPage.RouterName, newsItem))
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)
     }
@@ -174,11 +175,11 @@ export struct HomeTabNewsList {
           LoadingProgress()
             .height(24)
         } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_SUCCESS) {
-          Image($r("app.media.ic_main_selected_green"))
+          Image($r('app.media.ic_main_selected_green'))
             .width(24)
             .height(24)
         } else if (this.loadingMoreStatus === LOAD_MORE_STATUS.FINISHED_NO_MORE) {
-          Image($r("app.media.ic_main_selected_yellow"))
+          Image($r('app.media.ic_main_selected_yellow'))
             .width(24)
             .height(24)
         }

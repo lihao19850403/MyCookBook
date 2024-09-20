@@ -3,7 +3,7 @@ import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { firstNotVoid } from '../utils/common/Utils';
 import { LengthMetrics } from '@ohos.arkui.node';
 import { RouterUtils } from '../utils/common/RouterUtils';
-import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
+import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 
 /** 菜谱详情样式。 */
@@ -96,7 +96,7 @@ export struct MenuDetailCard {
           title: this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined ? this.menuInfo.cp_name : $r('app.string.photo_viewer'),
           uri: firstNotVoid(this.menuInfo?.cp_thumbnail, this.tempPic)!
         };
-        RouterUtils.navPushPath('LHPhotoViewer', params);
+        RouterUtils.navPushPath(LHPhotoViewer.RouterName, params);
       })
   }
 

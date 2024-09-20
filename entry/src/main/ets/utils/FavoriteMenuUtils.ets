@@ -20,7 +20,7 @@ export const enum FavoriteMenuChangeEventType {
 const FILE_NAME_FAVORITE_MENU: string = 'favorite_menu';
 
 /** 字段：菜谱顺序。 */
-const KEY_FAVORITE_ORDER: string = "favorite_order";
+const KEY_FAVORITE_ORDER: string = 'favorite_order';
 
 /**
  * 菜谱收藏工具类。

@@ -18,9 +18,13 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
+export namespace RecommendMenuListPage {
+  export const RouterName: string = 'RecommendMenuListPage';
+}
+
 @Builder
 export function RecommendMenuListPageBuilder() {
-  RecommendMenuListPage()
+  RecommendMenuListPageComponent()
 }
 
 /**
@@ -28,7 +32,7 @@ export function RecommendMenuListPageBuilder() {
  * @author li.hao85
  */
 @Component
-struct RecommendMenuListPage {
+struct RecommendMenuListPageComponent {
 
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();

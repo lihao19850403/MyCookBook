@@ -1,5 +1,7 @@
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { RecommendMenuItem, RecommendMenuResult } from '../models/RecommendMenuModel';
+import { MenuDetailPage } from '../pages/menudetail/MenuDetailPage';
+import { RecommendMenuListPage } from '../pages/recommendmenu/RecommendMenuListPage';
 import { RouterUtils } from '../utils/common/RouterUtils';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { MenuTipsCard } from './MenuTipsCard';
@@ -46,7 +48,7 @@ export struct HomeTabMenuRecommend {
                   .onSizeChange((_, newSize: SizeOptions) => {
                     this.cardHeight = Math.max(this.cardHeight, newSize.height as number);
                   })
-                  .onClick((event: ClickEvent) => RouterUtils.navPushPath('MenuDetailPage', menuItem))
+                  .onClick((event: ClickEvent) => RouterUtils.navPushPath(MenuDetailPage.RouterName, menuItem))
               }
             })
           }
@@ -93,7 +95,7 @@ export struct HomeTabMenuRecommend {
     .padding({ left: 12, right: 12, top: 4, bottom: 4 })
     .onClick((event: ClickEvent) => {
       if (this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0) {
-        RouterUtils.navPushPath('RecommendMenuListPage', this.recommendMenu);
+        RouterUtils.navPushPath(RecommendMenuListPage.RouterName, this.recommendMenu);
       }
     })
   }

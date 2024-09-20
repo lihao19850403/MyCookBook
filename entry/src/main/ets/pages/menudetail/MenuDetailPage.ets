@@ -16,9 +16,13 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
+export namespace MenuDetailPage {
+  export const RouterName: string = 'MenuDetailPage';
+}
+
 @Builder
 export function MenuDetailPageBuilder() {
-  MenuDetailPage()
+  MenuDetailPageComponent()
 }
 
 /**
@@ -26,7 +30,7 @@ export function MenuDetailPageBuilder() {
  * @author li.hao85
  */
 @Component
-struct MenuDetailPage {
+struct MenuDetailPageComponent {
 
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();

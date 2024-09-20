@@ -113,7 +113,7 @@ export struct HomeTabMineSettings {
             align: VerticalAlign.Top
           }
         })
-      Text($r("app.string.home_tab_mine_settings_first_page_tips"))
+      Text($r('app.string.home_tab_mine_settings_first_page_tips'))
         .width('100%')
         .fontSize(this.appTextSizePlan.homeTabMineSettingsTitleTextSize)
         .textAlign(TextAlign.Center)
@@ -137,7 +137,7 @@ export struct HomeTabMineSettings {
           $r('app.string.home_tab_socialize')
       );
       promptAction.showToast({
-        message: `${res2string($r("app.string.home_tab_mine_settings_first_page_toast"))}${newFirstPageName}`
+        message: `${res2string($r('app.string.home_tab_mine_settings_first_page_toast'))}${newFirstPageName}`
       });
     })
   }
@@ -185,7 +185,7 @@ export struct HomeTabMineSettings {
             align: VerticalAlign.Top
           }
         })
-      Text($r("app.string.home_tab_mine_settings_text_size_tips"))
+      Text($r('app.string.home_tab_mine_settings_text_size_tips'))
         .width('100%')
         .fontSize(this.appTextSizePlan.homeTabMineSettingsTitleTextSize)
         .textAlign(TextAlign.Center)
@@ -248,7 +248,7 @@ export struct HomeTabMineSettings {
             align: VerticalAlign.Top
           }
         })
-      Text($r("app.string.home_tab_mine_settings_split_screen_tips"))
+      Text($r('app.string.home_tab_mine_settings_split_screen_tips'))
         .width('100%')
         .fontSize(this.appTextSizePlan.homeTabMineSettingsTitleTextSize)
         .textAlign(TextAlign.Center)

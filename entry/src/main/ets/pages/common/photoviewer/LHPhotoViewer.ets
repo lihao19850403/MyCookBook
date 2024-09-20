@@ -9,9 +9,13 @@ import { firstNotVoid } from '../../../utils/common/Utils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../../views/common/LHCommonTitleBar';
 import { emitter } from '@kit.BasicServicesKit';
 
+export namespace LHPhotoViewer {
+  export const RouterName: string = 'LHPhotoViewer';
+}
+
 @Builder
 export function LHPhotoViewerBuilder() {
-  LHPhotoViewer()
+  LHPhotoViewerComponent()
 }
 
 /** 图片阅览需要的参数。 */
@@ -40,7 +44,7 @@ export interface PhotoViewerParams {
  * @author li.hao85
  */
 @Component
-struct LHPhotoViewer {
+struct LHPhotoViewerComponent {
 
   /** 图片阅览器。 */
   private title: ResourceStr = $r('app.string.photo_viewer');

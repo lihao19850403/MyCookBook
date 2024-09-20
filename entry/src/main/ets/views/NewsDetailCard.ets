@@ -2,8 +2,9 @@ import { firstNotVoid } from '../utils/common/Utils';
 import { TodayNewsItem } from '../models/TodayNewsModel';
 import { LengthMetrics } from '@kit.ArkUI';
 import { RouterUtils } from '../utils/common/RouterUtils';
-import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
+import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
+import { LHWebBrowser, URL_PARAMS } from '../pages/common/webbrowser/LHWebBrowser';
 
 /** 新闻详情样式。 */
 export enum NewsDetailCardStyle {
@@ -117,7 +118,7 @@ export struct NewsDetailCard {
             }
           }
           .width('100%')
-          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS ? undefined : $r("app.color.main_bg_gray_color"))
+          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS ? undefined : $r('app.color.main_bg_gray_color'))
           .onClick((event: ClickEvent) => {
             if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
               this.imageLoadingStatus = IMAGE_LOADING_STATUS.LOADING;
@@ -127,7 +128,7 @@ export struct NewsDetailCard {
                 title: $r('app.string.photo_viewer'),
                 uri: this.newsInfo?.picUrl!
               };
-              RouterUtils.navPushPath('LHPhotoViewer', params);
+              RouterUtils.navPushPath(LHPhotoViewer.RouterName, params);
             }
           })
         }
@@ -156,7 +157,11 @@ export struct NewsDetailCard {
           .justifyContent(FlexAlign.Start)
           .alignItems(HorizontalAlign.Start)
           .margin({ top: 24 })
-          .onClick((event: ClickEvent) => RouterUtils.navPushPath('LHWebBrowser', { "url": this.newsInfo?.url }))
+          .onClick((event: ClickEvent) => {
+            let urlParams: Record<string, string | undefined> = {};
+            urlParams[URL_PARAMS] = this.newsInfo?.url;
+            RouterUtils.navPushPath(LHWebBrowser.RouterName, urlParams);
+          })
         }
       }
       .width('100%')

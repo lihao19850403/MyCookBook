@@ -11,9 +11,13 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 
+export namespace NewsDetailPage {
+  export const RouterName: string = 'NewsDetailPage';
+}
+
 @Builder
 export function NewsDetailPageBuilder() {
-  NewsDetailPage()
+  NewsDetailPageComponent()
 }
 
 /**
@@ -21,7 +25,7 @@ export function NewsDetailPageBuilder() {
  * @author li.hao85
  */
 @Component
-struct NewsDetailPage {
+struct NewsDetailPageComponent {
 
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;

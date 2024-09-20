@@ -42,7 +42,7 @@ export struct HomeTabMine {
   private Content() {
     Column() {
       LHCommonTitleBar({
-        centerTitleText: $r("app.string.home_tab_mine"),
+        centerTitleText: $r('app.string.home_tab_mine'),
         centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
       })
       List({

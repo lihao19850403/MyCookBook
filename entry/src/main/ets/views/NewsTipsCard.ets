@@ -1,6 +1,6 @@
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { TodayNewsItem } from '../models/TodayNewsModel';
-import { PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
+import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { RouterUtils } from '../utils/common/RouterUtils';
 import { firstNotVoid } from '../utils/common/Utils';
 
@@ -79,7 +79,7 @@ export struct NewsTipsCard {
           }
           .width(112)
           .height(63)
-          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS ? undefined : $r("app.color.main_bg_gray_color"))
+          .backgroundColor(this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_SUCCESS ? undefined : $r('app.color.main_bg_gray_color'))
           .onClick((event: ClickEvent) => {
             if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
               this.imageLoadingStatus = IMAGE_LOADING_STATUS.LOADING;
@@ -89,7 +89,7 @@ export struct NewsTipsCard {
                 title: $r('app.string.photo_viewer'),
                 uri: this.newsInfo?.picUrl!
               };
-              RouterUtils.navPushPath('LHPhotoViewer', params);
+              RouterUtils.navPushPath(LHPhotoViewer.RouterName, params);
             }
           })
         }

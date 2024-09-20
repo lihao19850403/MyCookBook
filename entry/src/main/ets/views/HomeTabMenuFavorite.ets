@@ -6,6 +6,7 @@ import { LHMarkedStar } from './common/LHMarkedStar';
 import { MenuTipsCard } from './MenuTipsCard';
 import { componentUtils } from '@kit.ArkUI';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
+import { MenuDetailPage } from '../pages/menudetail/MenuDetailPage';
 
 /**
  * 首页 - 菜谱 - 我的收藏。
@@ -50,7 +51,7 @@ export struct HomeTabMenuFavorite {
                   .onSizeChange((_, newSize: SizeOptions) => {
                     this.cardHeight = Math.max(this.cardHeight, newSize.height as number);
                   })
-                  .onClick((event: ClickEvent) => RouterUtils.navPushPath('MenuDetailPage', menuItem))
+                  .onClick((event: ClickEvent) => RouterUtils.navPushPath(MenuDetailPage.RouterName, menuItem))
               }
             })
           }

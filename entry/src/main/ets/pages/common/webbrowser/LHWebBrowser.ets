@@ -9,17 +9,24 @@ import { GlobalAppSettings, GLOBAL_APP_SETTINGS_EVENT_TYPE,
 import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
 
+export namespace LHWebBrowser {
+  export const RouterName: string = 'LHWebBrowser';
+}
+
 @Builder
 export function LHWebBrowserBuilder() {
-  LHWebBrowser()
+  LHWebBrowserComponent()
 }
+
+/** 传递的url参数。 */
+export const URL_PARAMS: string = 'url_params';
 
 /**
  * 网页浏览器，基于原生Web组件实现。
  * @author li.hao85
  */
 @Component
-struct LHWebBrowser {
+struct LHWebBrowserComponent {
 
   /** 应用文字字号方案。 */
   @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
@@ -52,8 +59,8 @@ struct LHWebBrowser {
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
-      let urlParams: Record<string, string> = RouterUtils.navGetParams(context) as Record<string, string>;
-      this.url = urlParams['url'];
+      let urlParams: Record<string, string | undefined> = RouterUtils.navGetParams(context) as Record<string, string | undefined>;
+      this.url = urlParams[URL_PARAMS];
       this.appTextSizePlan = GlobalAppSettings.textSizePlan();
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
         if (dataWrap.data) {
