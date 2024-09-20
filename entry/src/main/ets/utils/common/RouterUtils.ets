@@ -6,6 +6,9 @@ type RouterParamsType = Record<string, Object | undefined> | Object | undefined;
 /** 保存Navigation组件的页面栈控制器。 */
 export const ROUTER_CONFIG_KEY_ROUTER_STACK: string = 'ROUTER_CONFIG_KEY_ROUTER_STACK';
 
+/** 路由跳转时传递参数包装的关键字。 */
+const ROUTER_PARAMS_WRAP_KEY: string = 'ROUTER_PARAMS_WRAP_KEY';
+
 /**
  * 路由跳转工具类。
  * @author li.hao85
@@ -30,7 +33,7 @@ export class RouterUtils {
    * @returns 传递过来的路由参数。
    */
   public static navGetParams<T>(context: NavDestinationContext): T {
-    let params: T = Reflect.get(context.pathInfo.param as Record<string, T>, 'params') as T;
+    let params: T = Reflect.get(context.pathInfo.param as Record<string, T>, ROUTER_PARAMS_WRAP_KEY) as T;
     return params;
   }
 
@@ -46,9 +49,8 @@ export class RouterUtils {
     if (routerStack === undefined) {
       return;
     }
-    let paramsWrap: Record<string, RouterParamsType> = {
-      'params': params
-    };
+    let paramsWrap: Record<string, RouterParamsType> = {};
+    paramsWrap[ROUTER_PARAMS_WRAP_KEY] = params;
     let navPathInfo: NavPathInfo = new NavPathInfo(routerName, paramsWrap, undefined, isEntry);
     routerStack.pushPath(navPathInfo, options);
   }
