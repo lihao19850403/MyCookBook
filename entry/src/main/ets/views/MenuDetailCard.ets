@@ -2,7 +2,6 @@ import { RecommendMenuItem } from '../models/RecommendMenuModel';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { firstNotVoid } from '../utils/common/Utils';
 import { LengthMetrics } from '@ohos.arkui.node';
-import { RouterUtils } from '../utils/common/RouterUtils';
 import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 

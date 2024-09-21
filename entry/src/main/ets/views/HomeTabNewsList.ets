@@ -8,7 +8,6 @@ import { KVUtils } from '../utils/common/KVUtils';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { util } from '@kit.ArkTS';
 import { NewsTipsCard } from './NewsTipsCard';
-import { RouterUtils } from '../utils/common/RouterUtils';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { NewsDetailPage } from '../pages/newsdetail/NewsDetailPage';
 
@@ -137,6 +136,7 @@ export struct HomeTabNewsList {
             newsInfo: newsItem,
             appTextSizePlan: this.appTextSizePlan
           })
+            .id(`NewsTipsCard${index}`)
             .onClick((event: ClickEvent) => NewsDetailPage.go(newsItem))
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)

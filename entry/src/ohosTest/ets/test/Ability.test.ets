@@ -1,8 +1,13 @@
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from '@ohos/hypium';
+import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect, TestType } from '@ohos/hypium';
+import Want from '@ohos.app.ability.Want';
+import { BUNDLE_NAME, sleep } from './Utils';
+import { ABILITY_NAME } from './Utils';
+import { DELEGATOR } from './Utils';
+import { UIAbility } from '@kit.AbilityKit';
 
+/** Ability测试套。 */
 export default function abilityTest() {
-  describe('ActsAbilityTest', () => {
+  describe('AbilityTest', () => {
     // Defines a test suite. Two parameters are supported: test suite name and test suite function.
     beforeAll(() => {
       // Presets an action, which is performed only once before all test cases of the test suite start.
@@ -22,14 +27,18 @@ export default function abilityTest() {
       // Presets a clear action, which is performed after all test cases of the test suite end.
       // This API supports only one parameter: clear action function.
     })
-    it('assertContain', 0, () => {
-      // Defines a test case. This API supports three parameters: test case name, filter parameter, and test case function.
-      hilog.info(0x0000, 'testTag', '%{public}s', 'it begin');
-      let a = 'abc';
-      let b = 'b';
-      // Defines a variety of assertion methods, which are used to declare expected boolean conditions.
-      expect(a).assertContain(b);
-      expect(a).assertEqual(a);
+
+    /** 应用启动测试。 */
+    it('BootTest', TestType.FUNCTION, async () => {
+      let want: Want = {
+        bundleName: BUNDLE_NAME,
+        abilityName: ABILITY_NAME
+      };
+      await DELEGATOR.startAbility(want);
+      await sleep(1000);
+      await DELEGATOR.getCurrentTopAbility().then((topAbility: UIAbility) => {
+        expect(topAbility.context.abilityInfo.name).assertEqual(ABILITY_NAME);
+      });
     })
   })
 }

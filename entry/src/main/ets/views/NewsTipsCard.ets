@@ -1,7 +1,6 @@
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { TodayNewsItem } from '../models/TodayNewsModel';
 import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
-import { RouterUtils } from '../utils/common/RouterUtils';
 import { firstNotVoid } from '../utils/common/Utils';
 
 /** 新闻名片样式。 */
