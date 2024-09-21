@@ -133,8 +133,8 @@ export struct HomeTabSocialize {
   private onLoadInterceptCallback(data: WebResourceRequest, webViewController: webview.WebviewController): boolean {
     let requestUrl: string = data.getRequestUrl();
     if (requestUrl !== undefined) {
-      // 分屏模式下在内容区打开新链接。
-      if (AppSettings.isSplitScreen() && !URL_WHITE_LIST.includes(requestUrl)) {
+      // 不在白名单的链接会在在内容区打开。
+      if (!URL_WHITE_LIST.includes(requestUrl)) {
         let urlParams: Record<string, string | undefined> = {};
         urlParams[URL_PARAMS] = requestUrl;
         LHWebBrowser.go(urlParams);
