@@ -37,6 +37,7 @@ export struct LHMarkedStar {
         .height('100%')
         .objectFit(ImageFit.Contain)
     }
+    .id('LHMarkedStar')
     .width(firstNotVoid(this.starSize, DEFAULT_ATTRIBUTES.starSize))
     .height(firstNotVoid(this.starSize, DEFAULT_ATTRIBUTES.starSize))
     .padding(`${firstNotVoid(this.starSize, DEFAULT_ATTRIBUTES.starSize)! * 0.2}vp`)

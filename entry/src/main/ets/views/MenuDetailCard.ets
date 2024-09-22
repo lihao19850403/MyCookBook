@@ -86,6 +86,7 @@ export struct MenuDetailCard {
   @Builder
   private Image(src: ResourceStr) {
     Image(this.imageErrorHappened ? this.tempPic : src)
+      .id('MenuDetailCard_image')
       .width(224)
       .height(126)
       .objectFit(ImageFit.Contain)
