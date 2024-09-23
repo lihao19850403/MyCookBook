@@ -52,7 +52,7 @@ struct LHPhotoViewerComponent {
   private title: ResourceStr = $r('app.string.photo_viewer');
 
   /** 图片数据。 */
-  @State data: PhotoView.Model = new PhotoView.Model();
+  private data: PhotoView.Model = new PhotoView.Model();
 
   /** 应用文字字号方案。 */
   @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
