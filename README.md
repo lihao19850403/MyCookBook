@@ -4,7 +4,10 @@
 
 本CodeLab基于ArkUI实现了一个菜谱应用，主要展示应用如何适配多种尺寸的屏幕。
 
-此外本项目尝试使用ArkXTest框架进行项目测试，详情可查阅 **[1.0.0版本应用测试](./Doc/1.0.0/测试/应用测试.md)**
+此外本项目还进行了如下测试工作：
+
+1.  使用ArkXTest框架进行项目测试，详情可查阅 [1.0.0版本应用测试](./Doc/1.0.0/测试/应用测试.md)
+2.  使用Hypium进行UI测试，测试工程见 [https://gitee.com/greatleghair/MyCookBookTest](https://gitee.com/greatleghair/MyCookBookTest)。
 
 #### 软件特点
 
@@ -12,8 +15,8 @@
 
 应用的特点如下：
 
-1.  屏幕适配：应用适配普通直板设备、折叠屏、Pad屏幕。应用在折叠屏上运行时，会对设备展开与合盖状态进行响应，并自动调整页面布局。关于屏幕状态响应的实现方法可查阅 **[动态监听屏幕尺寸及状态改变](https://developer.huawei.com/consumer/cn/blog/topic/03162326904748004)**。 
-2.  分页分屏：应用使用Tab组件进行多标签页展现，支持滑动切换页面或点击标签切换页面；应用使用Navigation实现分屏显示功能，并支持动态切换分屏状态。应用中各页面之间的跳转使用NavPathStack实现。关于分屏展示功能的实现方法可查阅 **[迁移旧项目至Navigation，使用NavPathStack进行页面跳转，并实现分屏显示](https://developer.huawei.com/consumer/cn/blog/topic/03162334632054323)**
+1.  屏幕适配：应用适配普通直板设备、折叠屏、Pad屏幕。应用在折叠屏上运行时，会对设备展开与合盖状态进行响应，并自动调整页面布局。关于屏幕状态响应的实现方法可查阅 [动态监听屏幕尺寸及状态改变](https://developer.huawei.com/consumer/cn/blog/topic/03162326904748004)。 
+2.  分页分屏：应用使用Tab组件进行多标签页展现，支持滑动切换页面或点击标签切换页面；应用使用Navigation实现分屏显示功能，并支持动态切换分屏状态。应用中各页面之间的跳转使用NavPathStack实现。关于分屏展示功能的实现方法可查阅 [迁移旧项目至Navigation，使用NavPathStack进行页面跳转，并实现分屏显示](https://developer.huawei.com/consumer/cn/blog/topic/03162334632054323)
 3.  列表吸顶：应用对List组件，使用ListItemGroup及sticky来展现小标题吸顶效果。 
 4.  网格拖拽：应用对Grid组件设置了用户可长按元素进行拖拽排序的功能。 
 5.  瀑布流UI：应用在首页新闻页面使用WaterFlow组件展现瀑布流排版效果，并使用LazyForEach实现懒加载。
@@ -60,7 +63,7 @@ ohpm install @ohos/pulltorefresh
 
 #### 使用说明
 
-应用在不同尺寸屏幕上的表现可查看：**[应用图集](./Doc/1.0.0/图集/应用图集.md)**
+应用在不同尺寸屏幕上的表现可查看：[应用图集](./Doc/1.0.0/图集/应用图集.md)
 
 ##### 头条
 
