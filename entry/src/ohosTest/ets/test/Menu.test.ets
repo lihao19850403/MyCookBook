@@ -51,7 +51,7 @@ export default function MenuTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title).assertEqual('菜谱');
@@ -88,7 +88,7 @@ export default function MenuTest() {
       let lastFavoriteMenuTipsCard: Component = menuTips[menuTips.length - 1];
       await lastFavoriteMenuTipsCard.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title.startsWith('家常')).assertTrue();
@@ -114,7 +114,7 @@ export default function MenuTest() {
 async function testAddFavoriteMenu(recommendMenuTips: Component) {
   await recommendMenuTips.click();
   await DRIVER.delayMs(1000);
-  let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+  let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
   expect(titleBar !== null).assertTrue();
   let title: string = await titleBar.getText();
   expect(title.includes('今日推荐')).assertTrue();

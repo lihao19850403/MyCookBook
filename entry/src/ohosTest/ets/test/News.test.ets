@@ -51,7 +51,7 @@ export default function NewsTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title).assertEqual('头条');
@@ -71,7 +71,7 @@ export default function NewsTest() {
       expect(newsTipsCard !== null).assertTrue();
       await newsTipsCard.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title).assertEqual('新闻');
@@ -80,7 +80,7 @@ export default function NewsTest() {
       expect(newsLink !== null).assertTrue();
       await newsLink.click();
       await DRIVER.delayMs(1000);
-      titleBar = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      titleBar = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       title = await titleBar.getText();
       expect(title).assertEqual('浏览器');

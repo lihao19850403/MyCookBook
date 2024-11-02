@@ -51,7 +51,7 @@ export default function SocializeTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title).assertEqual('美食圈');

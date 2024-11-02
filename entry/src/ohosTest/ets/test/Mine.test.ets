@@ -51,7 +51,7 @@ export default function MineTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title).assertEqual('我的');
@@ -128,7 +128,7 @@ export default function MineTest() {
       expect(lastPageGridItem !== null).assertTrue();
       await lastPageGridItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.id('LHCommonTitleBar_title'));
+      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
       expect(titleBar !== null).assertTrue();
       let title: string = await titleBar.getText();
       expect(title).assertEqual('菜谱');
