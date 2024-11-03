@@ -62,7 +62,6 @@ export struct HomeTabMineTips {
           alignContent: Alignment.Center
         }) {
           Text(this.todayTips)
-            .id('todayTips')
             .width(this.isSplitScreen ? '95%' :
               this.screenUIType === ScreenUIType.FOLD_OPENED ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
               this.screenUIType === ScreenUIType.PAD ? px2vp(getScreenWidthPx()) / 3 * 0.95 :

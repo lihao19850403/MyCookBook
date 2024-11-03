@@ -6,6 +6,10 @@ import { DELEGATOR } from './utils/Utils';
 import { UIAbility } from '@kit.AbilityKit';
 import { Component, ON } from '@kit.TestKit';
 import { checkTitleBarTextIs } from './utils/TitleBarTextUtils';
+import { Rect } from '@kit.ArkUI';
+
+/** 每日健康提示文字区域高度，用于查找控件时候的比较。 */
+const TODAY_TIPS_TEXT_HEIGHT: number = vp2px(100);
 
 /** 首页 - 我的测试套。 */
 export default function MineTest() {
@@ -62,9 +66,9 @@ export default function MineTest() {
       await DRIVER.delayMs(1000);
       let title: Component = await DRIVER.findComponent(ON.text('每日养生'));
       expect(title !== null).assertTrue();
-      let todayTips: Component = await DRIVER.findComponent(ON.id('todayTips'));
-      expect(todayTips !== null).assertTrue();
-      let tipsContent: string = await todayTips.getText();
+      let todayTips: Component | undefined = await findTodayTipsText();
+      expect(todayTips !== undefined).assertTrue();
+      let tipsContent: string = await todayTips!.getText();
       expect(tipsContent !== null && tipsContent.length > 0).message('这项测试需要联网获取每日养生信息才能通过').assertTrue();
       finish();
     })
@@ -132,4 +136,26 @@ export default function MineTest() {
       finish();
     })
   })
+}
+
+/**
+ * 查找每日健康提示文字区域，一般页面上第一个高度达到100vp的控件就是。
+ * @returns 每日健康提示文字区域组件。
+ */
+async function findTodayTipsText(): Promise<Component | undefined> {
+  let comps: Array<Component> = await DRIVER.findComponents(ON.type('Text'));
+  if (comps === null || comps.length === 0) {
+    return undefined;
+  }
+  let result: Component | undefined = undefined;
+  for (let index = 0; index < comps.length; index++) {
+    let item: Component = comps[index]
+    let bound: Rect = await item.getBounds()
+    let height: number = bound.bottom - bound.top
+    if (height >= TODAY_TIPS_TEXT_HEIGHT) {
+      result = item;
+      break;
+    }
+  }
+  return result;
 }
