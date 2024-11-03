@@ -66,14 +66,16 @@ export default function NewsTest() {
       // 是否能跳转至新闻详情？
       await waterFlow.scrollToTop();
       await DRIVER.delayMs(1000);
-      let newsTipsCard: Component = await DRIVER.findComponent(ON.id('NewsTipsCard0'));
+      let newsTipsCards: Array<Component> = await DRIVER.findComponents(ON.type('FlowItem'));
+      expect(newsTipsCards !== null && newsTipsCards.length > 0).assertTrue();
+      let newsTipsCard: Component = newsTipsCards[0];
       expect(newsTipsCard !== null).assertTrue();
       await newsTipsCard.click();
       await DRIVER.delayMs(1000);
       let check: boolean = await checkTitleBarTextIs('新闻');
       expect(check === true).assertTrue();
       // 是否能跳转至浏览器页？
-      let newsLink: Component = await DRIVER.findComponent(ON.id('news_link'));
+      let newsLink: Component = await DRIVER.findComponent(ON.text('原文链接'));
       expect(newsLink !== null).assertTrue();
       await newsLink.click();
       await DRIVER.delayMs(1000);

@@ -136,7 +136,6 @@ export struct HomeTabNewsList {
             newsInfo: newsItem,
             appTextSizePlan: this.appTextSizePlan
           })
-            .id(`NewsTipsCard${index}`)
             .onClick((event: ClickEvent) => NewsDetailPage.go(newsItem))
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)

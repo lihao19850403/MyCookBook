@@ -9,9 +9,9 @@ const TITLE_BAR_TEXT_HEIGHT: number = vp2px(48);
  * 查找标题栏文字组件，一般页面上第一个Text控件就是。
  * @returns 标题栏文字组件。
  */
-export async function findCommonTitleBarText(): Promise<Component | undefined> {
+async function findCommonTitleBarText(): Promise<Component | undefined> {
   let comps: Array<Component> = await DRIVER.findComponents(ON.type('Text'));
-  if (comps === undefined || comps.length === 0) {
+  if (comps === null || comps.length === 0) {
     return undefined;
   }
   let result: Component | undefined = undefined;

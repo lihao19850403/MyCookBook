@@ -152,7 +152,6 @@ export struct NewsDetailCard {
               .fontColor($r('app.color.main_link_text_color'))
               .lineSpacing(LengthMetrics.vp(4))
           }
-          .id('news_link')
           .width('100%')
           .justifyContent(FlexAlign.Start)
           .alignItems(HorizontalAlign.Start)
