@@ -86,7 +86,6 @@ export struct HomeTabMenuRecommend {
         .fontSize(this.appTextSizePlan.homeTabMenuSubTitleTextSize)
         .visibility(this.recommendMenu !== undefined && this.recommendMenu.list !== undefined && this.recommendMenu.list.length > 0 ? Visibility.Visible : Visibility.None)
     }
-    .id('RecommendMenuHeader')
     .width('100%')
     .height(32)
     .backgroundColor($r('app.color.main_bg_green_light_color'))
