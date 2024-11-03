@@ -1,10 +1,11 @@
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect, TestType } from '@ohos/hypium';
 import Want from '@ohos.app.ability.Want';
-import { BUNDLE_NAME, DRIVER, sleep } from './Utils';
-import { ABILITY_NAME } from './Utils';
-import { DELEGATOR } from './Utils';
+import { BUNDLE_NAME, DRIVER, sleep } from './utils/Utils';
+import { ABILITY_NAME } from './utils/Utils';
+import { DELEGATOR } from './utils/Utils';
 import { UIAbility } from '@kit.AbilityKit';
 import { Component, ON } from '@kit.TestKit';
+import { checkTitleBarTextIs } from './utils/TitleBarTextUtils';
 
 /** 首页 - 头条测试套。 */
 export default function NewsTest() {
@@ -51,10 +52,8 @@ export default function NewsTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-      expect(titleBar !== null).assertTrue();
-      let title: string = await titleBar.getText();
-      expect(title).assertEqual('头条');
+      let check: boolean = await checkTitleBarTextIs('头条');
+      expect(check === true).assertTrue();
       finish();
     })
 
@@ -71,19 +70,15 @@ export default function NewsTest() {
       expect(newsTipsCard !== null).assertTrue();
       await newsTipsCard.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-      expect(titleBar !== null).assertTrue();
-      let title: string = await titleBar.getText();
-      expect(title).assertEqual('新闻');
+      let check: boolean = await checkTitleBarTextIs('新闻');
+      expect(check === true).assertTrue();
       // 是否能跳转至浏览器页？
       let newsLink: Component = await DRIVER.findComponent(ON.id('news_link'));
       expect(newsLink !== null).assertTrue();
       await newsLink.click();
       await DRIVER.delayMs(1000);
-      titleBar = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-      expect(titleBar !== null).assertTrue();
-      title = await titleBar.getText();
-      expect(title).assertEqual('浏览器');
+      check = await checkTitleBarTextIs('浏览器');
+      expect(check === true).assertTrue();
       // 返回首页。
       await DRIVER.pressBack();
       await DRIVER.pressBack();

@@ -1,10 +1,11 @@
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect, TestType } from '@ohos/hypium';
 import Want from '@ohos.app.ability.Want';
-import { BUNDLE_NAME, DRIVER, sleep } from './Utils';
-import { ABILITY_NAME } from './Utils';
-import { DELEGATOR } from './Utils';
+import { BUNDLE_NAME, DRIVER, sleep } from './utils/Utils';
+import { ABILITY_NAME } from './utils/Utils';
+import { DELEGATOR } from './utils/Utils';
 import { UIAbility } from '@kit.AbilityKit';
 import { Component, ON } from '@kit.TestKit';
+import { checkTitleBarTextIs } from './utils/TitleBarTextUtils';
 
 /** 首页 - 美食圈测试套。 */
 export default function SocializeTest() {
@@ -51,10 +52,8 @@ export default function SocializeTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-      expect(titleBar !== null).assertTrue();
-      let title: string = await titleBar.getText();
-      expect(title).assertEqual('美食圈');
+      let check: boolean = await checkTitleBarTextIs('美食圈');
+      expect(check === true).assertTrue();
       finish();
     })
 

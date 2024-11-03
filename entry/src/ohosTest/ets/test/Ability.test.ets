@@ -1,8 +1,8 @@
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect, TestType } from '@ohos/hypium';
 import Want from '@ohos.app.ability.Want';
-import { BUNDLE_NAME, sleep } from './Utils';
-import { ABILITY_NAME } from './Utils';
-import { DELEGATOR } from './Utils';
+import { BUNDLE_NAME, sleep } from './utils/Utils';
+import { ABILITY_NAME } from './utils/Utils';
+import { DELEGATOR } from './utils/Utils';
 import { UIAbility } from '@kit.AbilityKit';
 
 /** Ability测试套。 */

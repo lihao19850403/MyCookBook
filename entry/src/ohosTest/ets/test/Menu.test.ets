@@ -1,10 +1,11 @@
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect, TestType } from '@ohos/hypium';
 import Want from '@ohos.app.ability.Want';
-import { BUNDLE_NAME, DRIVER, sleep } from './Utils';
-import { ABILITY_NAME } from './Utils';
-import { DELEGATOR } from './Utils';
+import { BUNDLE_NAME, DRIVER, sleep } from './utils/Utils';
+import { ABILITY_NAME } from './utils/Utils';
+import { DELEGATOR } from './utils/Utils';
 import { UIAbility } from '@kit.AbilityKit';
 import { Component, ON } from '@kit.TestKit';
+import { checkTitleBarTextIncludes, checkTitleBarTextIs, getTitleBarText } from './utils/TitleBarTextUtils';
 
 /** 首页 - 菜谱测试套。 */
 export default function MenuTest() {
@@ -51,10 +52,8 @@ export default function MenuTest() {
       // 是否能切换至对应标签页？
       await tabBarItem.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-      expect(titleBar !== null).assertTrue();
-      let title: string = await titleBar.getText();
-      expect(title).assertEqual('菜谱');
+      let check: boolean = await checkTitleBarTextIs('菜谱');
+      expect(check === true).assertTrue();
       finish();
     })
 
@@ -88,10 +87,8 @@ export default function MenuTest() {
       let lastFavoriteMenuTipsCard: Component = menuTips[menuTips.length - 1];
       await lastFavoriteMenuTipsCard.click();
       await DRIVER.delayMs(1000);
-      let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-      expect(titleBar !== null).assertTrue();
-      let title: string = await titleBar.getText();
-      expect(title.startsWith('家常')).assertTrue();
+      let check: boolean = await checkTitleBarTextIs('家常');
+      expect(check === true).assertTrue();
       // 是否能跳转至图片阅览页？
       let image: Component = await DRIVER.findComponent(ON.id('MenuDetailCard_image'));
       expect(image !== null).assertTrue();
@@ -114,11 +111,10 @@ export default function MenuTest() {
 async function testAddFavoriteMenu(recommendMenuTips: Component) {
   await recommendMenuTips.click();
   await DRIVER.delayMs(1000);
-  let titleBar: Component = await DRIVER.findComponent(ON.description('LHCommonTitleBar_title'));
-  expect(titleBar !== null).assertTrue();
-  let title: string = await titleBar.getText();
-  expect(title.includes('今日推荐')).assertTrue();
-  let recommendMenuCount: number = Number(title.substring(title.indexOf('(') + 1, title.length - 1));
+  let check: boolean = await checkTitleBarTextIncludes('今日推荐');
+  expect(check === true).assertTrue();
+  let title: string | undefined = await getTitleBarText();
+  let recommendMenuCount: number = Number(title!.substring(title!.indexOf('(') + 1, title!.length - 1));
   expect(recommendMenuCount > 0).assertTrue();
   // 是否能将菜谱加入收藏？
   let stars: Array<Component> = await DRIVER.findComponents(ON.id('LHMarkedStar'));

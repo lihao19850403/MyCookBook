@@ -70,7 +70,6 @@ export struct LHCommonTitleBar {
         .height('100%')
         .fontSize(this.centerTitleTextSize)
         .fontWeight(FontWeight.Medium)
-        .accessibilityDescription('LHCommonTitleBar_title')
       Row() {
         Stack({
           alignContent: Alignment.Center
