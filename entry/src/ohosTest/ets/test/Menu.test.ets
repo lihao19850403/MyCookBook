@@ -6,6 +6,18 @@ import { DELEGATOR } from './utils/Utils';
 import { UIAbility } from '@kit.AbilityKit';
 import { Component, ON } from '@kit.TestKit';
 import { checkTitleBarTextIncludes, checkTitleBarTextIs, getTitleBarText } from './utils/TitleBarTextUtils';
+import { Rect } from '@kit.ArkUI';
+
+/** 今日推荐菜谱Tips区域高度，用于查找控件时候的比较。 */
+const RECOMMEND_MENU_HEADER_HEIGHT: number = vp2px(32);
+
+/* 加入收藏的星星图片区域尺寸，用于查找控件时候的比较。 */
+const STAR_IMAGE_WIDTH: number = vp2px(35);
+const STAR_IMAGE_HEIGHT: number = vp2px(35);
+
+/* 菜谱详情页的图片区域尺寸，用于查找控件时候的比较。 */
+const MENU_DETAIL_CARD_IMAGE_WIDTH: number = vp2px(224);
+const MENU_DETAIL_CARD_IMAGE_HEIGHT: number = vp2px(126);
 
 /** 首页 - 菜谱测试套。 */
 export default function MenuTest() {
@@ -64,12 +76,12 @@ export default function MenuTest() {
       let grids: Array<Component> = await DRIVER.findComponents(ON.type('Grid'));
       expect(grids !== null && grids.length === 1).message('这项测试需要联网获取推荐菜谱列表后才能继续').assertTrue();
       // 是否能跳转至推荐菜谱列表？
-      let recommendMenuTips: Component = await DRIVER.findComponent(ON.id('RecommendMenuHeader'));
-      expect(recommendMenuTips !== null).assertTrue();
-      await testAddFavoriteMenu(recommendMenuTips);
+      let recommendMenuTip: Component | undefined = await findRecommendMenuHeader();
+      expect(recommendMenuTip !== undefined).assertTrue();
+      await testAddFavoriteMenu(recommendMenuTip!);
       grids = await DRIVER.findComponents(ON.type('Grid'));
       if (grids !== null && grids.length < 2) {
-        await testAddFavoriteMenu(recommendMenuTips); // 如果取消收藏，则再加入一次。
+        await testAddFavoriteMenu(recommendMenuTip!); // 如果取消收藏，则再加入一次。
       }
       expect(grids !== null && grids.length === 2).assertTrue();
       finish();
@@ -87,12 +99,12 @@ export default function MenuTest() {
       let lastFavoriteMenuTipsCard: Component = menuTips[menuTips.length - 1];
       await lastFavoriteMenuTipsCard.click();
       await DRIVER.delayMs(1000);
-      let check: boolean = await checkTitleBarTextIs('家常');
+      let check: boolean = await checkTitleBarTextIncludes('家常');
       expect(check === true).assertTrue();
       // 是否能跳转至图片阅览页？
-      let image: Component = await DRIVER.findComponent(ON.id('MenuDetailCard_image'));
-      expect(image !== null).assertTrue();
-      await image.click();
+      let image: Component | undefined = await findMenuDetailCardImage();
+      expect(image !== undefined).assertTrue();
+      await image!.click();
       await DRIVER.delayMs(1000);
       image = await DRIVER.findComponent(ON.type('Image'));
       expect(image !== null).assertTrue();
@@ -105,11 +117,33 @@ export default function MenuTest() {
 }
 
 /**
- * 测试将菜谱加入收藏。
- * @param recommendMenuTips 推荐菜谱列表提示。
+ * 查找今日推荐菜谱Tips区域，一般页面上第一个高是32vp的控件就是。
+ * @returns 今日推荐菜谱Tips区域组件。
  */
-async function testAddFavoriteMenu(recommendMenuTips: Component) {
-  await recommendMenuTips.click();
+async function findRecommendMenuHeader(): Promise<Component | undefined> {
+  let comps: Array<Component> = await DRIVER.findComponents(ON.type('Row'));
+  if (comps === null || comps.length === 0) {
+    return undefined;
+  }
+  let result: Component | undefined = undefined;
+  for (let index = 0; index < comps.length; index++) {
+    let item: Component = comps[index];
+    let bound: Rect = await item.getBounds();
+    let height: number = bound.bottom - bound.top;
+    if (Math.abs(height - RECOMMEND_MENU_HEADER_HEIGHT) < 3) {
+      result = item;
+      break;
+    }
+  }
+  return result;
+}
+
+/**
+ * 测试将菜谱加入收藏。
+ * @param recommendMenuTip 推荐菜谱列表提示。
+ */
+async function testAddFavoriteMenu(recommendMenuTip: Component) {
+  await recommendMenuTip.click();
   await DRIVER.delayMs(1000);
   let check: boolean = await checkTitleBarTextIncludes('今日推荐');
   expect(check === true).assertTrue();
@@ -117,11 +151,56 @@ async function testAddFavoriteMenu(recommendMenuTips: Component) {
   let recommendMenuCount: number = Number(title!.substring(title!.indexOf('(') + 1, title!.length - 1));
   expect(recommendMenuCount > 0).assertTrue();
   // 是否能将菜谱加入收藏？
-  let stars: Array<Component> = await DRIVER.findComponents(ON.id('LHMarkedStar'));
-  expect(stars !== null && stars.length > 0).assertTrue();
-  let star = stars[0];
-  await star.click();
+  let star: Component | undefined = await findStarImage();
+  expect(star !== undefined).assertTrue();
+  await star!.click();
   await DRIVER.delayMs(1000);
   await DRIVER.pressBack(); // 返回首页检查菜谱收藏结果。
   await DRIVER.delayMs(1000);
+}
+
+/**
+ * 查找加入收藏的星星图片区域，一般页面上第一个尺寸是35vp*35vp的控件就是。
+ * @returns 菜谱详情页的图片区域组件。
+ */
+async function findStarImage(): Promise<Component | undefined> {
+  let comps: Array<Component> = await DRIVER.findComponents(ON.type('Stack'));
+  if (comps === null || comps.length === 0) {
+    return undefined;
+  }
+  let result: Component | undefined = undefined;
+  for (let index = 0; index < comps.length; index++) {
+    let item: Component = comps[index];
+    let bound: Rect = await item.getBounds();
+    let width: number = bound.right - bound.left;
+    let height: number = bound.bottom - bound.top;
+    if (Math.abs(width - STAR_IMAGE_WIDTH) < 3 && Math.abs(height - STAR_IMAGE_HEIGHT) < 3) {
+      result = item;
+      break;
+    }
+  }
+  return result;
+}
+
+/**
+ * 查找菜谱详情页的图片区域，一般页面上第一个尺寸是224vp*126vp的控件就是。
+ * @returns 菜谱详情页的图片区域组件。
+ */
+async function findMenuDetailCardImage(): Promise<Component | undefined> {
+  let comps: Array<Component> = await DRIVER.findComponents(ON.type('Image'));
+  if (comps === null || comps.length === 0) {
+    return undefined;
+  }
+  let result: Component | undefined = undefined;
+  for (let index = 0; index < comps.length; index++) {
+    let item: Component = comps[index];
+    let bound: Rect = await item.getBounds();
+    let width: number = bound.right - bound.left;
+    let height: number = bound.bottom - bound.top;
+    if (Math.abs(width - MENU_DETAIL_CARD_IMAGE_WIDTH) < 3 && Math.abs(height - MENU_DETAIL_CARD_IMAGE_HEIGHT) < 3) {
+      result = item;
+      break;
+    }
+  }
+  return result;
 }

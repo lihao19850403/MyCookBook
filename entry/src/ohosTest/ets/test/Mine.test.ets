@@ -149,9 +149,9 @@ async function findTodayTipsText(): Promise<Component | undefined> {
   }
   let result: Component | undefined = undefined;
   for (let index = 0; index < comps.length; index++) {
-    let item: Component = comps[index]
-    let bound: Rect = await item.getBounds()
-    let height: number = bound.bottom - bound.top
+    let item: Component = comps[index];
+    let bound: Rect = await item.getBounds();
+    let height: number = bound.bottom - bound.top;
     if (height >= TODAY_TIPS_TEXT_HEIGHT) {
       result = item;
       break;

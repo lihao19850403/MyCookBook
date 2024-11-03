@@ -16,9 +16,9 @@ async function findCommonTitleBarText(): Promise<Component | undefined> {
   }
   let result: Component | undefined = undefined;
   for (let index = 0; index < comps.length; index++) {
-    let item: Component = comps[index]
-    let bound: Rect = await item.getBounds()
-    let height: number = bound.bottom - bound.top
+    let item: Component = comps[index];
+    let bound: Rect = await item.getBounds();
+    let height: number = bound.bottom - bound.top;
     if (Math.abs(height - TITLE_BAR_TEXT_HEIGHT) < 3) {
       result = item;
       break;
