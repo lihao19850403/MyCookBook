@@ -5,11 +5,15 @@ interface DefaultAttributes {
 
   /** 星尺寸。 */
   starSize: number;
+
+  /** 是否允许点击。 */
+  isEnabled: boolean;
 }
 
 /** 默认属性。 */
 const DEFAULT_ATTRIBUTES: DefaultAttributes = {
-  starSize: 35
+  starSize: 35,
+  isEnabled: true
 }
 
 /**
@@ -21,6 +25,9 @@ export struct LHMarkedStar {
 
   /** 是否选中。 */
   @State isSelected?: boolean = false;
+
+  /** 是否允许点击。 */
+  @State isEnabled?: boolean = true;
 
   /** 星尺寸。 */
   private starSize?: number;
@@ -40,6 +47,7 @@ export struct LHMarkedStar {
     .width(firstNotVoid(this.starSize, DEFAULT_ATTRIBUTES.starSize))
     .height(firstNotVoid(this.starSize, DEFAULT_ATTRIBUTES.starSize))
     .padding(`${firstNotVoid(this.starSize, DEFAULT_ATTRIBUTES.starSize)! * 0.2}vp`)
+    .enabled(this.isEnabled)
     .onClick((event: ClickEvent) => {
       this.isSelected = !this.isSelected;
       if (this.onSelectedChanged !== undefined) {

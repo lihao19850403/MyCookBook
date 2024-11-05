@@ -92,12 +92,12 @@ export struct HomeTabMenuFavorite {
           })
         } else {
           Row() {
-            LHMarkedStar({ isSelected: false })
+            LHMarkedStar({ isSelected: false, isEnabled: false })
             Text($r('app.string.no_favorite_tips'))
               .fontSize(this.appTextSizePlan.homeTabMenuGrayTextSize)
               .fontColor($r('app.color.main_unselected_color'))
               .textAlign(TextAlign.Center)
-            LHMarkedStar({ isSelected: true })
+            LHMarkedStar({ isSelected: true, isEnabled: false })
           }
           .width('100%')
           .height(100)

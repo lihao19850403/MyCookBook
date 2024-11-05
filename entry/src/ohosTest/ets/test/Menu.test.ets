@@ -79,6 +79,10 @@ export default function MenuTest() {
       let recommendMenuTip: Component | undefined = await findRecommendMenuHeader();
       expect(recommendMenuTip !== undefined).assertTrue();
       await testAddFavoriteMenu(recommendMenuTip!);
+      let wholeList: Component = await DRIVER.findComponent(ON.type('List'));
+      expect(wholeList !== null).assertTrue();
+      await wholeList.scrollToBottom();
+      await DRIVER.delayMs(1000);
       grids = await DRIVER.findComponents(ON.type('Grid'));
       if (grids !== null && grids.length < 2) {
         await testAddFavoriteMenu(recommendMenuTip!); // 如果取消收藏，则再加入一次。
@@ -175,8 +179,11 @@ async function findStarImage(): Promise<Component | undefined> {
     let width: number = bound.right - bound.left;
     let height: number = bound.bottom - bound.top;
     if (Math.abs(width - STAR_IMAGE_WIDTH) < 3 && Math.abs(height - STAR_IMAGE_HEIGHT) < 3) {
-      result = item;
-      break;
+      let isItemEnabled: boolean = await item.isEnabled();
+      if (isItemEnabled) {
+        result = item;
+        break;
+      }
     }
   }
   return result;
