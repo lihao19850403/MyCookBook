@@ -1,11 +1,9 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { display, window } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { GlobalContext } from '../utils/common/GlobalContext';
 import { getScreenUIType, observeScreenUIChange, ScreenUIType } from '../utils/common/ScreenUIAdapter';
-import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW,
-  GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX,
-  GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX } from '../utils/common/GlobalConfig';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
 import { setScreenOrientation } from '../utils/common/ScreenOrientationUtil';
 
 export default class EntryAbility extends UIAbility {
@@ -34,10 +32,6 @@ export default class EntryAbility extends UIAbility {
       // 记录window对象。
       let mainWindow: window.Window = windowStage.getMainWindowSync();
       GlobalConfig.set(GLOBAL_CONFIG_KEY_WINDOW, mainWindow);
-      // 记录屏幕尺寸。
-      let mainDisplay: display.Display = display.getDefaultDisplaySync();
-      GlobalConfig.set(GLOBAL_CONFIG_KEY_WINDOW_WIDTH_PX, mainDisplay.width);
-      GlobalConfig.set(GLOBAL_CONFIG_KEY_WINDOW_HEIGHT_PX, mainDisplay.height);
       // 设置屏幕方向。
       switch (getScreenUIType()) {
         case ScreenUIType.PAD: setScreenOrientation(window.Orientation.LANDSCAPE); break;
