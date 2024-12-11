@@ -106,10 +106,10 @@ export struct HomeTabNewsList {
         data: this.todayNews,
         scroller: this.scroller,
         refreshConfigurator: this.refreshConfigurator,
-        customList: this.NewsList.bind(this),
-        onAnimPullUp: this.onAnimPullUp.bind(this),
-        onAnimLoading: this.onAnimLoading.bind(this),
-        customLoad: this.LoadMore.bind(this),
+        customList: (): void => this.NewsList(),
+        onAnimPullUp: (value?: number, width?: number, height?: number): void => this.onAnimPullUp(value, width, height),
+        onAnimLoading:  (value?: number, width?: number, height?: number): void => this.onAnimLoading(value, width, height),
+        customLoad: (): void => this.LoadMore(),
         onLoadMore: () => new Promise<string>((resolve, reject) => {
           this.apiLoadTodayNews()
             .then((isReachEnd: boolean) => {

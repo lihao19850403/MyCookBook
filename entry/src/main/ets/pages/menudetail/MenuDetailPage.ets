@@ -53,7 +53,7 @@ struct MenuDetailPageComponent {
           centerTitleText: this.menuItem !== undefined && this.menuItem.cp_name !== undefined && this.menuItem.cp_name.length > 0 ? this.menuItem.cp_name : $r('app.string.home_tab_menu'),
           centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
           leftAction: LHCommonTitleBarLeftNavBack,
-          rightAction: this.FavoriteStar.bind(this)
+          rightAction: (): void => this.FavoriteStar()
         })
         Scroll() {
           MenuDetailCard({

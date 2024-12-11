@@ -50,7 +50,7 @@ struct LHWebBrowserComponent {
         LHWebView({
           src: this.url,
           mobileMode: true,
-          onControllerAttachedCallback: this.onControllerAttachedCallback.bind(this),
+          onControllerAttachedCallback: (webViewController: webview.WebviewController): void => this.onControllerAttachedCallback(webViewController)
         })
           .layoutWeight(1)
       }

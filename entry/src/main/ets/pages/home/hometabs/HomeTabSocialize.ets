@@ -5,7 +5,6 @@ import { webview } from '@kit.ArkWeb';
 import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_BACK_KEY_EVENT } from '../HomeMain';
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
-import { AppSettings } from '../../../utils/AppSettings';
 import { LHWebBrowser, URL_PARAMS } from '../../common/webbrowser/LHWebBrowser';
 
 /** 网页资源链接。 */
@@ -59,12 +58,12 @@ export struct HomeTabSocialize {
       LHCommonTitleBar({
         centerTitleText: $r('app.string.home_tab_socialize'),
         centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
-        rightAction: this.Reload.bind(this)
+        rightAction: (): void => this.Reload()
       })
       LHWebView({
         src: URL_SOCIALIZE,
         mobileMode: true,
-        onControllerAttachedCallback: this.onControllerAttachedCallback.bind(this),
+        onControllerAttachedCallback: (webViewController: webview.WebviewController): void => this.onControllerAttachedCallback(webViewController),
         onLoadInterceptCallback: this.onLoadInterceptCallback,
       })
         .layoutWeight(1)
