@@ -1,7 +1,10 @@
 import { LHAppSettingsTextSizePlans } from '../../models/common/LHAppSettingsTextSizePlans';
 import { RouterUtils } from '../../utils/common/RouterUtils';
-import { firstNotVoid } from '../../utils/common/Utils';
+import { firstNotVoid, res2string } from '../../utils/common/Utils';
 import { LHDivider } from './LHDivider';
+import emitter from '@ohos.events.emitter';
+import { getScreenWidthPx, SCREEN_UI_CHANGE_EVENT } from '../../utils/common/ScreenUIAdapter';
+import MeasureText from '@ohos.measure';
 
 /** 默认属性。 */
 interface DefaultAttributes {
@@ -59,17 +62,50 @@ export struct LHCommonTitleBar {
   /** 右侧区域。 */
   @BuilderParam private rightAction?: () => void;
 
+  /** 左侧区域宽度。 */
+  private leftZoneWidth: number = 0;
+
+  /** 右侧区域宽度。 */
+  private rightZoneWidth: number = 0;
+
+  /** 中间标题内容左右边距描述。 */
+  @State centerTitleMargin?: Margin = undefined;
+
+  /** 中间标题是否使用跑马灯。 */
+  @State useMarquee: boolean = false;
+
   /** 是否需要底部分割线。 */
   private needBottomDivider?: boolean;
+
+  aboutToAppear(): void {
+    emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
+      if (dataWrap.data) {
+        this.calcUseMarquee();
+      }
+    })
+  }
 
   build() {
     Stack({
       alignContent: Alignment.Bottom
     }) {
-      Text(firstNotVoid(this.centerTitleText, ''))
-        .height('100%')
-        .fontSize(this.centerTitleTextSize)
-        .fontWeight(FontWeight.Medium)
+      if (this.useMarquee) {
+        Marquee({
+          start: true,
+          src: this.centerTitleText !== undefined ? res2string(this.centerTitleText) : ''
+        })
+          .height('100%')
+          .margin(this.centerTitleMargin)
+          .fontSize(this.centerTitleTextSize)
+          .fontWeight(FontWeight.Medium)
+      } else {
+        Text(firstNotVoid(this.centerTitleText, ''))
+          .height('100%')
+          .margin(this.centerTitleMargin)
+          .fontSize(this.centerTitleTextSize)
+          .fontWeight(FontWeight.Medium)
+          .maxLines(1)
+      }
       Row() {
         Stack({
           alignContent: Alignment.Center
@@ -79,6 +115,11 @@ export struct LHCommonTitleBar {
           }
         }
         .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
+        .onSizeChange((_, newSize: SizeOptions) => {
+          this.leftZoneWidth = newSize.width as number;
+          this.calcCenterTitleMargin();
+          this.calcUseMarquee();
+        })
         Stack({
           alignContent: Alignment.Center
         }) {
@@ -87,6 +128,11 @@ export struct LHCommonTitleBar {
           }
         }
         .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
+        .onSizeChange((_, newSize: SizeOptions) => {
+          this.rightZoneWidth = newSize.width as number;
+          this.calcCenterTitleMargin();
+          this.calcUseMarquee();
+        })
       }
       .width('100%')
       .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
@@ -100,5 +146,37 @@ export struct LHCommonTitleBar {
     .width('100%')
     .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
     .backgroundColor(firstNotVoid(this.titleBarBg, DEFAULT_ATTRIBUTES.titleBarBg))
+  }
+
+  /**
+   * 计算中间内容的宽。
+   * @returns 中间内容的宽。
+   */
+  private calcCenterTitleTextWidth(): number {
+    let textSizeOptionPX: SizeOptions = MeasureText.measureTextSize({
+      textContent: firstNotVoid(this.centerTitleText, ''),
+      fontSize: this.centerTitleTextSize,
+      fontWeight: FontWeight.Medium
+    });
+    return px2vp(textSizeOptionPX.width as number);
+  }
+
+  /** 计算中间内容区域的左右边距。 */
+  private calcCenterTitleMargin() {
+    if (px2vp(getScreenWidthPx()) - Math.max(this.leftZoneWidth, this.rightZoneWidth) * 2 > this.calcCenterTitleTextWidth()) {
+      this.centerTitleMargin = undefined;
+    } else {
+      this.centerTitleMargin = {
+        left: this.leftZoneWidth,
+        right: this.rightZoneWidth
+      }
+    }
+  }
+
+  /** 决定中间内容区域是否使用跑马灯。 */
+  private calcUseMarquee() {
+    let centerTitleTextWidth = this.calcCenterTitleTextWidth();
+    let centerTitleWidth = px2vp(getScreenWidthPx()) - this.leftZoneWidth - this.rightZoneWidth;
+    this.useMarquee = centerTitleTextWidth > centerTitleWidth;
   }
 }

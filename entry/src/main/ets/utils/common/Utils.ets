@@ -45,7 +45,10 @@ export function firstNotVoidWithCustomRules<T>(customRules?: (object: T) => bool
  * @param res 待转换的资源。
  * @returns 转换结果。
  */
-export function res2string(res: Resource): string {
+export function res2string(res: ResourceStr): string {
+  if (typeof res === 'string') {
+    return res
+  }
   let context = GlobalContext.getContext();
   if (context === undefined) {
     return '';
