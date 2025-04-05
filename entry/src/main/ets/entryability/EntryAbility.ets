@@ -5,17 +5,23 @@ import { GlobalContext } from '../utils/common/GlobalContext';
 import { getScreenUIType, observeScreenUIChange, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
 import { setScreenOrientation } from '../utils/common/ScreenOrientationUtil';
+import { UncaughtExceptionsHandler } from '../utils/common/errorhandler/UncaughtExceptionsHandler';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
 
+    // 启动异常捕获。
+    UncaughtExceptionsHandler.start();
     // 初始化全局上下文。
     GlobalContext.init(this.context);
   }
 
   onDestroy(): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+
+    // 停止异常捕获。
+    UncaughtExceptionsHandler.stop();
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
