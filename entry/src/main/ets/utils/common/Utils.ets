@@ -1,4 +1,5 @@
 import { GlobalContext } from './GlobalContext';
+import { bundleManager } from '@kit.AbilityKit';
 
 /**
  * 通用工具类。
@@ -58,4 +59,14 @@ export function res2string(res: ResourceStr): string {
   } catch (error) {
   }
   return '';
+}
+
+/**
+ * 获取应用自身信息。
+ * @returns 应用自身信息。
+ */
+export function getAppInfo(): bundleManager.BundleInfo {
+  const bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION;
+  const bundleInfo: bundleManager.BundleInfo = bundleManager.getBundleInfoForSelfSync(bundleFlags);
+  return bundleInfo;
 }
