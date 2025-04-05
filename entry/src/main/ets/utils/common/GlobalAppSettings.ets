@@ -11,6 +11,9 @@ export const GLOBAL_APP_SETTINGS_CHANGED_EVENT: string = 'global_app_settings_ch
 /** 参数：应用配置方案变化类型(哪个配置项发生了变化)。 */
 export const GLOBAL_APP_SETTINGS_EVENT_TYPE: string = 'GLOBAL_APP_SETTINGS_EVENT_TYPE';
 
+/** 配置项：应用首页设置。 */
+export const GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX: string = 'global_app_settings_key_first_page_index';
+
 /** 配置项：文字大小设置。 */
 export const GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: string = 'global_app_settings_key_text_size_plan';
 

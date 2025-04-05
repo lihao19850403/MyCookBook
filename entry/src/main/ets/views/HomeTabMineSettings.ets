@@ -1,10 +1,9 @@
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
-import { promptAction } from '@kit.ArkUI';
-import { res2string } from '../utils/common/Utils';
 import { AppSettings } from '../utils/AppSettings';
 import { AppSettingsTextSizePlans } from '../models/AppSettingsTextSizePlan';
 import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../utils/common/GlobalAppSettings';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
@@ -26,13 +25,13 @@ export struct HomeTabMineSettings {
   @Prop isSplitScreen: boolean;
 
   /** 首页序号。 */
-  @State firstPage: number = 0;
+  @State firstPageIndex: number = 0;
 
   /** 应用字号方案ID。 */
   @State textSizePlanID: number = AppSettingsTextSizePlans.SMALL.id;
 
   aboutToAppear(): void {
-    this.firstPage = AppSettings.firstPageIndex();
+    this.firstPageIndex = AppSettings.firstPageIndex();
     this.textSizePlanID = AppSettings.textSizePlan().id;
     this.isSplitScreen = AppSettings.isSplitScreen();
   }
@@ -43,7 +42,7 @@ export struct HomeTabMineSettings {
     }) {
       ListItem() {
         Grid() {
-          GridItem() { this.FirstPage() }.height(84)
+          GridItem() { this.FirstPageIndex() }.height(84)
           GridItem() { this.TextSize() }.height(84)
           GridItem() { this.SplitScreen() }.height(84)
         }
@@ -71,13 +70,13 @@ export struct HomeTabMineSettings {
   }
 
   @Builder
-  private FirstPage() {
+  private FirstPageIndex() {
     RelativeContainer() {
       Stack({
         alignContent: Alignment.Center
       }) {
-        Image(this.firstPage === 0 ? $r('app.media.ic_home_tab_top_news_selected') :
-          this.firstPage === 1 ? $r('app.media.ic_home_tab_menu_selected') :
+        Image(this.firstPageIndex === 0 ? $r('app.media.ic_home_tab_top_news_selected') :
+          this.firstPageIndex === 1 ? $r('app.media.ic_home_tab_menu_selected') :
           $r('app.media.ic_home_tab_socialize_selected'))
           .width(32)
           .height(32)
@@ -99,8 +98,8 @@ export struct HomeTabMineSettings {
           align: HorizontalAlign.Center
         }
       })
-      Text(this.firstPage === 0 ? $r('app.string.home_tab_top_news') :
-        this.firstPage === 1 ? $r('app.string.home_tab_menu') :
+      Text(this.firstPageIndex === 0 ? $r('app.string.home_tab_top_news') :
+        this.firstPageIndex === 1 ? $r('app.string.home_tab_menu') :
         $r('app.string.home_tab_socialize'))
         .width('100%')
         .fontSize(this.appTextSizePlan.homeTabMineSettingsTipsTextSize)
@@ -129,16 +128,13 @@ export struct HomeTabMineSettings {
       color: $r('app.color.main_selected_color')
     })
     .onClick((event: ClickEvent) => {
-      this.firstPage = (this.firstPage + 1) % 3;
-      AppSettings.setFirstPageIndex(this.firstPage);
-      let newFirstPageName: string = res2string(
-        this.firstPage === 0 ? $r('app.string.home_tab_top_news') :
-          this.firstPage === 1 ? $r('app.string.home_tab_menu') :
-          $r('app.string.home_tab_socialize')
-      );
-      promptAction.showToast({
-        message: `${res2string($r('app.string.home_tab_mine_settings_first_page_toast'))}${newFirstPageName}`
-      });
+      this.firstPageIndex = (this.firstPageIndex + 1) % 3;
+      AppSettings.setFirstPageIndex(this.firstPageIndex);
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        GLOBAL_APP_SETTINGS_EVENT_TYPE: GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX
+      };
+      emitter.emit(GLOBAL_APP_SETTINGS_CHANGED_EVENT, dataWrap);
     })
   }
 

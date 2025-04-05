@@ -137,8 +137,8 @@
       "value": "应用首页"
     },
     {
-      "name": "home_tab_mine_settings_first_page_toast",
-      "value": "下次启动应用将首先显示："
+      "name": "home_tab_mine_settings_first_page_pop",
+      "value": "下次启动应用将首先显示此页"
     },
     {
       "name": "home_tab_mine_settings_text_size_tips",

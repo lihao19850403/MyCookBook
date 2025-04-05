@@ -4,6 +4,7 @@ import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
@@ -33,6 +34,9 @@ struct HomeMain {
 
   /** 屏幕状态。 */
   @State screenUIType: ScreenUIType = getScreenUIType();
+
+  /** 应用启动后显示的第一个Tab页，当在设置页进行更改后会被赋值，触发Pop提示。 */
+  @State firstPageIndex?: number = undefined;
 
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
@@ -65,6 +69,7 @@ struct HomeMain {
         switch (eventType) {
           case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
           case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
+          case GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX: this.firstPageIndex = AppSettings.firstPageIndex(); break;
           default: break;
         }
       }
@@ -98,18 +103,21 @@ struct HomeMain {
       }) {
         HomeTabNews({
           selectedIndex: this.curSelectedTabIndex,
+          firstPageIndex: this.firstPageIndex,
           screenUIType: this.screenUIType,
           appTextSizePlan: this.appTextSizePlan,
           isSplitScreen: this.isSplitScreen
         })
         HomeTabMenu({
           selectedIndex: this.curSelectedTabIndex,
+          firstPageIndex: this.firstPageIndex,
           screenUIType: this.screenUIType,
           appTextSizePlan: this.appTextSizePlan,
           isSplitScreen: this.isSplitScreen
         })
         HomeTabSocialize({
           selectedIndex: this.curSelectedTabIndex,
+          firstPageIndex: this.firstPageIndex,
           screenUIType: this.screenUIType,
           appTextSizePlan: this.appTextSizePlan,
           isSplitScreen: this.isSplitScreen
