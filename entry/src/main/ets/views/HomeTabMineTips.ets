@@ -1,12 +1,11 @@
-import { GlobalContext } from '../utils/common/GlobalContext';
 import { CallResult, HttpUtils } from '../utils/common/HttpUtils';
 import { KeysUtils } from '../utils/common/KeysUtils';
 import { getScreenWidthPx, ScreenUIType } from '../utils/common/ScreenUIAdapter';
-import { util } from '@kit.ArkTS';
 import { TodayTipsModel, TodayTipsResult } from '../models/TodayTipsModel';
 import { KVUtils } from '../utils/common/KVUtils';
 import { LengthMetrics } from '@ohos.arkui.node';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
+import { readRawFileSync } from '../utils/common/Utils';
 
 /** 每日养生请求key。 */
 const KEY_HOME_TAB_MINE_TIPS_REQUEST: string = 'home_tab_mine_tips_request';
@@ -104,9 +103,9 @@ export struct HomeTabMineTips {
   /**
    * 获取今日养生提示。
    */
-  private async apiLoadTodayTips() {
-    let apiPath: string = await KeysUtils.getServerUrlForID(KEY_HOME_TAB_MINE_TIPS_REQUEST);
-    let reqKey: string = await KeysUtils.getKeyForID(KEY_HOME_TAB_MINE_TIPS_REQUEST);
+  private apiLoadTodayTips() {
+    let apiPath: string = KeysUtils.getServerUrlForID(KEY_HOME_TAB_MINE_TIPS_REQUEST);
+    let reqKey: string = KeysUtils.getKeyForID(KEY_HOME_TAB_MINE_TIPS_REQUEST);
     return HttpUtils.get<TodayTipsModel>(`${apiPath}?key=${reqKey}`)
       .then((response: CallResult<TodayTipsModel>) => {
         if (response !== undefined &&
@@ -130,15 +129,8 @@ export struct HomeTabMineTips {
   /**
    * 准备模拟数据。
    */
-  private async prepareMockTodayTips() {
-    let context = GlobalContext.getContext();
-    if (context === undefined) {
-      return;
-    }
-    let rawFile = await context.resourceManager.getRawFileContent(FILE_NAME_MOCK_DATA);
-    let textDecoder = util.TextDecoder.create('UTF-8', { ignoreBOM: true });
-    let fileContent: string = textDecoder.decodeToString(rawFile, { stream: false });
-    let todayTipsObjectArray: TodayTipsResult[] = JSON.parse(fileContent) as TodayTipsResult[];
+  private prepareMockTodayTips() {
+    let todayTipsObjectArray: TodayTipsResult[] = readRawFileSync<TodayTipsResult[]>(FILE_NAME_MOCK_DATA);
     let index: number = Math.floor(Math.random() * todayTipsObjectArray.length);
     this.todayTips = todayTipsObjectArray[index].content;
   }

@@ -1,15 +1,14 @@
 import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import { TodayNewsDataSource } from '../models/TodayNewsDataSource';
 import { TodayNewsItem, TodayNewsModel } from '../models/TodayNewsModel';
-import { GlobalContext } from '../utils/common/GlobalContext';
 import { CallResult, HttpUtils } from '../utils/common/HttpUtils';
 import { KeysUtils } from '../utils/common/KeysUtils';
 import { KVUtils } from '../utils/common/KVUtils';
 import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
-import { util } from '@kit.ArkTS';
 import { NewsTipsCard } from './NewsTipsCard';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { NewsDetailPage } from '../pages/newsdetail/NewsDetailPage';
+import { readRawFileSync } from '../utils/common/Utils';
 
 /** 今日新闻请求key。 */
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
@@ -202,9 +201,9 @@ export struct HomeTabNewsList {
   /**
    * 获取今日新闻。
    */
-  private async apiLoadTodayNews(): Promise<boolean> {
-    let apiPath: string = await KeysUtils.getServerUrlForID(KEY_HOME_TAB_TODAY_NEWS_REQUEST);
-    let reqKey: string = await KeysUtils.getKeyForID(KEY_HOME_TAB_TODAY_NEWS_REQUEST);
+  private apiLoadTodayNews(): Promise<boolean> {
+    let apiPath: string = KeysUtils.getServerUrlForID(KEY_HOME_TAB_TODAY_NEWS_REQUEST);
+    let reqKey: string = KeysUtils.getKeyForID(KEY_HOME_TAB_TODAY_NEWS_REQUEST);
     let page: number = this.todayNewsDataSource.totalCount() === 0 ? 1 :
       this.todayNewsDataSource.totalCount() < API_PARAM_NEWS_PAGE_SIZE ? 2 :
         Math.ceil(this.todayNewsDataSource.totalCount() / API_PARAM_NEWS_PAGE_SIZE) + 1;
@@ -247,15 +246,8 @@ export struct HomeTabNewsList {
   /**
    * 准备模拟数据。
    */
-  private async prepareMockRecommendMenu() {
-    let context = GlobalContext.getContext();
-    if (context === undefined) {
-      return;
-    }
-    let rawFile = await context.resourceManager.getRawFileContent(FILE_NAME_MOCK_DATA);
-    let textDecoder = util.TextDecoder.create('UTF-8', { ignoreBOM: true });
-    let fileContent: string = textDecoder.decodeToString(rawFile, { stream: false });
-    let todayNewsArray = JSON.parse(fileContent) as TodayNewsItem[];
+  private prepareMockRecommendMenu() {
+    let todayNewsArray: TodayNewsItem[] = readRawFileSync<TodayNewsItem[]>(FILE_NAME_MOCK_DATA);
     this.todayNewsDataSource.deleteAllNews();
     this.todayNewsDataSource.appendNewsArray(todayNewsArray);
   }

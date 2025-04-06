@@ -1,9 +1,7 @@
 import { RecommendMenuItem, RecommendMenuModel, RecommendMenuResult } from '../../../models/RecommendMenuModel';
-import { GlobalContext } from '../../../utils/common/GlobalContext';
 import { CallResult, HttpUtils } from '../../../utils/common/HttpUtils';
 import { KeysUtils } from '../../../utils/common/KeysUtils';
 import { KVUtils } from '../../../utils/common/KVUtils';
-import { util } from '@kit.ArkTS';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { HomeTabMenuRecommend } from '../../../views/HomeTabMenuRecommend';
@@ -16,6 +14,7 @@ import {
 import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 import { HomeMainTabBarBuilder } from '../../../views/HomeMainTabBarBuilder';
+import { readRawFileSync } from '../../../utils/common/Utils';
 
 /**
  * 事件：锚定至“我的收藏”。
@@ -161,9 +160,9 @@ export struct HomeTabMenu {
   /**
    * 获取今日推荐菜谱。
    */
-  private async apiLoadRecommendMenus() {
-    let apiPath: string = await KeysUtils.getServerUrlForID(KEY_HOME_TAB_MENU_REQUEST);
-    let reqKey: string = await KeysUtils.getKeyForID(KEY_HOME_TAB_MENU_REQUEST);
+  private apiLoadRecommendMenus() {
+    let apiPath: string = KeysUtils.getServerUrlForID(KEY_HOME_TAB_MENU_REQUEST);
+    let reqKey: string = KeysUtils.getKeyForID(KEY_HOME_TAB_MENU_REQUEST);
     let page: number = Math.floor(Math.random() * 10) % 2 + 1;
     let num: number = Math.floor(Math.random() * 10) + 3;
     HttpUtils.get<RecommendMenuModel>(`${apiPath}?key=${reqKey}&word=家常&page=${page}&num=${num}`)
@@ -172,28 +171,14 @@ export struct HomeTabMenu {
           KVUtils.setKV(FILE_NAME_RECOMMEND_MENU, this.today, JSON.stringify(response.data.result));
           this.recommendMenu = response.data.result;
         } else {
-          this.prepareMockRecommendMenu();
+          this.recommendMenu = readRawFileSync<RecommendMenuResult>(FILE_NAME_MOCK_DATA);
         }
         this.isLoadingRecommendMenu = false;
       })
       .catch((error: CallResult<RecommendMenuModel>) => {
-        this.prepareMockRecommendMenu();
+        this.recommendMenu = readRawFileSync<RecommendMenuResult>(FILE_NAME_MOCK_DATA);
         this.isLoadingRecommendMenu = false;
       })
-  }
-
-  /**
-   * 准备模拟数据。
-   */
-  private async prepareMockRecommendMenu() {
-    let context = GlobalContext.getContext();
-    if (context === undefined) {
-      return;
-    }
-    let rawFile = await context.resourceManager.getRawFileContent(FILE_NAME_MOCK_DATA);
-    let textDecoder = util.TextDecoder.create('UTF-8', { ignoreBOM: true });
-    let fileContent: string = textDecoder.decodeToString(rawFile, { stream: false });
-    this.recommendMenu = JSON.parse(fileContent) as RecommendMenuResult;
   }
 
   /**
