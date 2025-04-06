@@ -1,5 +1,6 @@
 import { GlobalContext } from './GlobalContext';
 import { bundleManager } from '@kit.AbilityKit';
+import { util } from '@kit.ArkTS';
 
 /**
  * 通用工具类。
@@ -70,3 +71,24 @@ export function getAppInfo(): bundleManager.BundleInfo {
   const bundleInfo: bundleManager.BundleInfo = bundleManager.getBundleInfoForSelfSync(bundleFlags);
   return bundleInfo;
 }
+
+/**
+ * 获取rawfile文件夹中的文件内容，并解析成需要的格式。
+ * @param fileName 文件名，含扩展名。
+ * @returns 指定的对象，解析失败会返回一个空对象。
+ */
+export function readRawFileSync<T>(fileName: string): T {
+  let context = GlobalContext.getContext();
+  if (context === undefined) {
+    return BLANK_OBJECT as T;
+  }
+  try {
+    let rawFile = context.resourceManager.getRawFileContentSync(fileName);
+    let textDecoder = util.TextDecoder.create('UTF-8', { ignoreBOM: true });
+    let fileContent: string = textDecoder.decodeToString(rawFile, { stream: false });
+    return JSON.parse(fileContent) as T;
+  } catch (error) {
+  }
+  return BLANK_OBJECT as T;
+}
+

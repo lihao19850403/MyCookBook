@@ -1,3 +1,4 @@
+import { AppSettings } from "../utils/AppSettings"
 import { res2string } from "../utils/common/Utils"
 
 /**
@@ -31,6 +32,9 @@ export function HomeMainTabBarBuilder(info: HomeMainTabBarInfo) {
   .alignItems(HorizontalAlign.Center)
   .bindPopup(info.showFirstPagePopTips, {
     message: res2string($r('app.string.home_tab_mine_settings_first_page_pop')),
+    messageOptions: {
+      font: { size: AppSettings.textSizePlan().homeTabMinePopupTipsTextSize }
+    },
     backgroundBlurStyle: BlurStyle.NONE,
     onStateChange: (event) => {
       if (event.isVisible === true && info.onPopTipsShowed !== undefined) {

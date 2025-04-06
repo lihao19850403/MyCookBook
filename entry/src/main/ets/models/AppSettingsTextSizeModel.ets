@@ -86,4 +86,7 @@ export interface AppSettingsTextSizePlanModel extends LHAppSettingsTextSizePlanM
 
   /** 我的页面设置项提示文字字号。 */
   homeTabMineSettingsTipsTextSize: number;
+
+  /** 我的页面设置气泡弹出框文字提示字号。 */
+  homeTabMinePopupTipsTextSize: number;
 }
