@@ -272,7 +272,9 @@ export struct HomeTabNewsList {
       return;
     }
     if (value < 0.75) {
-      if (height === undefined || height < loadImgHeight) {
+      if (height === undefined || height < loadImgHeight * 0.1) {
+        this.loadingMoreStatus = LOAD_MORE_STATUS.NONE;
+      } else if (height < loadImgHeight) {
         this.loadingMoreStatus = LOAD_MORE_STATUS.TIPS_STEP_1;
       } else {
         this.loadingMoreStatus = LOAD_MORE_STATUS.TIPS_STEP_2;
