@@ -35,16 +35,20 @@ export function getScreenUIType(): ScreenUIType {
   if (deviceType === 'tablet' || deviceType === 'tv' || deviceType === 'car' || deviceType === 'smartVision') {
     return ScreenUIType.PAD;
   }
+  let screenWidthPx = getScreenWidthPx();
+  let screenHeightPx = getScreenHeightPx();
+  let bigEdgeLength = Math.max(screenWidthPx, screenHeightPx);
+  let smallEdgeLength = Math.min(screenWidthPx, screenHeightPx);
+  let rate = bigEdgeLength / smallEdgeLength;
   if (canIUse('SystemCapability.Window.SessionManager')) {
     if (display.isFoldable() && display.getFoldStatus() !== display.FoldStatus.FOLD_STATUS_FOLDED) {
-      return ScreenUIType.FOLD_OPENED;
+      if (rate > 1 && rate < 1.2) {
+        return ScreenUIType.FOLD_OPENED;
+      } else if (screenWidthPx > screenHeightPx) {
+        return ScreenUIType.PAD;
+      }
     }
   } else {
-    let screenWidthPx = getScreenWidthPx();
-    let screenHeightPx = getScreenHeightPx();
-    let bigEdgeLength = Math.max(screenWidthPx, screenHeightPx);
-    let smallEdgeLength = Math.min(screenWidthPx, screenHeightPx);
-    let rate = bigEdgeLength / smallEdgeLength;
     if (rate > 1 && rate < 1.2) {
       return ScreenUIType.FOLD_OPENED;
     } else if (screenWidthPx > screenHeightPx) {
