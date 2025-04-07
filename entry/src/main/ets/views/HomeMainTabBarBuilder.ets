@@ -1,4 +1,5 @@
 import { AppSettings } from "../utils/AppSettings"
+import { getScreenUIType, ScreenUIType } from "../utils/common/ScreenUIAdapter"
 import { res2string } from "../utils/common/Utils"
 
 /**
@@ -35,7 +36,10 @@ export function HomeMainTabBarBuilder(info: HomeMainTabBarInfo) {
     messageOptions: {
       font: { size: AppSettings.textSizePlan().homeTabMinePopupTipsTextSize }
     },
+    placement: getScreenUIType() === ScreenUIType.PAD ? Placement.Right : undefined,
     backgroundBlurStyle: BlurStyle.NONE,
+    mask: { color: '#33000000' },
+    popupColor: Color.White,
     onStateChange: (event) => {
       if (event.isVisible === true && info.onPopTipsShowed !== undefined) {
         setTimeout(() => info.onPopTipsShowed?.(), 2000);
