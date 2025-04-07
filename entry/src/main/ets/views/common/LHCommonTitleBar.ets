@@ -80,6 +80,7 @@ export struct LHCommonTitleBar {
   aboutToAppear(): void {
     emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
       if (dataWrap.data) {
+        this.calcCenterTitleMargin();
         this.calcUseMarquee();
       }
     })
