@@ -3,7 +3,7 @@ import { RouterUtils } from '../../utils/common/RouterUtils';
 import { firstNotVoid, res2string } from '../../utils/common/Utils';
 import { LHDivider } from './LHDivider';
 import emitter from '@ohos.events.emitter';
-import { getScreenWidthPx, SCREEN_UI_CHANGE_EVENT } from '../../utils/common/ScreenUIAdapter';
+import { SCREEN_UI_CHANGE_EVENT } from '../../utils/common/ScreenUIAdapter';
 import MeasureText from '@ohos.measure';
 
 /** 默认属性。 */
@@ -61,6 +61,9 @@ export struct LHCommonTitleBar {
 
   /** 右侧区域。 */
   @BuilderParam private rightAction?: () => void;
+
+  /** 标题栏整体宽度。 */
+  private titleBarWidth: number = 0;
 
   /** 左侧区域宽度。 */
   private leftZoneWidth: number = 0;
@@ -147,6 +150,11 @@ export struct LHCommonTitleBar {
     .width('100%')
     .height(firstNotVoid(this.titleBarHeight, DEFAULT_ATTRIBUTES.titleBarHeight))
     .backgroundColor(firstNotVoid(this.titleBarBg, DEFAULT_ATTRIBUTES.titleBarBg))
+    .onSizeChange((_, newSize: SizeOptions) => {
+      this.titleBarWidth = newSize.width as number;
+      this.calcCenterTitleMargin();
+      this.calcUseMarquee();
+    })
   }
 
   /**
@@ -164,7 +172,7 @@ export struct LHCommonTitleBar {
 
   /** 计算中间内容区域的左右边距。 */
   private calcCenterTitleMargin() {
-    if (px2vp(getScreenWidthPx()) - Math.max(this.leftZoneWidth, this.rightZoneWidth) * 2 > this.calcCenterTitleTextWidth()) {
+    if (this.titleBarWidth - Math.max(this.leftZoneWidth, this.rightZoneWidth) * 2 > this.calcCenterTitleTextWidth()) {
       this.centerTitleMargin = undefined;
     } else {
       this.centerTitleMargin = {
@@ -177,7 +185,7 @@ export struct LHCommonTitleBar {
   /** 决定中间内容区域是否使用跑马灯。 */
   private calcUseMarquee() {
     let centerTitleTextWidth = this.calcCenterTitleTextWidth();
-    let centerTitleWidth = px2vp(getScreenWidthPx()) - this.leftZoneWidth - this.rightZoneWidth;
+    let centerTitleWidth = this.titleBarWidth - this.leftZoneWidth - this.rightZoneWidth;
     this.useMarquee = centerTitleTextWidth > centerTitleWidth;
   }
 }
