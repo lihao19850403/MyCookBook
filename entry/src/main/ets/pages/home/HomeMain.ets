@@ -10,7 +10,7 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
 import { GlobalConfig } from '../../utils/common/GlobalConfig';
 import { RouterUtils, ROUTER_CONFIG_KEY_ROUTER_STACK } from '../../utils/common/RouterUtils';
 import {
-  getScreenUIType,
+  getScreenUIType, getScreenWidthPx,
   ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
 import { HomeTabMenu } from './hometabs/HomeTabMenu';
 import { HomeTabMine } from './hometabs/HomeTabMine';
@@ -141,11 +141,39 @@ struct HomeMain {
     .hideTitleBar(true)
     .hideToolBar(true)
     .hideBackButton(true)
+    .background(this.NavEmptyView)
     .navBarWidth(!this.isSplitScreen ? '100%' :
       this.screenUIType === ScreenUIType.PAD ? '35%' :
       this.screenUIType === ScreenUIType.FOLD_OPENED ? '50%' :
       '100%')
     .mode(this.screenUIType === ScreenUIType.NORMAL ? NavigationMode.Stack :
       this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack)
+  }
+
+  @Builder
+  private NavEmptyView() {
+    Row() {
+      if (this.isSplitScreen && this.screenUIType !== ScreenUIType.NORMAL) {
+        Image($r('app.media.app_icon_foreground_gray'))
+          .width('512px')
+          .height('512px')
+          .objectFit(ImageFit.Contain)
+          .margin({ right: px2vp(this.calcNavEmptyViewMarginPx()) })
+      }
+    }
+    .width('100%')
+    .height('100%')
+    .alignItems(VerticalAlign.Center)
+    .justifyContent(FlexAlign.End)
+    .backgroundColor(Color.White)
+  }
+
+  /**
+   * 计算导航栏背景图的右边距。
+   * @returns 导航栏背景图的右边距。
+   */
+  private calcNavEmptyViewMarginPx(): number {
+    let percent: number = this.screenUIType === ScreenUIType.FOLD_OPENED ? 0.5 : 0.65;
+    return (getScreenWidthPx() * percent - 512) / 2;
   }
 }
