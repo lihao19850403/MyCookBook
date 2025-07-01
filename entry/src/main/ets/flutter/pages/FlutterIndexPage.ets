@@ -25,10 +25,6 @@ struct FlutterIndexPageComponent {
   private flutterEntry?: FlutterEntry;
   private flutterView?: FlutterView;
 
-  aboutToDisappear(): void {
-    this.flutterEntry?.aboutToDisappear();
-  }
-
   build() {
     NavDestination() {
       Stack() {
@@ -51,6 +47,9 @@ struct FlutterIndexPageComponent {
     .onHidden(() => {
       FlutterManager.getInstance().setUseFullScreen(false);
       this.flutterEntry?.onPageHide();
+    })
+    .onDisAppear(() => {
+      this.flutterEntry?.aboutToDisappear();
     })
     // .onBackPressed(() => {
     //   this.context.eventHub.emit('EVENT_BACK_PRESS');
