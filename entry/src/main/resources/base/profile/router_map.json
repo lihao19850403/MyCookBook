@@ -24,6 +24,11 @@
       "name": "RecommendMenuListPage",
       "pageSourceFile": "src/main/ets/pages/recommendmenu/RecommendMenuListPage.ets",
       "buildFunction": "RecommendMenuListPageBuilder"
+    },
+    {
+      "name": "FlutterIndexPage",
+      "pageSourceFile": "src/main/ets/flutter/pages/FlutterIndexPage.ets",
+      "buildFunction": "FlutterIndexPageBuilder"
     }
   ]
 }

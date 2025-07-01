@@ -30,6 +30,18 @@
           ]
         }
       ]
+    },
+    {
+      name: "flutter_module",
+      "srcPath": "../MyCookBook_FlutterPlugin/.ohos/flutter_module",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }

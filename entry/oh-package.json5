@@ -6,6 +6,7 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "@ohos/axios": "^2.2.2",
     "@ohos/photoview": "^2.1.0",
     "@ohos/pulltorefresh": "^2.1.0"
   },

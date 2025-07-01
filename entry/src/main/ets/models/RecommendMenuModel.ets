@@ -36,7 +36,7 @@ export interface RecommendMenuItem {
   /** 分类ID。 */
   type_id?: number; // 443
 
-  /** 分类名称。。 */
+  /** 分类名称。 */
   type_name?: string; // "禽肉及其他肉类"
 
   /** 菜谱名称。 */

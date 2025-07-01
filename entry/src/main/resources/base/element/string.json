@@ -129,6 +129,10 @@
       "value": "菜谱收藏夹"
     },
     {
+      "name": "home_tab_mine_create_menu_tips",
+      "value": "自创菜谱"
+    },
+    {
       "name": "home_tab_mine_settings",
       "value": "应用设置"
     },
