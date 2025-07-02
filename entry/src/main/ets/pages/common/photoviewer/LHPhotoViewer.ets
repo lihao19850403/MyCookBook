@@ -8,6 +8,7 @@ import { RouterUtils } from '../../../utils/common/RouterUtils';
 import { firstNotVoid } from '../../../utils/common/Utils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../../views/common/LHCommonTitleBar';
 import { emitter } from '@kit.BasicServicesKit';
+import { getScreenTopSafeZoneHeightPx } from '../../../utils/common/ScreenUIAdapter';
 
 export namespace LHPhotoViewer {
   export function go(params: PhotoViewerParams) {
@@ -68,10 +69,15 @@ struct LHPhotoViewerComponent {
         PhotoView({
           model: this.data
         })
+          .layoutWeight(1)
       }
       .width('100%')
       .height('100%')
+      .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
+      .margin({
+        top: px2vp(getScreenTopSafeZoneHeightPx())
+      })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)

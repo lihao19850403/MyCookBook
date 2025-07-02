@@ -7,15 +7,18 @@ import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
-import { GlobalConfig } from '../../utils/common/GlobalConfig';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../../utils/common/GlobalConfig';
 import { RouterUtils, ROUTER_CONFIG_KEY_ROUTER_STACK } from '../../utils/common/RouterUtils';
 import {
+  getScreenBottomSafeZoneHeightPx,
+  getScreenTopSafeZoneHeightPx,
   getScreenUIType, getScreenWidthPx,
   ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
 import { HomeTabMenu } from './hometabs/HomeTabMenu';
 import { HomeTabMine } from './hometabs/HomeTabMine';
 import { HomeTabNews } from './hometabs/HomeTabNews';
 import { HomeTabSocialize } from './hometabs/HomeTabSocialize';
+import window from '@ohos.window';
 
 /**
  * 事件：物理返回键额外监听。
@@ -130,6 +133,11 @@ struct HomeMain {
           mainPageTabsController: this.tabsController
         })
       }
+      .layoutWeight(1)
+      .margin({
+        top: px2vp(getScreenTopSafeZoneHeightPx()),
+        bottom: px2vp(getScreenBottomSafeZoneHeightPx())
+      })
       .vertical(this.screenUIType === ScreenUIType.PAD)
       .edgeEffect(EdgeEffect.None)
       .scrollable(this.screenUIType !== ScreenUIType.PAD)
@@ -148,6 +156,14 @@ struct HomeMain {
       '100%')
     .mode(this.screenUIType === ScreenUIType.NORMAL ? NavigationMode.Stack :
       this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack)
+    .onAppear(() => {
+      let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+      mainWindow.setWindowLayoutFullScreen(true);
+    })
+    .onDisAppear(() => {
+      let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+      mainWindow.setWindowLayoutFullScreen(false);
+    })
   }
 
   @Builder

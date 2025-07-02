@@ -13,8 +13,7 @@ import { getAppInfo, res2string } from '../../utils/common/Utils';
 struct SplashScreen {
 
   aboutToAppear(): void {
-    let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW);
-    mainWindow.setWindowLayoutFullScreen(true).then((): void => this.changeToHomeMainPage());
+    this.changeToHomeMainPage();
   }
 
   build() {
@@ -49,7 +48,16 @@ struct SplashScreen {
     }
     .width('100%')
     .height('100%')
+    .layoutWeight(1)
     .backgroundColor($r('app.color.start_window_background'))
+    .onAppear(() => {
+      let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+      mainWindow.setWindowLayoutFullScreen(true);
+    })
+    .onDisAppear(() => {
+      let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+      mainWindow.setWindowLayoutFullScreen(false);
+    })
   }
 
   private changeToHomeMainPage() {

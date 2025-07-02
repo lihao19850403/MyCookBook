@@ -1,5 +1,6 @@
 import {
   getScreenBottomSafeZoneHeightPx,
+  getScreenTopSafeZoneHeightPx,
   getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
 import { emitter } from '@kit.BasicServicesKit';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../views/common/LHCommonTitleBar';
@@ -114,6 +115,7 @@ struct RecommendMenuListPageComponent {
           }
           .width('100%')
           .height('100%')
+          .layoutWeight(1)
           .edgeEffect(EdgeEffect.None)
           .sticky(StickyStyle.Header)
           .scrollBar(BarState.Off)
@@ -128,7 +130,11 @@ struct RecommendMenuListPageComponent {
       }
       .width('100%')
       .height('100%')
+      .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
+      .margin({
+        top: px2vp(getScreenTopSafeZoneHeightPx())
+      })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)

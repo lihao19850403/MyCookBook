@@ -1,4 +1,4 @@
-import { getScreenBottomSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import { RouterUtils } from '../../utils/common/RouterUtils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../views/common/LHCommonTitleBar';
 import { TodayNewsItem } from '../../models/TodayNewsModel';
@@ -44,19 +44,27 @@ struct NewsDetailPageComponent {
           leftAction: LHCommonTitleBarLeftNavBack
         })
         Scroll() {
-          NewsDetailCard({
-            newsInfo: this.newsItem,
-            style: NewsDetailCardStyle.SQUARE_BANNER,
-            appTextSizePlan: this.appTextSizePlan
-          })
+          Column() {
+            NewsDetailCard({
+              newsInfo: this.newsItem,
+              style: NewsDetailCardStyle.SQUARE_BANNER,
+              appTextSizePlan: this.appTextSizePlan
+            })
+            Blank()
+              .width('100%')
+              .height(`${px2vp(getScreenTopSafeZoneHeightPx()) + px2vp(getScreenBottomSafeZoneHeightPx())}`)
+          }
         }
         .width('100%')
         .scrollBar(BarState.Off)
-        .padding({ bottom: px2vp(getScreenBottomSafeZoneHeightPx()) })
       }
       .width('100%')
       .height('100%')
+      .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
+      .margin({
+        top: px2vp(getScreenTopSafeZoneHeightPx())
+      })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)

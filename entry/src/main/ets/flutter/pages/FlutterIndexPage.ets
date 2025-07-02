@@ -1,5 +1,5 @@
 import { common } from '@kit.AbilityKit';
-import { FlutterEntry, FlutterManager, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
+import { FlutterEntry, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import { GlobalContext } from '../../utils/common/GlobalContext';
 import { RouterUtils } from '../../utils/common/RouterUtils';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
@@ -32,6 +32,8 @@ struct FlutterIndexPageComponent {
           viewId: this.flutterView?.getId()
         })
       }
+      .width('100%')
+      .height('100%')
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)
@@ -41,11 +43,11 @@ struct FlutterIndexPageComponent {
       this.flutterView = this.flutterEntry.getFlutterView();
     })
     .onShown(() => {
-      FlutterManager.getInstance().setUseFullScreen(true);
+      // FlutterManager.getInstance().setUseFullScreen(true);
       this.flutterEntry?.onPageShow();
     })
     .onHidden(() => {
-      FlutterManager.getInstance().setUseFullScreen(false);
+      // FlutterManager.getInstance().setUseFullScreen(false);
       this.flutterEntry?.onPageHide();
     })
     .onDisAppear(() => {

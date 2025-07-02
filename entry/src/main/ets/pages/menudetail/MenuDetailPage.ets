@@ -1,5 +1,6 @@
 import {
   getScreenBottomSafeZoneHeightPx,
+  getScreenTopSafeZoneHeightPx,
   getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
 import { emitter } from '@kit.BasicServicesKit';
 import { RecommendMenuItem } from '../../models/RecommendMenuModel';
@@ -56,22 +57,30 @@ struct MenuDetailPageComponent {
           rightAction: (): void => this.FavoriteStar()
         })
         Scroll() {
-          MenuDetailCard({
-            screenUIType: this.screenUIType,
-            appTextSizePlan: this.appTextSizePlan,
-            isSplitScreen: this.isSplitScreen,
-            menuInfo: this.menuItem,
-            style: MenuDetailCardStyle.SQUARE_BANNER,
-            noTitleMode: true
-          })
+          Column() {
+            MenuDetailCard({
+              screenUIType: this.screenUIType,
+              appTextSizePlan: this.appTextSizePlan,
+              isSplitScreen: this.isSplitScreen,
+              menuInfo: this.menuItem,
+              style: MenuDetailCardStyle.SQUARE_BANNER,
+              noTitleMode: true
+            })
+            Blank()
+              .width('100%')
+              .height(`${px2vp(getScreenTopSafeZoneHeightPx()) + px2vp(getScreenBottomSafeZoneHeightPx())}`)
+          }
         }
         .width('100%')
         .scrollBar(BarState.Off)
-        .padding({ bottom: px2vp(getScreenBottomSafeZoneHeightPx()) })
       }
       .width('100%')
       .height('100%')
+      .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
+      .margin({
+        top: px2vp(getScreenTopSafeZoneHeightPx())
+      })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)

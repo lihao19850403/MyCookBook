@@ -75,6 +75,17 @@ export function getScreenHeightPx(): number {
 }
 
 /**
+ * 获取屏幕顶端状态栏安全区域高度。
+ * @returns 屏幕顶端状态栏安全区域高度。
+ */
+export function getScreenTopSafeZoneHeightPx(): number {
+  let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+  let type = window.AvoidAreaType.TYPE_SYSTEM;
+  let avoidArea = mainWindow.getWindowAvoidArea(type);
+  return avoidArea.topRect.height;
+}
+
+/**
  * 获取屏幕底部导航条安全区域高度。
  * @returns 屏幕底部导航条安全区域高度。
  */

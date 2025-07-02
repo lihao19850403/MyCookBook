@@ -8,6 +8,7 @@ import { GlobalAppSettings, GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../../../utils/common/GlobalAppSettings';
 import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../../utils/common/ScreenUIAdapter';
 
 export namespace LHWebBrowser {
   export function go(params: Record<string, string | undefined>) {
@@ -56,7 +57,12 @@ struct LHWebBrowserComponent {
       }
       .width('100%')
       .height('100%')
+      .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
+      .margin({
+        top: px2vp(getScreenTopSafeZoneHeightPx()),
+        bottom: px2vp(getScreenBottomSafeZoneHeightPx())
+      })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)
