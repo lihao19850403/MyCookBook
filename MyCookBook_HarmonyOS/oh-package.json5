@@ -9,5 +9,9 @@
     "@ohos/hypium": "1.0.19",
     "@ohos/hamock": "1.0.0"
   },
-  "dynamicDependencies": {}
+  "dynamicDependencies": {},
+  "overrides": {
+    "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter.har",
+    "@ohos/flutter_module": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_module.har"
+  }
 }
