@@ -1,0 +1,305 @@
+# HarmonyOS工程集成Flutter的过程
+
+#### 概述
+
+我想引入跨平台开发的相关技术，这次先引入Flutter框架。 基本思路是创建一个Flutter工程，与已有HarmonyOS工程平级，HarmonyOS工程引用Flutter工程的编译产物。
+这样以后如果有Android工程或iOS工程，也可放到与Flutter工程平级的位置，具体平台的工程都引用Flutter工程的编译产物，做到Flutter代码一次编写，各个平台统一运行。
+
+#### 【PART 1】搭建开发环境
+
+##### 一、下载定制版Flutter SDK
+
+定制版的Flutter SDK可以创建能够运行在HarmonyOS平台上的程序，因此首先下载此SDK，下载地址：
+
+```text
+https://gitcode.com/openharmony-tpc/flutter_flutter.git
+```
+
+选择一个稳定分支使用，比如`3.22.0-ohos`分支。
+
+##### 二、配置HarmonyOS开发环境
+
+1，需要先把DevEco-Studio升级至最新版，比如`5.1.0 release`，已有的模拟器、真机设备最好也用`api 18`及以上的版本。这样接下来配置用到的hvigor等工具也是最新的，可以避免创建Flutter模块的时候出错。
+
+2，在macos上需要把如下变量追加到PATH中，这些变量在使用命令行创建Flutter工程或插件的时候会用到：
+
+```text
+export TOOL_HOME="/Applications/DevEco-Studio.app/Contents"
+export DEVECO_SDK_HOME="$TOOL_HOME/sdk"
+```
+
+还需再追加这三个变量到PATH中：
+
+```text
+"$TOOL_HOME/tools/ohpm/bin"
+"$TOOL_HOME/tools/hvigor/bin"
+"$TOOL_HOME/tools/node/bin"
+```
+
+##### 三、环境配置检查
+
+需要使用定制版Flutter SDK中bin目录下的flutter命令来操作，可以把它加入PATH中，并与已有的官方Flutter SDK区分开。可以给定制版Flutter指定一个别名，比如`hflutter`：
+
+```text
+alias hflutter="~/flutter_for_harmonyOS/bin/flutter"
+```
+
+执行如下命令检查环境配置：
+
+```text
+hflutter doctor
+```
+按照提示补齐配置项即可。成功后的输出是这样的：
+
+```text
+Doctor summary (to see all details, run flutter doctor -v):
+[!] Flutter (Channel [user-branch], 3.22.1-ohos-1.0.3, on macOS 15.5 24F74 darwin-x64, locale zh-Hans-CN)
+! Flutter version 3.22.1-ohos-1.0.3 on channel [user-branch] at /Users/li.hao85/flutter_for_harmonyOS
+Currently on an unknown channel. Run `flutter channel` to switch to an official channel.
+If that doesn't fix the issue, reinstall Flutter by following instructions at https://flutter.dev/docs/get-started/install.
+! Warning: `flutter` on your path resolves to /Users/li.hao85/flutter/bin/flutter, which is not inside your current Flutter SDK checkout at /Users/li.hao85/flutter_for_harmonyOS. Consider adding
+/Users/li.hao85/flutter_for_harmonyOS/bin to the front of your path.
+! Warning: `dart` on your path resolves to /Users/li.hao85/flutter/bin/dart, which is not inside your current Flutter SDK checkout at /Users/li.hao85/flutter_for_harmonyOS. Consider adding
+/Users/li.hao85/flutter_for_harmonyOS/bin to the front of your path.
+! Upstream repository https://gitcode.com/openharmony-tpc/flutter_flutter.git is not a standard remote.
+Set environment variable "FLUTTER_GIT_URL" to https://gitcode.com/openharmony-tpc/flutter_flutter.git to dismiss this error.
+[✓] HarmonyOS toolchain - develop for HarmonyOS devices
+[✓] Android toolchain - develop for Android devices (Android SDK version 36.0.0)
+[!] Xcode - develop for iOS and macOS (Xcode 16.4)
+✗ Unable to get list of installed Simulator runtimes.
+[✓] Chrome - develop for the web
+[✓] Android Studio (version 2024.1)
+[✓] IntelliJ IDEA Ultimate Edition (version 2024.3.5)
+[✓] IntelliJ IDEA Community Edition (version 2024.3.6)
+[✓] VS Code (version 1.98.2)
+[✓] Connected device (3 available)
+Attempting to reach github.com...
+```
+
+注：此处忽略Xcode的配置项、与github的交互。这个输出中HarmonyOS toolchain配置项前面出现了\[✓\]，这样就可以进行HarmonyOS平台下的Flutter程序开发了。
+
+##### 四、验证环境搭建结果
+
+执行这个命令创建示例工程：
+
+```text
+hflutter create --platform ohos ~/workspaces/Flutter/oh_flutter_hello_world
+```
+
+然后cd到这个工程目录中执行`hflutter run`即可运行起来了，或者使用IDE运行也可以。期间会提示应用无签名，使用DevEco-Studio打开HarmonyOS部分工程，对其配置签名后再运行即可。
+
+使用定制版Flutter SDK创建的项目，其SDK位置自动标记到定制版SDK目录中，不会与已有的官方Flutter SDK冲突。
+
+####【PART 2】应用开发
+
+##### 一、创建Flutter工程
+
+1，cd到HarmonyOS工程外面，与HarmonyOS工程平级的位置，执行命令：
+
+```text
+hflutter create -t module my_cook_book_flutter_plugin
+```
+
+2，创建工程的时候，要求工程名字不能有大写，创建完毕后可以给工程文件夹改名。此处修改为`MyCookBook_FlutterPlugin`。
+
+3，cd到MyCookBook_FlutterPlugin文件夹，执行命令：
+
+```text
+hflutter build har --release
+```
+
+4，Flutter工程创建完毕，并生成了`flutter.har`和`flutter_module.har`。flutter.har是Flutter SDK的鸿蒙适配版，flutter_module.har是Flutter工程的编译产物。
+
+##### 二、引用flutter工程编译产物
+
+1，HarmonyOS工程根目录下oh-package.json5文件中增加如下依赖：
+
+```text
+...
+"dependencies": {
+  ...
+  "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter.har",
+  "@ohos/flutter_module": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_module.har",
+  ...
+},
+...
+"overrides": {
+  ...
+  "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter.har",
+  "@ohos/flutter_module": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_module.har",
+  ...
+}
+...
+```
+
+2，HarmonyOS工程根目录下build-profile.json5文件中增加新的模块：
+
+```text
+...
+"modules": [
+  ...
+  {
+    name: "flutter_module",
+    "srcPath": "../MyCookBook_FlutterPlugin/.ohos/flutter_module",
+    "targets": [
+      {
+        "name": "default",
+        "applyToProducts": [
+          "default"
+        ]
+      }
+    ]
+  },
+  ...
+]
+...
+```
+
+3，重新编一下HarmonyOS工程即可。
+
+4，Flutter工程的编译产物引用完毕，之后的开发流程是：
+
+- 在Flutter工程的lib文件夹下进行Flutter应用开发。
+- 在Flutter工程根目录执行`hflutter build har --release`，重新生成`flutter.har`及`flutter_module.har`。
+- 重新编译下HarmonyOS工程，确保引用了最新的Flutter代码。
+
+##### 三、HarmonyOS代码中引用Flutter库，并进行初始化
+
+1，应用已有的EntryAbility需要进行改造，修改如下：
+
+```text
+import { ExclusiveAppComponent, FlutterManager } from '@ohos/flutter_ohos';
+
+export default class EntryAbility extends UIAbility implements ExclusiveAppComponent<UIAbility> { // 实现ExclusiveAppComponent<UIAbility>接口。
+  ...
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    ...
+    FlutterManager.getInstance().pushUIAbility(this); // 在Flutter模块中进行登记。
+  }
+  ...
+  onDestroy(): void {
+    ...
+    FlutterManager.getInstance().popUIAbility(this); // 在Flutter模块中解除登记。
+  }
+  ...
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    ...
+    FlutterManager.getInstance().pushWindowStage(this, windowStage); // 在Flutter模块中进行登记。
+  }
+  ...
+  onWindowStageDestroy(): void {
+    ...
+    FlutterManager.getInstance().popWindowStage(this); // 在Flutter模块中解除登记。
+  }
+  ...
+  detachFromFlutterEngine(): void { // 新增实现。
+  
+  }
+  ...
+  getAppComponent(): UIAbility { // 新增实现。
+    return this;
+  }
+  ...
+}
+```
+
+2，增加一个Flutter工具类，用来注册各种桥接方法：
+
+```text
+import { GeneratedPluginRegistrant } from "@ohos/flutter_module";
+import { FlutterEngine, FlutterEntry } from "@ohos/flutter_ohos";
+
+export default class FlutterWrapEntry extends FlutterEntry {
+  configureFlutterEngine(flutterEngine: FlutterEngine): void {
+    super.configureFlutterEngine(flutterEngine);
+    GeneratedPluginRegistrant.registerWith(flutterEngine);
+    // 接下来进行各种桥接方法的注册：
+    // this.delegate?.addPlugin(new BatteryPlugin());
+  }
+}
+```
+
+3，增加一个Flutter内容展示页：
+
+```text
+import { common } from '@kit.AbilityKit';
+import { FlutterEntry, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
+import { GlobalContext } from '../../utils/common/GlobalContext';
+import { RouterUtils } from '../../utils/common/RouterUtils';
+import FlutterWrapEntry from '../utils/FlutterWrapEntry';
+
+export namespace FlutterIndexPage {
+  export function go(params?: Record<string, string | undefined>) {
+	RouterUtils.navPushPath('FlutterIndexPage', params);
+  }
+}
+
+@Builder
+export function FlutterIndexPageBuilder() {
+  FlutterIndexPageComponent()
+}
+
+@Component
+struct FlutterIndexPageComponent {
+  private context = GlobalContext.getContext() as common.UIAbilityContext;
+  private flutterEntry?: FlutterEntry;
+  private flutterView?: FlutterView;
+
+  build() {
+	NavDestination() {
+	  Stack() {
+		FlutterPage({
+		  viewId: this.flutterView?.getId()
+		})
+	  }
+	  .width('100%')
+	  .height('100%')
+	}
+	.hideTitleBar(true)
+	.backButtonIcon(undefined)
+	.onReady((context: NavDestinationContext) => {
+	  this.flutterEntry = new FlutterWrapEntry(this.context);
+	  this.flutterEntry.aboutToAppear();
+	  this.flutterView = this.flutterEntry.getFlutterView();
+	})
+	.onShown(() => {
+	  this.flutterEntry?.onPageShow();
+	})
+	.onHidden(() => {
+	  this.flutterEntry?.onPageHide();
+	})
+	.onDisAppear(() => {
+	  this.flutterEntry?.aboutToDisappear();
+	})
+  }
+}
+```
+
+这个展示页使用了NavDestination，记得在resources/base/profile/router_map.json中进行注册：
+
+```text
+{
+  "routerMap": [
+    ...
+    {
+      "name": "FlutterIndexPage",
+      "pageSourceFile": "src/main/ets/flutter/pages/FlutterIndexPage.ets",
+      "buildFunction": "FlutterIndexPageBuilder"
+    }
+  ]
+}
+```
+
+4，跳转：
+
+HarmonyOS中跳转至Flutter内容页，使用如下代码：
+
+```text
+...
+.onClick((event: ClickEvent) => {
+  FlutterIndexPage.go();
+})
+```
+
+#### 致谢
+
