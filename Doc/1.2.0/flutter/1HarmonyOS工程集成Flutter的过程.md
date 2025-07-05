@@ -19,9 +19,9 @@ https://gitcode.com/openharmony-tpc/flutter_flutter.git
 
 ##### 二、配置HarmonyOS开发环境
 
-1，需要先把DevEco-Studio升级至最新版，比如`5.1.0 release`，已有的模拟器、真机设备最好也用`api 18`及以上的版本。这样接下来配置用到的hvigor等工具也是最新的，可以避免创建Flutter模块的时候出错。
+1.  需要先把DevEco-Studio升级至最新版，比如`5.1.0 release`，已有的模拟器、真机设备最好也用`api 18`及以上的版本。这样接下来配置用到的hvigor等工具也是最新的，可以避免创建Flutter模块的时候出错。
 
-2，在macos上需要把如下变量追加到PATH中，这些变量在使用命令行创建Flutter工程或插件的时候会用到：
+2.  在macos上需要把如下变量追加到PATH中，这些变量在使用命令行创建Flutter工程或插件的时候会用到：
 
 ```text
 export TOOL_HOME="/Applications/DevEco-Studio.app/Contents"
@@ -53,26 +53,26 @@ hflutter doctor
 
 ```text
 Doctor summary (to see all details, run flutter doctor -v):
-[!] Flutter (Channel [user-branch], 3.22.1-ohos-1.0.3, on macOS 15.5 24F74 darwin-x64, locale zh-Hans-CN)
-! Flutter version 3.22.1-ohos-1.0.3 on channel [user-branch] at /Users/li.hao85/flutter_for_harmonyOS
-Currently on an unknown channel. Run `flutter channel` to switch to an official channel.
-If that doesn't fix the issue, reinstall Flutter by following instructions at https://flutter.dev/docs/get-started/install.
-! Warning: `flutter` on your path resolves to /Users/li.hao85/flutter/bin/flutter, which is not inside your current Flutter SDK checkout at /Users/li.hao85/flutter_for_harmonyOS. Consider adding
-/Users/li.hao85/flutter_for_harmonyOS/bin to the front of your path.
-! Warning: `dart` on your path resolves to /Users/li.hao85/flutter/bin/dart, which is not inside your current Flutter SDK checkout at /Users/li.hao85/flutter_for_harmonyOS. Consider adding
-/Users/li.hao85/flutter_for_harmonyOS/bin to the front of your path.
-! Upstream repository https://gitcode.com/openharmony-tpc/flutter_flutter.git is not a standard remote.
-Set environment variable "FLUTTER_GIT_URL" to https://gitcode.com/openharmony-tpc/flutter_flutter.git to dismiss this error.
+[!] Flutter (Channel [user-branch], 3.22.1-ohos-1.0.4, on macOS 15.5 24F74 darwin-x64, locale zh-Hans-CN)
+    ! Flutter version 3.22.1-ohos-1.0.4 on channel [user-branch] at /Users/li.hao85/flutter_for_harmonyOS
+      Currently on an unknown channel. Run `flutter channel` to switch to an official channel.
+      If that doesn't fix the issue, reinstall Flutter by following instructions at https://flutter.dev/docs/get-started/install.
+    ! Warning: `flutter` on your path resolves to /Users/li.hao85/flutter/bin/flutter, which is not inside your current Flutter SDK checkout at /Users/li.hao85/flutter_for_harmonyOS. Consider adding
+      /Users/li.hao85/flutter_for_harmonyOS/bin to the front of your path.
+    ! Warning: `dart` on your path resolves to /Users/li.hao85/flutter/bin/dart, which is not inside your current Flutter SDK checkout at /Users/li.hao85/flutter_for_harmonyOS. Consider adding
+      /Users/li.hao85/flutter_for_harmonyOS/bin to the front of your path.
+    ! Upstream repository https://gitcode.com/openharmony-tpc/flutter_flutter.git is not a standard remote.
+      Set environment variable "FLUTTER_GIT_URL" to https://gitcode.com/openharmony-tpc/flutter_flutter.git to dismiss this error.
 [✓] HarmonyOS toolchain - develop for HarmonyOS devices
 [✓] Android toolchain - develop for Android devices (Android SDK version 36.0.0)
 [!] Xcode - develop for iOS and macOS (Xcode 16.4)
-✗ Unable to get list of installed Simulator runtimes.
+    ✗ Unable to get list of installed Simulator runtimes.
 [✓] Chrome - develop for the web
 [✓] Android Studio (version 2024.1)
 [✓] IntelliJ IDEA Ultimate Edition (version 2024.3.5)
 [✓] IntelliJ IDEA Community Edition (version 2024.3.6)
 [✓] VS Code (version 1.98.2)
-[✓] Connected device (3 available)
+[✓] Connected device (4 available)
 Attempting to reach github.com...
 ```
 
@@ -94,25 +94,25 @@ hflutter create --platform ohos ~/workspaces/Flutter/oh_flutter_hello_world
 
 ##### 一、创建Flutter工程
 
-1，cd到HarmonyOS工程外面，与HarmonyOS工程平级的位置，执行命令：
+1.  cd到HarmonyOS工程外面，与HarmonyOS工程平级的位置，执行命令：
 
 ```text
 hflutter create -t module my_cook_book_flutter_plugin
 ```
 
-2，创建工程的时候，要求工程名字不能有大写，创建完毕后可以给工程文件夹改名。此处修改为`MyCookBook_FlutterPlugin`。
+2.  创建工程的时候，要求工程名字不能有大写，创建完毕后可以给工程文件夹改名。此处修改为`MyCookBook_FlutterPlugin`。
 
-3，cd到MyCookBook_FlutterPlugin文件夹，执行命令：
+3.  cd到MyCookBook_FlutterPlugin文件夹，执行命令：
 
 ```text
 hflutter build har --release
 ```
 
-4，Flutter工程创建完毕，并生成了`flutter.har`和`flutter_module.har`。flutter.har是Flutter SDK的鸿蒙适配版，flutter_module.har是Flutter工程的编译产物。
+4.  Flutter工程创建完毕，并生成了`flutter.har`和`flutter_module.har`。flutter.har是Flutter SDK的鸿蒙适配版，flutter_module.har是Flutter工程的编译产物。
 
 ##### 二、引用flutter工程编译产物
 
-1，HarmonyOS工程根目录下oh-package.json5文件中增加如下依赖：
+1.  HarmonyOS工程根目录下oh-package.json5文件中增加如下依赖：
 
 ```text
 ...
@@ -132,7 +132,7 @@ hflutter build har --release
 ...
 ```
 
-2，HarmonyOS工程根目录下build-profile.json5文件中增加新的模块：
+2.  HarmonyOS工程根目录下build-profile.json5文件中增加新的模块：
 
 ```text
 ...
@@ -155,9 +155,9 @@ hflutter build har --release
 ...
 ```
 
-3，重新编一下HarmonyOS工程即可。
+3.  重新编译一下HarmonyOS工程即可。
 
-4，Flutter工程的编译产物引用完毕，之后的开发流程是：
+4.  Flutter工程的编译产物引用完毕，之后的开发流程是：
 
 - 在Flutter工程的lib文件夹下进行Flutter应用开发。
 - 在Flutter工程根目录执行`hflutter build har --release`，重新生成`flutter.har`及`flutter_module.har`。
@@ -165,7 +165,7 @@ hflutter build har --release
 
 ##### 三、HarmonyOS代码中引用Flutter库，并进行初始化
 
-1，应用已有的EntryAbility需要进行改造，修改如下：
+1.  应用已有的EntryAbility需要进行改造，修改如下：
 
 ```text
 import { ExclusiveAppComponent, FlutterManager } from '@ohos/flutter_ohos';
@@ -203,7 +203,7 @@ export default class EntryAbility extends UIAbility implements ExclusiveAppCompo
 }
 ```
 
-2，增加一个Flutter工具类，用来注册各种桥接方法：
+2.  增加一个Flutter工具类，用来注册各种桥接方法：
 
 ```text
 import { GeneratedPluginRegistrant } from "@ohos/flutter_module";
@@ -219,7 +219,7 @@ export default class FlutterWrapEntry extends FlutterEntry {
 }
 ```
 
-3，增加一个Flutter内容展示页：
+3.  增加一个Flutter内容展示页：
 
 ```text
 import { common } from '@kit.AbilityKit';
@@ -246,31 +246,31 @@ struct FlutterIndexPageComponent {
   private flutterView?: FlutterView;
 
   build() {
-	NavDestination() {
-	  Stack() {
-		FlutterPage({
-		  viewId: this.flutterView?.getId()
-		})
-	  }
-	  .width('100%')
-	  .height('100%')
-	}
-	.hideTitleBar(true)
-	.backButtonIcon(undefined)
-	.onReady((context: NavDestinationContext) => {
-	  this.flutterEntry = new FlutterWrapEntry(this.context);
-	  this.flutterEntry.aboutToAppear();
-	  this.flutterView = this.flutterEntry.getFlutterView();
-	})
-	.onShown(() => {
-	  this.flutterEntry?.onPageShow();
-	})
-	.onHidden(() => {
-	  this.flutterEntry?.onPageHide();
-	})
-	.onDisAppear(() => {
-	  this.flutterEntry?.aboutToDisappear();
-	})
+    NavDestination() {
+      Stack() {
+    	FlutterPage({
+    	  viewId: this.flutterView?.getId()
+    	})
+      }
+      .width('100%')
+      .height('100%')
+    }
+    .hideTitleBar(true)
+    .backButtonIcon(undefined)
+    .onReady((context: NavDestinationContext) => {
+      this.flutterEntry = new FlutterWrapEntry(this.context);
+      this.flutterEntry.aboutToAppear();
+      this.flutterView = this.flutterEntry.getFlutterView();
+    })
+    .onShown(() => {
+      this.flutterEntry?.onPageShow();
+    })
+    .onHidden(() => {
+      this.flutterEntry?.onPageHide();
+    })
+    .onDisAppear(() => {
+      this.flutterEntry?.aboutToDisappear();
+    })
   }
 }
 ```
@@ -290,7 +290,7 @@ struct FlutterIndexPageComponent {
 }
 ```
 
-4，跳转：
+4.  跳转：
 
 HarmonyOS中跳转至Flutter内容页，使用如下代码：
 
@@ -303,3 +303,7 @@ HarmonyOS中跳转至Flutter内容页，使用如下代码：
 
 #### 致谢
 
+本文参考了以下资料，在此致谢：
+
+1.  《鸿蒙-flutter-环境搭建和第一个HelloWorld》：[https://blog.csdn.net/huangyuan_xuan/article/details/148566018](https://blog.csdn.net/huangyuan_xuan/article/details/148566018)。
+2.  《鸿蒙-flutter-如何向现有鸿蒙项目中添加flutter模块》：[https://blog.csdn.net/huangyuan_xuan/article/details/148582419](https://blog.csdn.net/huangyuan_xuan/article/details/148582419)。
