@@ -1,12 +1,35 @@
 import { common } from '@kit.AbilityKit';
-import { FlutterEntry, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
+import { FlutterAbilityLaunchConfigs, FlutterEntry, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import { GlobalContext } from '../../utils/common/GlobalContext';
 import { RouterUtils } from '../../utils/common/RouterUtils';
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
 
+/** 跳转Flutter内容页时传递的参数。 */
+export interface FlutterPathInfo {
+  /** Flutter页面路由名称。 */
+  path: string;
+  /** Flutter页面路由参数。 */
+  params?: Record<string, Object | undefined>;
+}
+
 export namespace FlutterIndexPage {
-  export function go(params?: Record<string, string | undefined>) {
-    RouterUtils.navPushPath('FlutterIndexPage', params);
+  export function go(pathInfo: FlutterPathInfo) {
+    let path: string = pathInfo.path;
+    let params: Record<string, Object> = {};
+    params['ScreenTopSafeZoneHeightPx'] = getScreenTopSafeZoneHeightPx();
+    params['ScreenBottomSafeZoneHeightPx'] = getScreenBottomSafeZoneHeightPx();
+    if (pathInfo.params !== undefined) {
+      Object.keys(pathInfo.params).forEach((key: string) => {
+        let value: Object | undefined = pathInfo.params?.[key];
+        if (value !== undefined) {
+          params[key] = value;
+        }
+      })
+    }
+    let routerParams: Record<string, Object> = {};
+    routerParams[FlutterAbilityLaunchConfigs.EXTRA_INITIAL_ROUTE] = `${path}?${JSON.stringify(params)}`;
+    RouterUtils.navPushPath('FlutterIndexPage', routerParams);
   }
 }
 
@@ -38,7 +61,8 @@ struct FlutterIndexPageComponent {
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
-      this.flutterEntry = new FlutterWrapEntry(this.context);
+      let params: Record<string, Object> = RouterUtils.navGetParams(context) as Record<string, Object>;
+      this.flutterEntry = new FlutterWrapEntry(this.context, params);
       this.flutterEntry.aboutToAppear();
       this.flutterView = this.flutterEntry.getFlutterView();
     })
