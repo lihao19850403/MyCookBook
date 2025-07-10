@@ -132,32 +132,9 @@ hflutter build har --release
 ...
 ```
 
-2.  HarmonyOS工程根目录下build-profile.json5文件中增加新的模块：
+2.  重新编译一下HarmonyOS工程即可。
 
-```text
-...
-"modules": [
-  ...
-  {
-    name: "flutter_module",
-    "srcPath": "../MyCookBook_FlutterPlugin/.ohos/flutter_module",
-    "targets": [
-      {
-        "name": "default",
-        "applyToProducts": [
-          "default"
-        ]
-      }
-    ]
-  },
-  ...
-]
-...
-```
-
-3.  重新编译一下HarmonyOS工程即可。
-
-4.  Flutter工程的编译产物引用完毕，之后的开发流程是：
+3.  Flutter工程的编译产物引用完毕，之后的开发流程是：
 
 - 在Flutter工程的lib文件夹下进行Flutter应用开发。
 - 在Flutter工程根目录执行`hflutter build har --release`，重新生成`flutter.har`及`flutter_module.har`。
