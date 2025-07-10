@@ -11,7 +11,19 @@ class MethodChannelFlutterRouter extends FlutterRouterPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
+  }
+
+  @override
+  Future<T> go<T extends Object?>(String path, {dynamic params}) async {
+    var routerParams = {};
+    routerParams['path'] = path;
+    if (params != null) {
+      routerParams['params'] = params;
+    }
+    final result = await methodChannel.invokeMethod('go', routerParams);
+    return result;
   }
 }

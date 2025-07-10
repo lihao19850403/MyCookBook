@@ -221,8 +221,132 @@ export namespace FlutterIndexPage {
 })
 ```
 
+#### 【PART 4】Flutter框架跳转至HarmonyOS工程
+
+从Flutter页面跳转至HarmonyOS工程页面，需要用到MethodChannel来进行跳转，具体操作步骤为：
+
+1.  编写HarmonyOS平台特定跳转方法：
+
+代码位置是[MyCookBook_FlutterPlugin/plugins/flutter_router/ohos/src/main/ets/components/plugin/FlutterRouterPlugin.ets](../../../MyCookBook_FlutterPlugin/plugins/flutter_router/ohos/src/main/ets/components/plugin/FlutterRouterPlugin.ets)，这里主要做了三件事：
+
+- 定义一个HarmonyOS端的路由处理handler(`routerPushHandler`)，当有从Flutter页面跳转至HarmonyOS页面的动作时，交由此handler处理。
+- 定义一个routerPushHandler的设置方法(`setRouterPushHandler()`)，HarmonyOS平台可以通过此方法手动设置一个routerPushHandler，以便跳转至不同的HarmonyOS原生页面。
+- 在`onMethodCall()`方法中定义了一个`go()`方法的处理过程，以后Flutter部分跳转页面都使用这个go方法进行。
+
+2.  在Flutter插件工程中编写go()方法的实现：
+
+- 首先在FlutterRouterPlatform中对go()方法进行了定义。代码位置是[MyCookBook_FlutterPlugin/plugins/flutter_router/lib/flutter_router_platform_interface.dart](../../../MyCookBook_FlutterPlugin/plugins/flutter_router/lib/flutter_router_platform_interface.dart)。
+- 然后在MethodChannelFlutterRouter中对go()方法进行了实现。代码位置是[MyCookBook_FlutterPlugin/plugins/flutter_router/lib/flutter_router_method_channel.dart](../../../MyCookBook_FlutterPlugin/plugins/flutter_router/lib/flutter_router_method_channel.dart)。
+- 此外在RouterManager中增加了一个方法`isFlutterPage()`，用来判断要跳转的页面是否Flutter页面。代码位置是[MyCookBook_FlutterPlugin/plugins/flutter_router/lib/router_manager.dart](../../../MyCookBook_FlutterPlugin/plugins/flutter_router/lib/router_manager.dart)。
+- 最后再FlutterRouter中定义了一个go()方法，供Flutter工程代码调用。这个方法会判断要跳转的目标页面类型。如果目标页面是Flutter页面，则使用Flutter的Navigator跳转；如果目标页面不在Flutter路由表中，那么就尝试跳转入原生页面。代码位置是[MyCookBook_FlutterPlugin/plugins/flutter_router/lib/flutter_router.dart](../../../MyCookBook_FlutterPlugin/plugins/flutter_router/lib/flutter_router.dart)。
+
+3.  编译并引入go()方法：
+
+- 首先给flutter_router添加HarmonyOS平台支持。这需要在其pubspec.yaml中添加如下配置信息：
+
+```text
+...
+plugin:
+    platforms:
+    # This plugin project was generated without specifying any
+    # platforms with the `--platform` argument. If you see the `some_platform` map below, remove it and
+    # then add platforms following the instruction here:
+    # https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms
+    # -------------------
+      some_platform:
+        pluginClass: somePluginClass
+    # -------------------
+      ohos: # 此处添加HarmonyOS平台支持，主要填写pluginClass。
+        package: com.example.my_cook_book_flutter_plugin
+        pluginClass: FlutterRouterPlugin
+...
+```
+
+代码位置是[MyCookBook_FlutterPlugin/plugins/flutter_router/pubspec.yaml](../../../MyCookBook_FlutterPlugin/plugins/flutter_router/pubspec.yaml)。
+
+- 接下来编译此插件。进入MyCookBook_FlutterPlugin根目录，执行命令：
+
+```text
+hflutter pub get
+hflutter build har --release
+```
+
+编译完成后会在MyCookBook_FlutterPlugin/build/ohos/har/release中生成flutter.har、flutter_module.har、flutter_router.har。最后新生成的flutter_router.har包含了上述go()方法的实现。
+
+- 最后在HarmonyOS工程中引入此har文件。代码位置是[MyCookBook_HarmonyOS/oh-package.json5](../../../MyCookBook_HarmonyOS/oh-package.json5)。
+**注意引用flutter_router.har时指定的key不是以@ohos开头的**。
+引用完毕后重编译一下HarmonyOS工程。
+
+4.  HarmonyOS平台配置routerPushHandler：
+
+由于引用了flutter_router.har，因此HarmonyOS工程可以调用里面的方法了。此处在EntryAbility初始化时登记一个页面跳转路由handler：
+
+```text
+...
+import FlutterRouterPlugin from 'flutter_router';
+...
+export default class EntryAbility extends UIAbility implements ExclusiveAppComponent<UIAbility> {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    ...
+    // 声明平台特定的Flutter页面跳转路由handler。
+    FlutterRouterPlugin.setRouterPushHandler(flutterRouterHandler);
+  }
+}
+```
+
+其中flutterRouterHandler定义如下：
+
+```text
+import { MethodResult } from '@ohos/flutter_ohos';
+import { LHWebBrowser, URL_PARAMS } from '../../pages/common/webbrowser/LHWebBrowser';
+
+/**
+ * 鸿蒙平台下的Flutter页面跳转handler。
+ * @author li.hao85
+ * @param path 路由路径。
+ * @param params 路由参数。
+ * @param result 跳转结果，用于向Flutter页面返回参数。
+ * @returns 处理是否完成。
+ */
+export const flutterRouterHandler: (path: string, params: Record<string, Object> | undefined, result: MethodResult) => boolean =
+  (path, params, result) => {
+    if (path === 'LHWebBrowser') {
+      let routerParams: Record<string, string | undefined> = {};
+      if (params !== undefined) {
+        let urlParams: string = params instanceof Map ? params.get(URL_PARAMS) as string : params[URL_PARAMS] as string;
+        routerParams[URL_PARAMS] = urlParams;
+      }
+      LHWebBrowser.go(routerParams);
+    }
+    return true;
+  };
+
+```
+
+这个handler先对Web页的跳转进行了处理。
+
+5.  测试跳转：
+
+测试跳转路径是：Flutter页面打开HarmonyOS原生Web页，加载百度首页。可以编写如下Flutter代码实现：
+
+```text
+...
+Padding(
+  padding: const EdgeInsets.only(top: 4),
+  child: ElevatedButton(
+    onPressed: () {
+      FlutterRouter().go(context, 'LHWebBrowser',
+        params: {'url_params': 'https://www.baidu.com'});
+      },
+      child: const Text('跳转至百度首页',
+        style: TextStyle(
+          fontSize: 16, color: Color(0xFF333333)))))
+...
+```
+
 #### 致谢
 
 本文参考了以下资料，在此致谢：
 
 1.  《鸿蒙-flutter-使用FlutterEntry的路由管理和参数传递_上》：[https://blog.csdn.net/huangyuan_xuan/article/details/148582528](https://blog.csdn.net/huangyuan_xuan/article/details/148582528)。
+2.  《鸿蒙-flutter-使用FlutterEntry的路由管理和参数传递_中_flutter打开native页面传递参数》[https://blog.csdn.net/huangyuan_xuan/article/details/148606583](https://blog.csdn.net/huangyuan_xuan/article/details/148606583)。

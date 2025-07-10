@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_router/flutter_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, this.params}) : super(key: key);
@@ -23,7 +24,17 @@ class _LoginState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
               const Text('登录页面获取到的参数', style: TextStyle(fontSize: 16)),
-              Text(jsonEncode(widget.params))
+              Text(jsonEncode(widget.params)),
+              Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        FlutterRouter().go(context, 'LHWebBrowser',
+                            params: {'url_params': 'https://www.baidu.com'});
+                      },
+                      child: const Text('跳转至百度首页',
+                          style: TextStyle(
+                              fontSize: 16, color: Color(0xFF333333)))))
             ])));
   }
 }

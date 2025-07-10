@@ -26,4 +26,8 @@ abstract class FlutterRouterPlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  Future<T> go<T extends Object?>(String path, {dynamic params}) {
+    throw UnimplementedError('go() has not been implemented.');
+  }
 }

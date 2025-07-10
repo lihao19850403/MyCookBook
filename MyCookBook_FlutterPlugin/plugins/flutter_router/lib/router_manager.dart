@@ -38,6 +38,12 @@ class RouterManager {
     }
   }
 
+  /// 判断给定的路由信息[routerInfo]是否指向Flutter页面。
+  bool isFlutterPage(String routerInfo) {
+    final String path = _getRouterPath(routerInfo);
+    return _routerMap.containsKey(path);
+  }
+
   /// 从路由信息[routerInfo]中解析出路径信息。
   ///
   /// 路由格式暂定为`path?params`，其中path是路由的路径信息，params是路由参数。路由参数是一个json字符串，路径信息与路由参数之间用问号分割。
