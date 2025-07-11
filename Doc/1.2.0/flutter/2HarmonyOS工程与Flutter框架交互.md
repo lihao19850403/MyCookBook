@@ -344,9 +344,50 @@ Padding(
 ...
 ```
 
+#### 【PART 5】页面带参返回
+
+不论是从HarmonyOS页面跳转至Flutter页面，还是从Flutter页面跳转至HarmonyOS页面，当用户点击返回键进行返回的时候，上一个页面都应获取到结果参数。
+
+##### 一、HarmonyOS页面返回Flutter页面
+
+这种情况比较简单，因为之前从Flutter页面跳转至HarmonyOS页面时，是使用鸿蒙的`flutterRouterHandler`实现的，这个handler中带有一个`MethodResult`类型的参数`result`，HarmonyOS代码可以通过这个参数把页面跳转的结果传回Flutter页面：
+
+```text
+result.success('从HarmonyOS页面成功返回');
+```
+
+在Flutter页面中，一开始向HarmonyOS页面跳转的地方添加then回调，就可以接收此结果：
+
+```text
+...
+Padding(
+  padding: const EdgeInsets.only(top: 4),
+  child: ElevatedButton(
+    onPressed: () {
+      FlutterRouter().go(context, 'LHWebBrowser', 
+        params: {'url_params': 'https://www.baidu.com'})
+        .then((value) => {print('Flutter页面接收: $value')}); // 这里的value就是HarmonyOS页面回传的字符串。
+      },
+      child: const Text('跳转至百度首页',
+        style: TextStyle(
+          fontSize: 16, color: Color(0xFF333333)))))
+...
+```
+
+当从HarmonyOS页面返回Flutter页面时，控制台打印如下日志：
+
+```text
+07-10 23:45:58.185   26672-26929   A00000/XComFlutterOHOS_Native   com.lihao.cookbook    W     flutter settings log message: Flutter页面接收: 从HarmonyOS页面成功返回
+```
+
+注：
+
+- HarmonyOS页面可多次调用`result.success()`，但Flutter页面只接收第一次的参数传递结果，即使Flutter页面使用多个then回调来尝试接收其他结果，也是拿不到的。
+
 #### 致谢
 
 本文参考了以下资料，在此致谢：
 
 1.  《鸿蒙-flutter-使用FlutterEntry的路由管理和参数传递_上》：[https://blog.csdn.net/huangyuan_xuan/article/details/148582528](https://blog.csdn.net/huangyuan_xuan/article/details/148582528)。
 2.  《鸿蒙-flutter-使用FlutterEntry的路由管理和参数传递_中_flutter打开native页面传递参数》[https://blog.csdn.net/huangyuan_xuan/article/details/148606583](https://blog.csdn.net/huangyuan_xuan/article/details/148606583)。
+3.  《鸿蒙-flutter-使用FlutterEntry的路由管理和参数传递_下_页面返回时透传数据》[https://blog.csdn.net/huangyuan_xuan/article/details/148606632](https://blog.csdn.net/huangyuan_xuan/article/details/148606632)。
