@@ -2,9 +2,10 @@
   "modelVersion": "5.0.5",
   "description": "Please describe the basic information.",
   "dependencies": {
-    "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter.har",
+    "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_embedding_release.har",
     "@ohos/flutter_module": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_module.har",
-    "flutter_router": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_router.har"
+    "flutter_native_arm64_v8a": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/arm64_v8a_release.har",
+    "flutter_router": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_router.har",
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.19",
@@ -12,8 +13,9 @@
   },
   "dynamicDependencies": {},
   "overrides": {
-    "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter.har",
+    "@ohos/flutter_ohos": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_embedding_release.har",
     "@ohos/flutter_module": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_module.har",
+    "flutter_native_arm64_v8a": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/arm64_v8a_release.har",
     "flutter_router": "file:../MyCookBook_FlutterPlugin/build/ohos/har/release/flutter_router.har"
   }
 }
