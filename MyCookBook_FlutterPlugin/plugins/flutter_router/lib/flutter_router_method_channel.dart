@@ -26,4 +26,13 @@ class MethodChannelFlutterRouter extends FlutterRouterPlatform {
     final result = await methodChannel.invokeMethod('go', routerParams);
     return result;
   }
+
+  @override
+  void back({dynamic params}) async {
+    var routerParams = {};
+    if (params != null) {
+      routerParams = params;
+    }
+    await methodChannel.invokeMethod('back', routerParams);
+  }
 }

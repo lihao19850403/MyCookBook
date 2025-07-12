@@ -35,4 +35,15 @@ class FlutterRouter {
           .then((result) => result);
     }
   }
+
+  /// 页面返回方法。
+  ///
+  /// 注：如果上一个页面是Flutter页面，则使用Flutter的Navigator跳转，需要借助布局上下文[context]；如果上一个页面是原生平台页面，那么就尝试跳转入原生页面。
+  void back(BuildContext context, {Object? params}) {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop(params);
+    } else {
+      FlutterRouterPlatform.instance.back(params: params);
+    }
+  }
 }

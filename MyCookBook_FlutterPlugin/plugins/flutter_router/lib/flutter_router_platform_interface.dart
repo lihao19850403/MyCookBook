@@ -30,4 +30,8 @@ abstract class FlutterRouterPlatform extends PlatformInterface {
   Future<T> go<T extends Object?>(String path, {dynamic params}) {
     throw UnimplementedError('go() has not been implemented.');
   }
+
+  void back({dynamic params}) {
+    throw UnimplementedError('back() has not been implemented.');
+  }
 }

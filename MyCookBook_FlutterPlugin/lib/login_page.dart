@@ -34,6 +34,16 @@ class _LoginState extends State<LoginPage> {
                       },
                       child: const Text('跳转至百度首页',
                           style: TextStyle(
+                              fontSize: 16, color: Color(0xFF333333))))),
+              Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        FlutterRouter()
+                            .back(context, params: {'result': 'Flutter示例页面'});
+                      },
+                      child: const Text('退出此页面',
+                          style: TextStyle(
                               fontSize: 16, color: Color(0xFF333333)))))
             ])));
   }

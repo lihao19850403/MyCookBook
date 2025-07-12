@@ -7,7 +7,7 @@ import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalCo
 import { UncaughtExceptionsHandler } from '../utils/common/errorhandler/UncaughtExceptionsHandler';
 import { ExclusiveAppComponent, FlutterManager } from '@ohos/flutter_ohos';
 import FlutterRouterPlugin from 'flutter_router';
-import { flutterRouterHandler } from '../flutter/utils/FlutterRouterUtils';
+import { flutterRouterBackHandler, flutterRouterPushHandler } from '../flutter/utils/FlutterRouterUtils';
 
 export default class EntryAbility extends UIAbility implements ExclusiveAppComponent<UIAbility> {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -20,7 +20,9 @@ export default class EntryAbility extends UIAbility implements ExclusiveAppCompo
     // 在Flutter模块中进行登记。
     FlutterManager.getInstance().pushUIAbility(this);
     // 声明平台特定的Flutter页面跳转路由handler。
-    FlutterRouterPlugin.setRouterPushHandler(flutterRouterHandler);
+    FlutterRouterPlugin.setRouterPushHandler(flutterRouterPushHandler);
+    // 声明平台特定的Flutter页面返回路由handler。
+    FlutterRouterPlugin.setRouterBackHandler(flutterRouterBackHandler);
   }
 
   onDestroy(): void {
