@@ -1,11 +1,7 @@
 import { MethodCall, MethodResult } from '@ohos/flutter_ohos';
+import FlutterRouterPlugin from 'flutter_router';
 import { LHWebBrowser, URL_PARAMS } from '../../pages/common/webbrowser/LHWebBrowser';
 import { RouterUtils } from '../../utils/common/RouterUtils';
-
-/**
- * 鸿蒙平台下的Flutter路由管理handler。
- * @author li.hao85
- */
 
 /**
  * 鸿蒙平台下的Flutter页面跳转handler。
@@ -14,7 +10,7 @@ import { RouterUtils } from '../../utils/common/RouterUtils';
  * @param result 跳转结果，用于向Flutter页面返回参数。
  * @returns 处理是否完成。
  */
-export const flutterRouterPushHandler: (path: string, params: Record<string, Object> | undefined, result: MethodResult) => boolean =
+const flutterRouterPushHandler: (path: string, params: Record<string, Object> | undefined, result: MethodResult) => boolean =
   (path, params, result) => {
     if (path === 'LHWebBrowser') {
       let routerParams: Record<string, string | undefined> = {};
@@ -34,7 +30,7 @@ export const flutterRouterPushHandler: (path: string, params: Record<string, Obj
  * @param result 跳转结果，用于向Flutter页面返回参数。
  * @returns 处理是否完成。
  */
-export const flutterRouterBackHandler: (call: MethodCall, params: Record<string, Object> | undefined, result: MethodResult) => boolean =
+const flutterRouterBackHandler: (call: MethodCall, params: Record<string, Object> | undefined, result: MethodResult) => boolean =
   (call, params, result) => {
     if (call.method === 'back') {
       let routerName: string | undefined = undefined;
@@ -49,3 +45,11 @@ export const flutterRouterBackHandler: (call: MethodCall, params: Record<string,
     }
     return true;
   };
+
+/** 鸿蒙平台下的Flutter路由管理handler。 */
+export function flutterRouterPlugin(): FlutterRouterPlugin {
+  let flutterRouterPlugin: FlutterRouterPlugin = new FlutterRouterPlugin();
+  flutterRouterPlugin.setRouterPushHandler(flutterRouterPushHandler);
+  flutterRouterPlugin.setRouterBackHandler(flutterRouterBackHandler);
+  return flutterRouterPlugin;
+}

@@ -18,13 +18,13 @@ export default class FlutterRouterPlugin implements FlutterPlugin, MethodCallHan
   private channel: MethodChannel | null = null;
 
   /** Flutter路由跳转工具，默认不处理路由，返回false。主工程可自行修改为有意义的工具。 */
-  static routerPushHandler: FlutterRouterPushHandler = (path, params, result) => {
+  private routerPushHandler: FlutterRouterPushHandler = (path, params, result) => {
     console.log(`FlutterRouterPushHandler 默认实现。路径：${path}，参数：${JSON.stringify(params)}`);
     return false;
   };
 
   /** Flutter路由返回工具，默认不处理路由，返回false。主工程可自行修改为有意义的工具。 */
-  static routerBackHandler: FlutterRouterBackHandler = (call, params, result) => {
+  private routerBackHandler: FlutterRouterBackHandler = (call, params, result) => {
     console.log(`FlutterRouterBackHandler 默认实现。调用：${JSON.stringify(call)}，参数：${JSON.stringify(params)}`);
     return false;
   }
@@ -36,45 +36,43 @@ export default class FlutterRouterPlugin implements FlutterPlugin, MethodCallHan
    * 设置Flutter路由跳转工具。
    * @param newHandler 新的路由跳转工具。
    */
-  static setRouterPushHandler(newHandler: FlutterRouterPushHandler) {
-    FlutterRouterPlugin.routerPushHandler = newHandler;
+  setRouterPushHandler(newHandler: FlutterRouterPushHandler) {
+    this.routerPushHandler = newHandler;
   }
 
   /**
    * 设置Flutter路由返回工具。
    * @param newHandler 新的路由返回工具。
    */
-  static setRouterBackHandler(newHandler: FlutterRouterBackHandler) {
-    FlutterRouterPlugin.routerBackHandler = newHandler;
+  setRouterBackHandler(newHandler: FlutterRouterBackHandler) {
+    this.routerBackHandler = newHandler;
   }
 
   getUniqueClassName(): string {
-    return "FlutterRouterPlugin"
+    return "FlutterRouterPlugin";
   }
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_router");
-    this.channel.setMethodCallHandler(this)
+    this.channel.setMethodCallHandler(this);
   }
 
   onDetachedFromEngine(binding: FlutterPluginBinding): void {
     if (this.channel != null) {
-      this.channel.setMethodCallHandler(null)
+      this.channel.setMethodCallHandler(null);
     }
   }
 
   onMethodCall(call: MethodCall, result: MethodResult): void {
-    if (call.method == "getPlatformVersion") {
-      result.success("OpenHarmony ^ ^ ")
-    } else if (call.method === 'go') {
+    if (call.method === 'go') {
       let path: string = call.argument('path');
       let params: Record<string, Object> | undefined = call.argument('params');
-      FlutterRouterPlugin.routerPushHandler(path, params, result);
+      this.routerPushHandler(path, params, result);
     } else if (call.method === 'back') {
       let params: Record<string, Object> | undefined = call.argument('params');
-      FlutterRouterPlugin.routerBackHandler(call, params, result);
+      this.routerBackHandler(call, params, result);
     } else {
-      result.notImplemented()
+      result.notImplemented();
     }
   }
 }

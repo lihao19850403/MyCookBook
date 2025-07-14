@@ -11,10 +11,6 @@ import 'package:flutter_router/router_manager.dart';
 import 'flutter_router_platform_interface.dart';
 
 class FlutterRouter {
-  Future<String?> getPlatformVersion() {
-    return FlutterRouterPlatform.instance.getPlatformVersion();
-  }
-
   /// 页面跳转方法。
   ///
   /// 根据给定的路由路径[path]和路由参数[params]跳转至目标页面。
