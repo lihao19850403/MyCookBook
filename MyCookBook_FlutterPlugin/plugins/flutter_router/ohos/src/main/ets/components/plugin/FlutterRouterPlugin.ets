@@ -52,6 +52,10 @@ export default class FlutterRouterPlugin implements FlutterPlugin, MethodCallHan
     return "FlutterRouterPlugin";
   }
 
+  getChannel(): MethodChannel | null {
+    return this.channel;
+  }
+
   onAttachedToEngine(binding: FlutterPluginBinding): void {
     this.channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_router");
     this.channel.setMethodCallHandler(this);

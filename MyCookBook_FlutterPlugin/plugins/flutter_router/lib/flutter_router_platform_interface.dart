@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_router_method_channel.dart';
@@ -21,6 +22,10 @@ abstract class FlutterRouterPlatform extends PlatformInterface {
   static set instance(FlutterRouterPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
+  }
+
+  MethodChannel getChannel() {
+    throw UnimplementedError('getChannel() has not been implemented.');
   }
 
   Future<T> go<T extends Object?>(String path, {dynamic params}) {

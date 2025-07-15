@@ -1,6 +1,6 @@
-import { FlutterEngine, FlutterEntry, Log } from "@ohos/flutter_ohos";
+import { FlutterEngine, FlutterEntry, Log, MethodResult } from "@ohos/flutter_ohos";
 import FlutterRouterPlugin from "flutter_router";
-import { flutterRouterPlugin } from "./FlutterRouterUtils";
+import { getFlutterRouterPlugin } from "./FlutterRouterUtils";
 
 const TAG = "FlutterWrapEntry";
 
@@ -9,7 +9,7 @@ const TAG = "FlutterWrapEntry";
  * @author li.hao85
  */
 export default class FlutterWrapEntry extends FlutterEntry {
-  private flutterRouterPlugin: FlutterRouterPlugin = flutterRouterPlugin();
+  private flutterRouterPlugin: FlutterRouterPlugin = getFlutterRouterPlugin();
 
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine);
@@ -29,7 +29,12 @@ export default class FlutterWrapEntry extends FlutterEntry {
     }
   }
 
-  callFlutterMethod(name: string, params: Object) {
-    this.flutterRouterPlugin.
+  /**
+   * 调用Flutter的back()方法。
+   * @param params 方法参数。
+   * @param callback 执行结果回调。
+   */
+  callFlutterBack(params?: Object, callback?: MethodResult) {
+    this.flutterRouterPlugin.getChannel()?.invokeMethod('back', params, callback);
   }
 }

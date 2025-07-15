@@ -6,11 +6,27 @@
 // https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_router/router_manager.dart';
 
 import 'flutter_router_platform_interface.dart';
 
 class FlutterRouter {
+  /// 初始化Flutter层方法回调监听。
+  ///
+  /// 参数[navigatorKey]可用来获取全局context。
+  void initOnMethodCallWhenBuild(GlobalKey navigatorKey) {
+    FlutterRouterPlatform.instance
+        .getChannel()
+        .setMethodCallHandler((MethodCall call) async {
+      if (call.method == 'back') {
+        back(navigatorKey.currentState!.context, params: call.arguments);
+        return true;
+      }
+      return '${call.method} is not exist.';
+    });
+  }
+
   /// 页面跳转方法。
   ///
   /// 根据给定的路由路径[path]和路由参数[params]跳转至目标页面。

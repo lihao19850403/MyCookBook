@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 import 'flutter_router_platform_interface.dart';
 
@@ -8,6 +9,11 @@ class MethodChannelFlutterRouter extends FlutterRouterPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   final methodChannel = const MethodChannel('flutter_router');
+
+  @override
+  MethodChannel getChannel() {
+    return methodChannel;
+  }
 
   @override
   Future<T> go<T extends Object?>(String path, {dynamic params}) async {

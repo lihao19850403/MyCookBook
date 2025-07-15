@@ -2,7 +2,6 @@ import { common } from '@kit.AbilityKit';
 import { FlutterAbilityLaunchConfigs, FlutterEntry, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import { GlobalContext } from '../../utils/common/GlobalContext';
 import { RouterUtils } from '../../utils/common/RouterUtils';
-import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
 
 /** 跳转Flutter内容页时传递的参数。 */
@@ -17,8 +16,6 @@ export namespace FlutterIndexPage {
   export function go(pathInfo: FlutterPathInfo) {
     let path: string = pathInfo.path;
     let params: Record<string, Object> = {};
-    params['ScreenTopSafeZoneHeightPx'] = getScreenTopSafeZoneHeightPx();
-    params['ScreenBottomSafeZoneHeightPx'] = getScreenBottomSafeZoneHeightPx();
     if (pathInfo.params !== undefined) {
       Object.keys(pathInfo.params).forEach((key: string) => {
         let value: Object | undefined = pathInfo.params?.[key];
@@ -45,7 +42,7 @@ export function FlutterIndexPageBuilder() {
 @Component
 struct FlutterIndexPageComponent {
   private context = GlobalContext.getContext() as common.UIAbilityContext;
-  private flutterEntry?: FlutterEntry;
+  private flutterEntry?: FlutterWrapEntry;
   private flutterView?: FlutterView;
 
   build() {
@@ -77,9 +74,9 @@ struct FlutterIndexPageComponent {
     .onDisAppear(() => {
       this.flutterEntry?.aboutToDisappear();
     })
-    // .onBackPressed(() => {
-    //   this.context.eventHub.emit('EVENT_BACK_PRESS');
-    //   return true;
-    // })
+    .onBackPressed(() => {
+      this.flutterEntry?.callFlutterBack();
+      return true;
+    })
   }
 }

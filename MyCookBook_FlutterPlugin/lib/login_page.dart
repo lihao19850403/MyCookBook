@@ -39,6 +39,15 @@ class _LoginState extends State<LoginPage> {
                   padding: const EdgeInsets.only(top: 4),
                   child: ElevatedButton(
                       onPressed: () {
+                        FlutterRouter().go(context, 'second_page');
+                      },
+                      child: const Text('跳转至第二个Flutter页面',
+                          style: TextStyle(
+                              fontSize: 16, color: Color(0xFF333333))))),
+              Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: ElevatedButton(
+                      onPressed: () {
                         FlutterRouter()
                             .back(context, params: {'result': 'Flutter示例页面'});
                       },

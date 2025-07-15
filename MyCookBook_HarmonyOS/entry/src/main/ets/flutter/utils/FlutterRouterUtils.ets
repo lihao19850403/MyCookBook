@@ -47,7 +47,7 @@ const flutterRouterBackHandler: (call: MethodCall, params: Record<string, Object
   };
 
 /** 鸿蒙平台下的Flutter路由管理handler。 */
-export function flutterRouterPlugin(): FlutterRouterPlugin {
+export function getFlutterRouterPlugin(): FlutterRouterPlugin {
   let flutterRouterPlugin: FlutterRouterPlugin = new FlutterRouterPlugin();
   flutterRouterPlugin.setRouterPushHandler(flutterRouterPushHandler);
   flutterRouterPlugin.setRouterBackHandler(flutterRouterBackHandler);
