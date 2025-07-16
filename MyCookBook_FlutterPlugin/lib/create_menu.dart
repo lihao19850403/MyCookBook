@@ -1,22 +1,26 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key, this.params}) : super(key: key);
+class CreateMenu extends StatefulWidget {
+  const CreateMenu({Key? key, this.params}) : super(key: key);
 
   final Map<String, dynamic>? params;
 
   @override
   State<StatefulWidget> createState() {
-    return _LoginState();
+    return _CreateMenu();
   }
 }
 
-class _LoginState extends State<LoginPage> {
+class _CreateMenu extends State<CreateMenu> {
   @override
   Widget build(BuildContext context) {
+    FlutterBridge().getScreenSafeZoneHeightPx().then((result) =>
+        {print('flutter 顶端：${result["top"]}，底端：${result["bottom"]}')});
+
     return Scaffold(
         appBar: AppBar(centerTitle: true, title: const Text('登录页面')),
         body: Center(
@@ -33,15 +37,6 @@ class _LoginState extends State<LoginPage> {
                             params: {'url_params': 'https://www.baidu.com'});
                       },
                       child: const Text('跳转至百度首页',
-                          style: TextStyle(
-                              fontSize: 16, color: Color(0xFF333333))))),
-              Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        FlutterRouter().go(context, 'second_page');
-                      },
-                      child: const Text('跳转至第二个Flutter页面',
                           style: TextStyle(
                               fontSize: 16, color: Color(0xFF333333))))),
               Padding(

@@ -1,5 +1,5 @@
 import { common } from '@kit.AbilityKit';
-import { FlutterAbilityLaunchConfigs, FlutterEntry, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
+import { FlutterAbilityLaunchConfigs, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import { GlobalContext } from '../../utils/common/GlobalContext';
 import { RouterUtils } from '../../utils/common/RouterUtils';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
@@ -63,17 +63,9 @@ struct FlutterIndexPageComponent {
       this.flutterEntry.aboutToAppear();
       this.flutterView = this.flutterEntry.getFlutterView();
     })
-    .onShown(() => {
-      // FlutterManager.getInstance().setUseFullScreen(true);
-      this.flutterEntry?.onPageShow();
-    })
-    .onHidden(() => {
-      // FlutterManager.getInstance().setUseFullScreen(false);
-      this.flutterEntry?.onPageHide();
-    })
-    .onDisAppear(() => {
-      this.flutterEntry?.aboutToDisappear();
-    })
+    .onShown(() => this.flutterEntry?.onPageShow())
+    .onHidden(() => this.flutterEntry?.onPageHide())
+    .onDisAppear(() => this.flutterEntry?.aboutToDisappear())
     .onBackPressed(() => {
       this.flutterEntry?.callFlutterBack();
       return true;

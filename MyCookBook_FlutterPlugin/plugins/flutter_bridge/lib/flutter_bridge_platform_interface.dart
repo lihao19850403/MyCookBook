@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'flutter_bridge_method_channel.dart';
@@ -23,7 +24,12 @@ abstract class FlutterBridgePlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  MethodChannel getChannel() {
+    throw UnimplementedError('getChannel() has not been implemented.');
+  }
+
+  Future<T> getScreenSafeZoneHeightPx<T extends Object?>() {
+    throw UnimplementedError(
+        'getScreenSafeZoneHeightPx() has not been implemented.');
   }
 }

@@ -200,15 +200,7 @@ export struct HomeTabMineFavorite {
           }
         })
     }
-    .onClick((event: ClickEvent) => {
-      FlutterIndexPage.go({
-        path: 'login_page',
-        params: {
-          'name': '李浩',
-          'year': '1985-4-3'
-        }
-      });
-    })
+    .onClick((event: ClickEvent) => FlutterIndexPage.go({path: 'CreateMenu'}))
   }
 
   /**

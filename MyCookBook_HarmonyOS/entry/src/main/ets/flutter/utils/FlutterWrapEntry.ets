@@ -1,5 +1,7 @@
 import { FlutterEngine, FlutterEntry, Log, MethodResult } from "@ohos/flutter_ohos";
+import FlutterBridgePlugin from "flutter_bridge";
 import FlutterRouterPlugin from "flutter_router";
+import { getFlutterBridgePlugin } from "./FlutterBridgeUtils";
 import { getFlutterRouterPlugin } from "./FlutterRouterUtils";
 
 const TAG = "FlutterWrapEntry";
@@ -10,6 +12,7 @@ const TAG = "FlutterWrapEntry";
  */
 export default class FlutterWrapEntry extends FlutterEntry {
   private flutterRouterPlugin: FlutterRouterPlugin = getFlutterRouterPlugin();
+  private flutterBridgePlugin: FlutterBridgePlugin = getFlutterBridgePlugin();
 
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine);
@@ -17,8 +20,7 @@ export default class FlutterWrapEntry extends FlutterEntry {
       /* 注册通用插件。 */
       flutterEngine.getPlugins()?.add(this.flutterRouterPlugin);
       /* 注册其他插件。 */
-
-      // this.delegate?.addPlugin(new BatteryPlugin());
+      this.delegate?.addPlugin(this.flutterBridgePlugin);
     } catch (error) {
       Log.e(
         TAG,

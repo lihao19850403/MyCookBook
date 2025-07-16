@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:flutter_router/router_manager.dart';
-import 'package:my_cook_book_flutter_plugin/login_page.dart';
-import 'package:my_cook_book_flutter_plugin/second_page.dart';
+import 'package:my_cook_book_flutter_plugin/create_menu.dart';
 import 'package:my_cook_book_flutter_plugin/utils.dart';
 
 void main() {
@@ -18,10 +18,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterRouter().initOnMethodCallWhenBuild(Global.navigatorkey);
+    _initMethodCallHandlerWhenBuild();
     return MaterialApp(
       navigatorKey: Global.navigatorkey,
-      theme: ThemeData(primarySwatch: Colors.blue),
       home: RouterManager.instance.getRouterWidget(pathInfo),
     );
   }
@@ -29,7 +28,10 @@ class MyApp extends StatelessWidget {
 
 void _initRouters() {
   RouterManager.instance
-      .addRouter('login_page', (params) => LoginPage(params: params));
-  RouterManager.instance
-      .addRouter('second_page', (params) => const SecondPage());
+      .addRouter('CreateMenu', (params) => CreateMenu(params: params));
+}
+
+void _initMethodCallHandlerWhenBuild() {
+  FlutterRouter().initOnMethodCallWhenBuild(Global.navigatorkey);
+  FlutterBridge().initOnMethodCallWhenBuild(Global.navigatorkey);
 }
