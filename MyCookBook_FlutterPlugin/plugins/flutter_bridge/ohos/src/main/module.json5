@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "flutter_bridge",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}

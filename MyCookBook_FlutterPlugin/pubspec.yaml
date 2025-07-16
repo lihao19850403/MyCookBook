@@ -30,6 +30,8 @@ dependencies:
 
   flutter_router: 
     path: plugins/flutter_router
+  flutter_bridge:
+    path: plugins/flutter_bridge
 
 dev_dependencies:
   flutter_test:
