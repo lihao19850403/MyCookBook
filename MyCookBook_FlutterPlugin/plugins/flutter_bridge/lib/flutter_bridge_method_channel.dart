@@ -13,11 +13,4 @@ class MethodChannelFlutterBridge extends FlutterBridgePlatform {
   MethodChannel getChannel() {
     return methodChannel;
   }
-
-  @override
-  Future<T> getScreenSafeZoneHeightPx<T extends Object?>() async {
-    final result =
-        await methodChannel.invokeMethod('getScreenSafeZoneHeightPx');
-    return result;
-  }
 }

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
+import 'package:my_cook_book_flutter_plugin/utils/utils.dart';
 
 class CreateMenu extends StatefulWidget {
   const CreateMenu({Key? key, this.params}) : super(key: key);
@@ -18,15 +18,37 @@ class CreateMenu extends StatefulWidget {
 class _CreateMenu extends State<CreateMenu> {
   @override
   Widget build(BuildContext context) {
-    FlutterBridge().getScreenSafeZoneHeightPx().then((result) =>
-        {print('flutter 顶端：${result["top"]}，底端：${result["bottom"]}')});
-
     return Scaffold(
-        appBar: AppBar(centerTitle: true, title: const Text('登录页面')),
-        body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          toolbarHeight: 48 - 0.3,
+          centerTitle: true,
+          title: const Text(Resources_string.create_menu,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+          leading: Container(
+              alignment: Alignment.centerLeft,
+              child: InkWell(
+                  child: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child:
+                              Image.asset(Resources_media.ic_main_back_arrow))),
+                  onTap: () {
+                    FlutterRouter().back(context);
+                  })),
+        ),
+        body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const Divider(
+                color: Resources_color.main_bg_gray_color,
+                height: 0.3,
+              ),
+              /*
               const Text('登录页面获取到的参数', style: TextStyle(fontSize: 16)),
               Text(jsonEncode(widget.params)),
               Padding(
@@ -49,6 +71,7 @@ class _CreateMenu extends State<CreateMenu> {
                       child: const Text('退出此页面',
                           style: TextStyle(
                               fontSize: 16, color: Color(0xFF333333)))))
-            ])));
+               */
+            ]));
   }
 }

@@ -4,12 +4,18 @@ import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:flutter_router/router_manager.dart';
 import 'package:my_cook_book_flutter_plugin/create_menu.dart';
-import 'package:my_cook_book_flutter_plugin/utils.dart';
+import 'package:my_cook_book_flutter_plugin/utils/utils.dart';
+import 'package:my_cook_book_flutter_plugin/utils/error_handler.dart';
 
 void main() {
-  _initRouters();
-  var pathInfo = PlatformDispatcher.instance.defaultRouteName;
-  runApp(MyApp(pathInfo: pathInfo));
+  safeRun(() {
+    // 初始化路由。
+    RouterManager.instance
+        .addRouter('CreateMenu', (params) => CreateMenu(params: params));
+    // 加载内容页。
+    var pathInfo = PlatformDispatcher.instance.defaultRouteName;
+    runApp(MyApp(pathInfo: pathInfo));
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -20,17 +26,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     _initMethodCallHandlerWhenBuild();
     return MaterialApp(
+      title: 'FlutterPlugin',
       navigatorKey: Global.navigatorkey,
       home: RouterManager.instance.getRouterWidget(pathInfo),
     );
   }
 }
 
-void _initRouters() {
-  RouterManager.instance
-      .addRouter('CreateMenu', (params) => CreateMenu(params: params));
-}
-
+/// 在build方法中初始化Flutter方法回到监听。
 void _initMethodCallHandlerWhenBuild() {
   FlutterRouter().initOnMethodCallWhenBuild(Global.navigatorkey);
   FlutterBridge().initOnMethodCallWhenBuild(Global.navigatorkey);

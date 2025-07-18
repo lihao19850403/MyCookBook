@@ -27,9 +27,4 @@ abstract class FlutterBridgePlatform extends PlatformInterface {
   MethodChannel getChannel() {
     throw UnimplementedError('getChannel() has not been implemented.');
   }
-
-  Future<T> getScreenSafeZoneHeightPx<T extends Object?>() {
-    throw UnimplementedError(
-        'getScreenSafeZoneHeightPx() has not been implemented.');
-  }
 }

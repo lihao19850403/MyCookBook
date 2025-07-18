@@ -30,7 +30,7 @@ export default class FlutterBridgePlugin implements FlutterPlugin, MethodCallHan
   }
 
   getUniqueClassName(): string {
-    return "FlutterBridgePlugin"
+    return 'FlutterBridgePlugin'
   }
 
   getChannel(): MethodChannel | null {
@@ -38,7 +38,7 @@ export default class FlutterBridgePlugin implements FlutterPlugin, MethodCallHan
   }
 
   onAttachedToEngine(binding: FlutterPluginBinding): void {
-    this.channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_bridge");
+    this.channel = new MethodChannel(binding.getBinaryMessenger(), 'flutter_bridge');
     this.channel.setMethodCallHandler(this)
   }
 
