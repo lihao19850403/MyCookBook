@@ -71,7 +71,7 @@ export struct NewsTipsCard {
               LoadingProgress()
                 .height(24)
             } else if (this.imageLoadingStatus === IMAGE_LOADING_STATUS.FINISHED_FAILURE) {
-              Image($r('app.media.ic_reload_heavy_gray'))
+              Image($r("app.media.ic_reload_green"))
                 .width(24)
                 .height(24)
             }

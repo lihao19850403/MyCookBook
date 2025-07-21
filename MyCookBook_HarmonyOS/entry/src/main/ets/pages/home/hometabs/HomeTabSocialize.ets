@@ -86,7 +86,7 @@ export struct HomeTabSocialize {
 
   @Builder
   private Reload() {
-    Image($r('app.media.ic_reload_heavy_gray'))
+    Image($r("app.media.ic_reload_green"))
       .width(48)
       .height(48)
       .padding(12)

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
-import 'package:my_cook_book_flutter_plugin/utils/utils.dart';
+import 'package:my_cook_book_flutter_plugin/utils/global.dart';
 
 class CreateMenu extends StatefulWidget {
   const CreateMenu({Key? key, this.params}) : super(key: key);
@@ -39,15 +39,30 @@ class _CreateMenu extends State<CreateMenu> {
                   onTap: () {
                     FlutterRouter().back(context);
                   })),
+          actions: <Widget>[
+            Container(
+                alignment: Alignment.centerRight,
+                child: InkWell(
+                  child: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Image.asset(
+                              Resources_media.ic_create_menu_green))),
+                  onTap: () {},
+                ))
+          ],
         ),
         body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              const Divider(
-                color: Resources_color.main_bg_gray_color,
-                height: 0.3,
-              ),
+              SizedBox(
+                  height: 0.3,
+                  child: Container(
+                      decoration: const BoxDecoration(
+                          color: Resources_color.main_bg_gray_color))),
               /*
               const Text('登录页面获取到的参数', style: TextStyle(fontSize: 16)),
               Text(jsonEncode(widget.params)),

@@ -4,7 +4,7 @@ import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:flutter_router/router_manager.dart';
 import 'package:my_cook_book_flutter_plugin/create_menu.dart';
-import 'package:my_cook_book_flutter_plugin/utils/utils.dart';
+import 'package:my_cook_book_flutter_plugin/utils/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/error_handler.dart';
 
 void main() {
