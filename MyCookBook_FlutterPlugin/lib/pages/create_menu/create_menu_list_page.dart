@@ -1,21 +1,24 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
-import 'package:my_cook_book_flutter_plugin/utils/global.dart';
+import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
 
-class CreateMenu extends StatefulWidget {
-  const CreateMenu({Key? key, this.params}) : super(key: key);
+class CreateMenuListPage extends StatefulWidget {
+  const CreateMenuListPage({Key? key, this.params}) : super(key: key);
 
   final Map<String, dynamic>? params;
 
   @override
   State<StatefulWidget> createState() {
-    return _CreateMenu();
+    return _CreateMenuListPage();
   }
 }
 
-class _CreateMenu extends State<CreateMenu> {
+class _CreateMenuListPage extends State<CreateMenuListPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +27,7 @@ class _CreateMenu extends State<CreateMenu> {
           backgroundColor: Colors.white,
           toolbarHeight: 48 - 0.3,
           centerTitle: true,
-          title: const Text(Resources_string.create_menu,
+          title: const Text(Resources_string.create_menu_list_page_title,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
           leading: Container(
               alignment: Alignment.centerLeft,
@@ -49,7 +52,7 @@ class _CreateMenu extends State<CreateMenu> {
                       child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Image.asset(
-                              Resources_media.ic_create_menu_green))),
+                              Resources_media.ic_create_menu_add_green))),
                   onTap: () {},
                 ))
           ],
@@ -63,30 +66,11 @@ class _CreateMenu extends State<CreateMenu> {
                   child: Container(
                       decoration: const BoxDecoration(
                           color: Resources_color.main_bg_gray_color))),
-              /*
-              const Text('登录页面获取到的参数', style: TextStyle(fontSize: 16)),
-              Text(jsonEncode(widget.params)),
-              Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        FlutterRouter().go(context, 'LHWebBrowser',
-                            params: {'url_params': 'https://www.baidu.com'});
-                      },
-                      child: const Text('跳转至百度首页',
-                          style: TextStyle(
-                              fontSize: 16, color: Color(0xFF333333))))),
-              Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        FlutterRouter()
-                            .back(context, params: {'result': 'Flutter示例页面'});
-                      },
-                      child: const Text('退出此页面',
-                          style: TextStyle(
-                              fontSize: 16, color: Color(0xFF333333)))))
-               */
             ]));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

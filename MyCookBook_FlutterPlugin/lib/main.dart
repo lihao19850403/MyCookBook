@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:flutter_router/router_manager.dart';
-import 'package:my_cook_book_flutter_plugin/create_menu.dart';
-import 'package:my_cook_book_flutter_plugin/utils/global.dart';
-import 'package:my_cook_book_flutter_plugin/utils/error_handler.dart';
+import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/error_handler.dart';
 
 void main() {
   safeRun(() {
     // 初始化路由。
-    RouterManager.instance
-        .addRouter('CreateMenu', (params) => CreateMenu(params: params));
+    RouterManager.instance.addRouter(
+        'CreateMenu', (params) => CreateMenuListPage(params: params));
     // 加载内容页。
     var pathInfo = PlatformDispatcher.instance.defaultRouteName;
     runApp(MyApp(pathInfo: pathInfo));

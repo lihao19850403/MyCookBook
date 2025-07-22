@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:my_cook_book_flutter_plugin/utils/global.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 
 /// 长文本分段长度限制。
 const int _PART_CONTENT_LENGTH_LIMIT = 2000;
