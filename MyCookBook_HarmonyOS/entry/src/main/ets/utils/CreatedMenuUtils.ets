@@ -13,6 +13,7 @@ export const CREATED_MENU_CHANGE_EVENT_TYPE: string = 'CREATED_MENU_CHANGE_EVENT
 export const enum CreatedMenuChangeEventType {
   /** 更新创建的菜谱条目顺序。 */ UPDATE_CREATED_ORDER,
   /** 添加一个创建的菜谱。 */ ADD_ONE_CREATED_MENU,
+  /** 更新一个自创的菜谱。 */ UPDATE_ONE_CREATED_MENU,
   /** 删除一个创建的菜谱。 */ REMOVE_ONE_CREATED_MENU
 }
 
@@ -118,6 +119,37 @@ export class CreatedMenuUtils {
       let dataWrap: emitter.EventData = {};
       dataWrap.data = {
         CREATED_MENU_CHANGE_EVENT_TYPE: CreatedMenuChangeEventType.ADD_ONE_CREATED_MENU
+      };
+      emitter.emit(CREATED_MENU_CHANGE_EVENT, dataWrap);
+    } catch (error) {
+    }
+  }
+
+  /**
+   * 更新一个已有的自创菜谱。
+   * @param menu 待更新的新数据。
+   */
+  public static updateOneCreateMenu(menu: CreatedMenuItem) {
+    if (menu.id === undefined) {
+      return;
+    }
+    if (!KVUtils.hasKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER)) {
+      return;
+    }
+    let createdOrder = KVUtils.queryKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER);
+    if (createdOrder === BLANK_OBJECT) {
+      return;
+    }
+    try {
+      if (!(createdOrder as Array<number>).includes(menu.id)) {
+        return;
+      }
+      (createdOrder as Array<number>).unshift(menu.id);
+      KVUtils.setKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER, createdOrder);
+      KVUtils.setKV(FILE_NAME_CREATED_MENU, `${menu.id}`, JSON.stringify(menu));
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        CREATED_MENU_CHANGE_EVENT_TYPE: CreatedMenuChangeEventType.UPDATE_ONE_CREATED_MENU
       };
       emitter.emit(CREATED_MENU_CHANGE_EVENT, dataWrap);
     } catch (error) {
