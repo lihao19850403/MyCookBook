@@ -15,5 +15,5 @@ class Resources_media {
   static const String ic_main_back_arrow =
       'assets/images/ic_main_back_arrow.webp';
   static const String ic_create_menu_add_green =
-      'assets/images/ic_create_menu_green.webp';
+      'assets/images/ic_create_menu_add_green.webp';
 }

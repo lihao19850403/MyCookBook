@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bridge/flutter_bridge.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:flutter_router/router_manager.dart';
-import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu.dart';
+import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_list_page.dart';
+import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/error_handler.dart';
 
@@ -36,5 +36,5 @@ class MyApp extends StatelessWidget {
 /// 在build方法中初始化Flutter方法回到监听。
 void _initMethodCallHandlerWhenBuild() {
   FlutterRouter().initOnMethodCallWhenBuild(Global.navigatorkey);
-  FlutterBridge().initOnMethodCallWhenBuild(Global.navigatorkey);
+  Bridge.initOnMethodCallWhenBuild(Global.navigatorkey);
 }

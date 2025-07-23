@@ -27,4 +27,9 @@ abstract class FlutterBridgePlatform extends PlatformInterface {
   MethodChannel getChannel() {
     throw UnimplementedError('getChannel() has not been implemented.');
   }
+
+  Future<T> callNativeMethod<T extends Object?>(String methodName,
+      {dynamic methodParams}) {
+    throw UnimplementedError('callNativeMethod() has not been implemented.');
+  }
 }

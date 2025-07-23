@@ -13,4 +13,11 @@ class MethodChannelFlutterBridge extends FlutterBridgePlatform {
   MethodChannel getChannel() {
     return methodChannel;
   }
+
+  @override
+  Future<T> callNativeMethod<T extends Object?>(String methodName,
+      {dynamic methodParams}) async {
+    final result = await methodChannel.invokeMethod(methodName, methodParams);
+    return result;
+  }
 }

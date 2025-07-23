@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
+import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
+import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
 
 class CreateMenuListPage extends StatefulWidget {
@@ -17,6 +21,12 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
   @override
   void initState() {
     super.initState();
+    Bridge.queryAllCreatedMenus().then((List<CreatedMenuItem>? result) => {
+          if (result != null && result.isNotEmpty)
+            {
+              for (CreatedMenuItem item in result) {print(jsonEncode(item))}
+            }
+        });
   }
 
   @override
