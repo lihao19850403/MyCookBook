@@ -18,4 +18,6 @@ class Resources_media {
       'assets/images/ic_main_back_arrow.webp';
   static const String ic_create_menu_add_green =
       'assets/images/ic_create_menu_add_green.webp';
+  static const String ic_create_menu_default_bg =
+      'assets/images/ic_create_menu_default_bg.webp';
 }

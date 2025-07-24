@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
@@ -176,19 +178,44 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
             : null,
         child: InkWell(
           child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                    color: Resources_color.main_selected_light_color,
-                    width: 1.0),
-                boxShadow: const [
-                  BoxShadow(
-                      color: Resources_color.main_bg_gray_color,
-                      offset: Offset(2, 2))
-                ]),
-            child: Text('菜谱${index + 1}：\n$menuItem'),
-          ),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                      color: Resources_color.main_selected_light_color,
+                      width: 1.0),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Resources_color.main_selected_color,
+                        offset: Offset(1, 1))
+                  ]),
+              child: Stack(
+                alignment: Alignment.topRight,
+                children: <Widget>[
+                  Container(
+                      alignment: Alignment.topCenter,
+                      child: Column(children: <Widget>[
+                        Image(
+                            image: ResizeImage(
+                                FileImage(File(menuItem.cp_thumbnail ?? ''))),
+                            width: 640,
+                            height: 480,
+                            errorBuilder: (BuildContext imageErrorContext,
+                                    Object error, StackTrace? stackTrace) =>
+                                Image.asset(
+                                    Resources_media.ic_create_menu_default_bg),
+                            fit: BoxFit.contain),
+                        Container(
+                            alignment: Alignment.topLeft,
+                            decoration: const BoxDecoration(
+                                color:
+                                    Resources_color.main_selected_light_color),
+                            child: Column(children: <Widget>[
+                              Text('${menuItem.cp_name}')
+                            ]))
+                      ])),
+                ],
+              )),
           onLongPress: () {
             // 长按删除。
           },
