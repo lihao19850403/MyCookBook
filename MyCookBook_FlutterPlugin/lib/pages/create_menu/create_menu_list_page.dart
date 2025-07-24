@@ -1,10 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:waterfall_flow/waterfall_flow.dart';
 
 class CreateMenuListPage extends StatefulWidget {
   const CreateMenuListPage({Key? key, this.params}) : super(key: key);
@@ -18,15 +18,26 @@ class CreateMenuListPage extends StatefulWidget {
 }
 
 class _CreateMenuListPage extends State<CreateMenuListPage> {
+  /// 控制上拉加载/下拉刷新的controller。
+  final RefreshController _refreshController = RefreshController();
+
+  /// 瀑布流显示的列数。
+  int _columnCount = 2;
+
+  /// 自创菜谱列表。
+  List<CreatedMenuItem> _createdMenuList = <CreatedMenuItem>[];
+
   @override
   void initState() {
     super.initState();
-    Bridge.queryAllCreatedMenus().then((List<CreatedMenuItem>? result) => {
-          if (result != null && result.isNotEmpty)
-            {
-              for (CreatedMenuItem item in result) {print(jsonEncode(item))}
-            }
-        });
+    Bridge.queryAllCreatedMenus()
+        .then((List<CreatedMenuItem>? result) => setState(() {
+              if (result == null) {
+                _createdMenuList.clear();
+              } else {
+                _createdMenuList = result;
+              }
+            }));
   }
 
   @override
@@ -67,20 +78,92 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
                 ))
           ],
         ),
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
+        body: SafeArea(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
               SizedBox(
                   height: 0.3,
                   child: Container(
                       decoration: const BoxDecoration(
                           color: Resources_color.main_bg_gray_color))),
-            ]));
+              SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height - // 屏幕高。
+                      MediaQuery.of(context).padding.top - // 顶部安全区距离。
+                      48 + // 顶部标题栏高度。
+                      60, // 底部加载更多视图高度，ClassicFooter目前默认高60。
+                  child: _content())
+            ])));
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  /// 页面主体内容，使用瀑布流+下拉刷新组件实现。
+  Widget _content() {
+    return SmartRefresher(
+      controller: _refreshController,
+      enablePullDown: true,
+      enablePullUp: true,
+      header: const ClassicHeader(),
+      footer: const ClassicFooter(),
+      onRefresh: _onRefresh,
+      onLoading: _onLoadMore,
+      child: WaterfallFlow.builder(
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+            crossAxisCount: _columnCount,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            viewportBuilder: (int preIndex, int nextIndex) {
+              print('瀑布流变化：$preIndex → $nextIndex');
+            },
+            lastChildLayoutTypeBuilder: (int curCheckedIndex) {
+              return curCheckedIndex == _createdMenuList.length
+                  ? LastChildLayoutType.fullCrossAxisExtent
+                  : LastChildLayoutType.none;
+            },
+          ),
+          itemCount: _createdMenuList.length,
+          itemBuilder: (BuildContext buildContext, int index) =>
+              _oneMenuItem(buildContext, index)),
+    );
+  }
+
+  /// 下拉刷新整个页面。
+  void _onRefresh() async {
+    List<CreatedMenuItem>? refreshedData = await Bridge.queryAllCreatedMenus();
+    setState(() {
+      if (refreshedData == null) {
+        _createdMenuList.clear();
+      } else {
+        _createdMenuList = refreshedData;
+      }
+    });
+    _refreshController.refreshCompleted();
+  }
+
+  /// 上拉加载更多内容。
+  void _onLoadMore() async {
+    /// 动作待定。
+    _refreshController.loadComplete();
+  }
+
+  /// 菜谱item内容。
+  Widget _oneMenuItem(BuildContext buildContext, int index) {
+    CreatedMenuItem menuItem = _createdMenuList[index];
+    bool isLast = index == _createdMenuList.length - 1;
+    return Container(
+        child: Container(
+      alignment: Alignment.center,
+      decoration:
+          const BoxDecoration(color: Resources_color.main_selected_light_color),
+      margin: isLast ? EdgeInsets.only(bottom: 60) : null,
+      child: Text('菜谱${index + 1}：\n$menuItem'),
+    ));
   }
 }

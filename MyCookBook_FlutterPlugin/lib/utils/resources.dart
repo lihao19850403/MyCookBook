@@ -3,6 +3,8 @@ import 'dart:ui';
 /// 全局颜色资源。
 class Resources_color {
   static const main_bg_gray_color = Color(0xFFF2F2F2);
+  static const main_selected_light_color = Color(0xFF8BD159);
+  static const main_selected_color = Color(0xFF5E9D3B);
 }
 
 /// 全局文字资源。

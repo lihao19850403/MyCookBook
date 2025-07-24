@@ -55,6 +55,7 @@ function queryAllCreatedMenus(): Array<CreatedMenuItem> {
   if (menuItems.length === 0) { // 无自创菜谱数据时，使用mock数据。
     let dataResult: CreateMenuMockResult = readRawFileSync<CreateMenuMockResult>(CREATE_MENU_MOCK_DATA);
     if (dataResult !== undefined && dataResult !== BLANK_OBJECT && dataResult.list !== undefined && dataResult.list.length > 0) {
+      dataResult.list.forEach((menuItem: CreatedMenuItem): void => CreatedMenuUtils.addOneCreatedMenu(menuItem));
       menuItems = dataResult.list;
     }
   }
