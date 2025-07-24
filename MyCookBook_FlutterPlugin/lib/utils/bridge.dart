@@ -20,6 +20,27 @@ class Bridge {
     });
   }
 
+  /// 查询屏幕顶部和底部安全区距离，单位是VP。
+  static Future<Map<String, double>?> queryScreenSafeZoneHeightVP() async {
+    final Map<Object?, Object?>? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('queryScreenSafeZoneHeightVP');
+    if (result == null) {
+      return Future.value(null);
+    }
+    Map<String, double> data = <String, double>{};
+    if (result.containsKey('screenTopSafeZoneHeightVP') &&
+        result['screenTopSafeZoneHeightVP'] != null) {
+      data['screenTopSafeZoneHeightVP'] =
+          result['screenTopSafeZoneHeightVP'] as double;
+    }
+    if (result.containsKey('screenBottomSafeZoneHeightVP') &&
+        result['screenBottomSafeZoneHeightVP'] != null) {
+      data['screenBottomSafeZoneHeightVP'] =
+          result['screenBottomSafeZoneHeightVP'] as double;
+    }
+    return Future.value(data);
+  }
+
   /// 查询所有自创菜谱。
   static Future<List<CreatedMenuItem>?> queryAllCreatedMenus() async {
     final List<Object?>? result = await FlutterBridgePlatform.instance

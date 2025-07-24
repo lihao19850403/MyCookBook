@@ -1,6 +1,7 @@
 import { MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import { CreatedMenuItem } from "../../models/CreatedMenuItem";
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from "../../utils/common/ScreenUIAdapter";
 import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 
@@ -12,6 +13,11 @@ import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
  */
 const flutterBridgeCallHandler: (methodName: string, methodParams: object | undefined, result: MethodResult) => void =
   (methodName, methodParams, result) => {
+    if (methodName === 'queryScreenSafeZoneHeightVP') {
+      let screenSafeZoneVP: Record<string, number> = queryScreenSafeZoneHeightVP();
+      result.success(screenSafeZoneVP);
+      return;
+    }
     if (methodName === 'queryAllCreatedMenus') {
       let allCreatedMenus: Array<CreatedMenuItem> = queryAllCreatedMenus();
       result.success(allCreatedMenus);
@@ -28,6 +34,19 @@ export function getFlutterBridgePlugin(): FlutterBridgePlugin {
 }
 
 /* ---------- 桥方法。 ---------- */
+
+/**
+ * 查询屏幕安全区高度，单位是VP。
+ * @returns 查询结果。
+ */
+function queryScreenSafeZoneHeightVP(): Record<string, number> {
+  let screenTopSafeZoneHeightPx: number = getScreenTopSafeZoneHeightPx();
+  let screenBottomSafeZoneHeightPx: number = getScreenBottomSafeZoneHeightPx();
+  let result: Record<string, number> = {};
+  result['screenTopSafeZoneHeightVP'] = px2vp(screenTopSafeZoneHeightPx);
+  result['screenBottomSafeZoneHeightVP'] = px2vp(screenBottomSafeZoneHeightPx);
+  return result;
+}
 
 /** 自创菜谱模拟数据文件。 */
 const CREATE_MENU_MOCK_DATA: string = 'home_tab_mine_create_menu_mock.json5';

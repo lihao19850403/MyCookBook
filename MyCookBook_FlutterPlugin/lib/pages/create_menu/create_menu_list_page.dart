@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
@@ -21,6 +22,15 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
   /// 控制上拉加载/下拉刷新的controller。
   final RefreshController _refreshController = RefreshController();
 
+  /// 屏幕顶部安全区距离。
+  final double _screenTopSafeZoneHeightVP =
+      MediaQueryData.fromView(PlatformDispatcher.instance.views.first)
+          .padding
+          .top;
+
+  /// 屏幕底部安全区距离。
+  double _screenBottomSafeZoneHeightVP = 0;
+
   /// 瀑布流显示的列数。
   int _columnCount = 2;
 
@@ -30,6 +40,14 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
   @override
   void initState() {
     super.initState();
+    Bridge.queryScreenSafeZoneHeightVP()
+        .then((Map<String, double>? result) => setState(() {
+              if (result != null &&
+                  result.containsKey('screenBottomSafeZoneHeightVP')) {
+                _screenBottomSafeZoneHeightVP =
+                    result['screenBottomSafeZoneHeightVP'] as double;
+              }
+            }));
     Bridge.queryAllCreatedMenus()
         .then((List<CreatedMenuItem>? result) => setState(() {
               if (result == null) {
@@ -43,10 +61,9 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Resources_color.main_bg_gray_color,
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          toolbarHeight: 48 - 0.3,
+          toolbarHeight: 48,
           centerTitle: true,
           title: const Text(Resources_string.create_menu_list_page_title,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
@@ -84,14 +101,9 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
               SizedBox(
-                  height: 0.3,
-                  child: Container(
-                      decoration: const BoxDecoration(
-                          color: Resources_color.main_bg_gray_color))),
-              SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height - // 屏幕高。
-                      MediaQuery.of(context).padding.top - // 顶部安全区距离。
+                      _screenTopSafeZoneHeightVP - // 顶部安全区距离。
                       48 + // 顶部标题栏高度。
                       60, // 底部加载更多视图高度，ClassicFooter目前默认高60。
                   child: _content())
@@ -114,11 +126,12 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
       onRefresh: _onRefresh,
       onLoading: _onLoadMore,
       child: WaterfallFlow.builder(
+          padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
           physics: const BouncingScrollPhysics(),
           gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
             crossAxisCount: _columnCount,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
             viewportBuilder: (int preIndex, int nextIndex) {
               print('瀑布流变化：$preIndex → $nextIndex');
             },
@@ -158,12 +171,30 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
     CreatedMenuItem menuItem = _createdMenuList[index];
     bool isLast = index == _createdMenuList.length - 1;
     return Container(
-        child: Container(
-      alignment: Alignment.center,
-      decoration:
-          const BoxDecoration(color: Resources_color.main_selected_light_color),
-      margin: isLast ? EdgeInsets.only(bottom: 60) : null,
-      child: Text('菜谱${index + 1}：\n$menuItem'),
-    ));
+        margin: isLast
+            ? EdgeInsets.only(bottom: _screenBottomSafeZoneHeightVP)
+            : null,
+        child: InkWell(
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                    color: Resources_color.main_selected_light_color,
+                    width: 1.0),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Resources_color.main_bg_gray_color,
+                      offset: Offset(2, 2))
+                ]),
+            child: Text('菜谱${index + 1}：\n$menuItem'),
+          ),
+          onLongPress: () {
+            // 长按删除。
+          },
+          onTap: () {
+            // 单击查看详情。
+          },
+        ));
   }
 }
