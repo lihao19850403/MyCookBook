@@ -5,6 +5,11 @@ class Resources_color {
   static const main_bg_gray_color = Color(0xFFF2F2F2);
   static const main_selected_light_color = Color(0xFF8BD159);
   static const main_selected_color = Color(0xFF5E9D3B);
+  static const menu_type_name_bg_color = Color(0xFFCBDFAE);
+  static const menu_type_name_text_color = Color(0xFF3E5529);
+  static const menu_feature_bg_color = Color(0xFFF1CCB1);
+  static const menu_feature_text_color = Color(0xFF80401A);
+  static const main_unselected_color = Color(0xFFBFBFBF);
 }
 
 /// 全局文字资源。

@@ -117,6 +117,8 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
     super.dispose();
   }
 
+  /* ---------- 页面主体内容。 ---------- */
+
   /// 页面主体内容，使用瀑布流+下拉刷新组件实现。
   Widget _content() {
     return SmartRefresher(
@@ -134,9 +136,7 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
             crossAxisCount: _columnCount,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            viewportBuilder: (int preIndex, int nextIndex) {
-              print('瀑布流变化：$preIndex → $nextIndex');
-            },
+            viewportBuilder: (int preIndex, int nextIndex) {},
             lastChildLayoutTypeBuilder: (int curCheckedIndex) {
               return curCheckedIndex == _createdMenuList.length
                   ? LastChildLayoutType.fullCrossAxisExtent
@@ -160,13 +160,17 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
       }
     });
     _refreshController.refreshCompleted();
+    print('下拉刷新-完成');
   }
 
   /// 上拉加载更多内容。
   void _onLoadMore() async {
     /// 动作待定。
     _refreshController.loadComplete();
+    print('上拉加载更多-完成');
   }
+
+  /* ---------- 菜谱item内容。 ---------- */
 
   /// 菜谱item内容。
   Widget _oneMenuItem(BuildContext buildContext, int index) {
@@ -179,20 +183,14 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
         child: InkWell(
           child: Container(
               alignment: Alignment.center,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(
-                      color: Resources_color.main_selected_light_color,
-                      width: 1.0),
-                  boxShadow: const [
-                    BoxShadow(
-                        color: Resources_color.main_selected_color,
-                        offset: Offset(1, 1))
-                  ]),
+                  borderRadius: BorderRadius.all(Radius.circular(4))),
               child: Stack(
                 alignment: Alignment.topRight,
                 children: <Widget>[
                   Container(
+                      padding: const EdgeInsets.all(4),
                       alignment: Alignment.topCenter,
                       child: Column(children: <Widget>[
                         Image(
@@ -207,12 +205,10 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
                             fit: BoxFit.contain),
                         Container(
                             alignment: Alignment.topLeft,
-                            decoration: const BoxDecoration(
-                                color:
-                                    Resources_color.main_selected_light_color),
-                            child: Column(children: <Widget>[
-                              Text('${menuItem.cp_name}')
-                            ]))
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: _textContent(menuItem, index)))
                       ])),
                 ],
               )),
@@ -223,5 +219,63 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
             // 单击查看详情。
           },
         ));
+  }
+
+  /// 菜谱item的文字部分内容。
+  List<Widget> _textContent(CreatedMenuItem menuItem, int index) {
+    List<Widget> children = <Widget>[];
+    if (menuItem.cp_name != null && menuItem.cp_name!.isNotEmpty) {
+      children.add(Text('${index + 1}. ${menuItem.cp_name}',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)));
+    }
+    if (menuItem.type_name != null && menuItem.type_name!.isNotEmpty) {
+      children.add(Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+                color: Resources_color.menu_type_name_bg_color,
+                borderRadius: BorderRadius.all(Radius.circular(4))),
+            child: Text('${menuItem.type_name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal,
+                    color: Resources_color.menu_type_name_text_color)),
+          )));
+    }
+    if (menuItem.texing != null && menuItem.texing!.isNotEmpty) {
+      children.add(Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+                color: Resources_color.menu_feature_bg_color,
+                borderRadius: BorderRadius.all(Radius.circular(4))),
+            child: Text('${menuItem.texing}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal,
+                    color: Resources_color.menu_feature_text_color)),
+          )));
+    }
+    if (menuItem.author != null &&
+        menuItem.author!.isNotEmpty &&
+        menuItem.createdTime != null &&
+        menuItem.createdTime!.isNotEmpty) {
+      children.add(Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text('${menuItem.author} 创作于 ${menuItem.createdTime}',
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Resources_color.main_unselected_color))));
+    }
+    return children;
   }
 }
