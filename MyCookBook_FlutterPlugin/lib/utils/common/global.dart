@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// 全局调试标记。
@@ -7,4 +8,13 @@ const String TAG = '[Flutter]';
 class Global {
   /// 全局Navigator上下文。
   static GlobalKey<NavigatorState> navigatorkey = GlobalKey();
+
+  /// 屏幕顶端安全区距离。
+  static double screenTopSafeZoneHeightVP =
+      MediaQueryData.fromView(PlatformDispatcher.instance.views.first)
+          .padding
+          .top;
+
+  /// 屏幕底部安全区距离。
+  static double screenBottomSafeZoneHeightVP = 0;
 }

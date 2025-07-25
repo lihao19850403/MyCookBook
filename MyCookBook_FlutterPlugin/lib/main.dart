@@ -24,12 +24,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _initGlobalParams(pathInfo);
     _initMethodCallHandlerWhenBuild();
     return MaterialApp(
       title: 'FlutterPlugin',
       navigatorKey: Global.navigatorkey,
       home: RouterManager.instance.getRouterWidget(pathInfo),
     );
+  }
+}
+
+/// 初始化全局参数。
+void _initGlobalParams(String pathInfo) {
+  Map<Object?, Object?>? params =
+      RouterManager.instance.getRouterParams(pathInfo) as Map?;
+  if (params == null || params.isEmpty) {
+    return;
+  }
+  if (params.containsKey('screenTopSafeZoneHeightVP')) {
+    Global.screenTopSafeZoneHeightVP =
+        params['screenTopSafeZoneHeightVP'] as double;
+  }
+  if (params.containsKey('screenBottomSafeZoneHeightVP')) {
+    Global.screenBottomSafeZoneHeightVP =
+        params['screenBottomSafeZoneHeightVP'] as double;
   }
 }
 

@@ -2,6 +2,7 @@ import { common } from '@kit.AbilityKit';
 import { FlutterAbilityLaunchConfigs, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import { GlobalContext } from '../../utils/common/GlobalContext';
 import { RouterUtils } from '../../utils/common/RouterUtils';
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
 
 /** 跳转Flutter内容页时传递的参数。 */
@@ -14,6 +15,7 @@ export interface FlutterPathInfo {
 
 export namespace FlutterIndexPage {
   export function go(pathInfo: FlutterPathInfo) {
+    // 解析页面跳转参数。
     let path: string = pathInfo.path;
     let params: Record<string, Object> = {};
     if (pathInfo.params !== undefined) {
@@ -24,6 +26,9 @@ export namespace FlutterIndexPage {
         }
       })
     }
+    // 增加全局设置参数。
+    params['screenTopSafeZoneHeightVP'] = px2vp(getScreenTopSafeZoneHeightPx());
+    params['screenBottomSafeZoneHeightVP'] = px2vp(getScreenBottomSafeZoneHeightPx());
     let routerParams: Record<string, Object> = {};
     routerParams[FlutterAbilityLaunchConfigs.EXTRA_INITIAL_ROUTE] = `${path}?${JSON.stringify(params)}`;
     RouterUtils.navPushPath('FlutterIndexPage', routerParams);

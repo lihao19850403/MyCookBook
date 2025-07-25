@@ -28,8 +28,8 @@ class RouterManager {
   ///
   /// 注：如果路由信息不对应任何Widget构造方法，那么会返回一个Container空容器。
   Widget getRouterWidget(String routerInfo, {Object? defaultParams}) {
-    final String path = _getRouterPath(routerInfo);
-    Object? params = _getRouterParams(routerInfo);
+    final String path = getRouterPath(routerInfo);
+    Object? params = getRouterParams(routerInfo);
     RouterWidgetBuilder? routerWidgetBuilder = _routerMap[path];
     if (routerWidgetBuilder != null) {
       return routerWidgetBuilder(params ?? defaultParams);
@@ -40,14 +40,14 @@ class RouterManager {
 
   /// 判断给定的路由信息[routerInfo]是否指向Flutter页面。
   bool isFlutterPage(String routerInfo) {
-    final String path = _getRouterPath(routerInfo);
+    final String path = getRouterPath(routerInfo);
     return _routerMap.containsKey(path);
   }
 
   /// 从路由信息[routerInfo]中解析出路径信息。
   ///
   /// 路由格式暂定为`path?params`，其中path是路由的路径信息，params是路由参数。路由参数是一个json字符串，路径信息与路由参数之间用问号分割。
-  String _getRouterPath(String? routerInfo) {
+  String getRouterPath(String? routerInfo) {
     if (routerInfo == null) {
       return '/';
     }
@@ -62,7 +62,7 @@ class RouterManager {
   /// 从路由信息[routerInfo]中解析出路由参数。
   ///
   /// 路由格式暂定为`path?params`，其中path是路由的路径信息，params是路由参数。路由参数是一个json字符串，路径信息与路由参数之间用问号分割。
-  Object? _getRouterParams(String? routerInfo) {
+  Object? getRouterParams(String? routerInfo) {
     if (routerInfo == null) {
       return null;
     }

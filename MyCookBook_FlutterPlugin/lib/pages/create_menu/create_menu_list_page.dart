@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
@@ -20,18 +21,9 @@ class CreateMenuListPage extends StatefulWidget {
   }
 }
 
-class _CreateMenuListPage extends State<CreateMenuListPage> {
+class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   /// 控制上拉加载/下拉刷新的controller。
   final RefreshController _refreshController = RefreshController();
-
-  /// 屏幕顶部安全区距离。
-  final double _screenTopSafeZoneHeightVP =
-      MediaQueryData.fromView(PlatformDispatcher.instance.views.first)
-          .padding
-          .top;
-
-  /// 屏幕底部安全区距离。
-  double _screenBottomSafeZoneHeightVP = 0;
 
   /// 瀑布流显示的列数。
   int _columnCount = 2;
@@ -42,20 +34,11 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
   @override
   void initState() {
     super.initState();
-    Bridge.queryScreenSafeZoneHeightVP()
-        .then((Map<String, double>? result) => setState(() {
-              if (result != null &&
-                  result.containsKey('screenBottomSafeZoneHeightVP')) {
-                _screenBottomSafeZoneHeightVP =
-                    result['screenBottomSafeZoneHeightVP'] as double;
-              }
-            }));
     Bridge.queryAllCreatedMenus()
-        .then((List<CreatedMenuItem>? result) => setState(() {
-              if (result == null) {
-                _createdMenuList.clear();
-              } else {
-                _createdMenuList = result;
+        .then((List<CreatedMenuItem>? result) => safeUpdate(() {
+              _createdMenuList.clear();
+              if (result != null) {
+                _createdMenuList.addAll(result);
               }
             }));
   }
@@ -79,9 +62,7 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
                           padding: const EdgeInsets.all(12),
                           child:
                               Image.asset(Resources_media.ic_main_back_arrow))),
-                  onTap: () {
-                    FlutterRouter().back(context);
-                  })),
+                  onTap: () => FlutterRouter().back(context))),
           actions: <Widget>[
             Container(
                 alignment: Alignment.centerRight,
@@ -105,7 +86,7 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
               SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height - // 屏幕高。
-                      _screenTopSafeZoneHeightVP - // 顶部安全区距离。
+                      Global.screenTopSafeZoneHeightVP - // 顶部安全区距离。
                       48 + // 顶部标题栏高度。
                       60, // 底部加载更多视图高度，ClassicFooter目前默认高60。
                   child: _content())
@@ -136,7 +117,6 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
             crossAxisCount: _columnCount,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            viewportBuilder: (int preIndex, int nextIndex) {},
             lastChildLayoutTypeBuilder: (int curCheckedIndex) {
               return curCheckedIndex == _createdMenuList.length
                   ? LastChildLayoutType.fullCrossAxisExtent
@@ -152,11 +132,10 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
   /// 下拉刷新整个页面。
   void _onRefresh() async {
     List<CreatedMenuItem>? refreshedData = await Bridge.queryAllCreatedMenus();
-    setState(() {
-      if (refreshedData == null) {
-        _createdMenuList.clear();
-      } else {
-        _createdMenuList = refreshedData;
+    safeUpdate(() {
+      _createdMenuList.clear();
+      if (refreshedData != null) {
+        _createdMenuList.addAll(refreshedData);
       }
     });
     _refreshController.refreshCompleted();
@@ -165,7 +144,8 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
 
   /// 上拉加载更多内容。
   void _onLoadMore() async {
-    /// 动作待定。
+    /// 动作待定，先延迟1秒。
+    await Future.delayed(const Duration(milliseconds: 1000));
     _refreshController.loadComplete();
     print('上拉加载更多-完成');
   }
@@ -178,7 +158,7 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
     bool isLast = index == _createdMenuList.length - 1;
     return Container(
         margin: isLast
-            ? EdgeInsets.only(bottom: _screenBottomSafeZoneHeightVP)
+            ? EdgeInsets.only(bottom: Global.screenBottomSafeZoneHeightVP)
             : null,
         child: InkWell(
           child: Container(
@@ -194,14 +174,8 @@ class _CreateMenuListPage extends State<CreateMenuListPage> {
                       alignment: Alignment.topCenter,
                       child: Column(children: <Widget>[
                         Image(
-                            image: ResizeImage(
-                                FileImage(File(menuItem.cp_thumbnail ?? ''))),
-                            width: 640,
-                            height: 480,
-                            errorBuilder: (BuildContext imageErrorContext,
-                                    Object error, StackTrace? stackTrace) =>
-                                Image.asset(
-                                    Resources_media.ic_create_menu_default_bg),
+                            image: AssetImage(
+                                Resources_media.ic_create_menu_default_bg),
                             fit: BoxFit.contain),
                         Container(
                             alignment: Alignment.topLeft,
