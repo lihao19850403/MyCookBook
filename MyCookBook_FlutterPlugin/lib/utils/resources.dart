@@ -15,6 +15,9 @@ class Resources_color {
 /// 全局文字资源。
 class Resources_string {
   static const String create_menu_list_page_title = '自创菜谱';
+  static const String create_menu_add_page_title = '新建菜谱';
+  static const String detail_page_author = '作者';
+  static const String modify_page_title_hint = '请输入菜谱名字';
 }
 
 /// 全局文件资源。
@@ -25,4 +28,6 @@ class Resources_media {
       'assets/images/ic_create_menu_add_green.webp';
   static const String ic_create_menu_default_bg =
       'assets/images/ic_create_menu_default_bg.webp';
+  static const String ic_right_green = 'assets/images/ic_right_green.webp';
+  static const String ic_wrong_green = 'assets/images/ic_wrong_green.webp';
 }

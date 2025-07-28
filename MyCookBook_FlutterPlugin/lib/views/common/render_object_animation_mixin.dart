@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 
 /// 动画调度抽象类，用于混入。
 mixin RenderObjectAnimationMixin on RenderObject {

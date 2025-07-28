@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 
 /// 自定义抽象控件，提供安全的setState功能。
 class SafeState<T extends StatefulWidget> extends State<T> {

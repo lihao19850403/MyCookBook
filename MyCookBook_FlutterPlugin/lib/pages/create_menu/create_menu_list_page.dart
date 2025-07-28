@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
@@ -27,10 +25,14 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   final RefreshController _refreshController = RefreshController();
 
   /// 瀑布流显示的列数。
-  int _columnCount = 2;
+  int _columnCount = Global.screenUIType == ScreenUIType.NORMAL ||
+          (Global.isSplitScreen &&
+              Global.screenUIType == ScreenUIType.FOLD_OPENED)
+      ? 2
+      : 4;
 
   /// 自创菜谱列表。
-  List<CreatedMenuItem> _createdMenuList = <CreatedMenuItem>[];
+  final List<CreatedMenuItem> _createdMenuList = <CreatedMenuItem>[];
 
   @override
   void initState() {
@@ -86,7 +88,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                           padding: const EdgeInsets.all(12),
                           child: Image.asset(
                               Resources_media.ic_create_menu_add_green))),
-                  onTap: () {},
+                  onTap: () => FlutterRouter().go(context, 'ModifyMenu'),
                 ))
           ],
         ),
