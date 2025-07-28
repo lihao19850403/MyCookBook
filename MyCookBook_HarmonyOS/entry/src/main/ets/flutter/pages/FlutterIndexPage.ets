@@ -2,8 +2,17 @@ import { common } from '@kit.AbilityKit';
 import { FlutterAbilityLaunchConfigs, FlutterPage, FlutterView } from '@ohos/flutter_ohos';
 import { GlobalContext } from '../../utils/common/GlobalContext';
 import { RouterUtils } from '../../utils/common/RouterUtils';
-import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx,
+  getScreenUIType,
+  ScreenUIType,
+  SCREEN_UI_CHANGE_EVENT,
+  SCREEN_UI_NEW_TYPE} from '../../utils/common/ScreenUIAdapter';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
+import emitter from '@ohos.events.emitter';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN} from '../../utils/common/GlobalAppSettings';
+import { AppSettings } from '../../utils/AppSettings';
 
 /** 跳转Flutter内容页时传递的参数。 */
 export interface FlutterPathInfo {
@@ -29,6 +38,8 @@ export namespace FlutterIndexPage {
     // 增加全局设置参数。
     params['screenTopSafeZoneHeightVP'] = px2vp(getScreenTopSafeZoneHeightPx());
     params['screenBottomSafeZoneHeightVP'] = px2vp(getScreenBottomSafeZoneHeightPx());
+    params['screenUIType'] = getScreenUIType();
+    params['splitScreenSetting'] = AppSettings.isSplitScreen();
     let routerParams: Record<string, Object> = {};
     routerParams[FlutterAbilityLaunchConfigs.EXTRA_INITIAL_ROUTE] = `${path}?${JSON.stringify(params)}`;
     RouterUtils.navPushPath('FlutterIndexPage', routerParams);
@@ -67,6 +78,24 @@ struct FlutterIndexPageComponent {
       this.flutterEntry = new FlutterWrapEntry(this.context, params);
       this.flutterEntry.aboutToAppear();
       this.flutterView = this.flutterEntry.getFlutterView();
+      emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
+        if (dataWrap.data) {
+          let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
+          this.flutterEntry?.callFlutterBridgeMethod('screenUITypeChanged', newScreenUIType);
+        }
+      });
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
+        if (dataWrap.data) {
+          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+          switch (eventType) {
+            case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+              let isSplitScreen: boolean = AppSettings.isSplitScreen();
+              this.flutterEntry?.callFlutterBridgeMethod('splitScreenSettingChanged', isSplitScreen);
+            } break;
+            default: break;
+          }
+        }
+      });
     })
     .onShown(() => this.flutterEntry?.onPageShow())
     .onHidden(() => this.flutterEntry?.onPageHide())

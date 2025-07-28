@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
@@ -34,6 +35,17 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   @override
   void initState() {
     super.initState();
+    eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
+      safeUpdate(() {
+        if (Global.screenUIType == ScreenUIType.NORMAL ||
+            (Global.isSplitScreen &&
+                Global.screenUIType == ScreenUIType.FOLD_OPENED)) {
+          _columnCount = 2;
+        } else {
+          _columnCount = 4;
+        }
+      });
+    });
     Bridge.queryAllCreatedMenus()
         .then((List<CreatedMenuItem>? result) => safeUpdate(() {
               _createdMenuList.clear();

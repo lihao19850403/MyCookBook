@@ -2,6 +2,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bridge/flutter_bridge_platform_interface.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
+
+/// 屏幕类型、分屏配置项变化事件。
+const String SCREEN_UI_INFO_CHANGED_EVENT = 'screenUIInfoChangedEvent';
 
 /// Flutter与原生交互的桥方法集。
 class Bridge {
@@ -12,10 +17,22 @@ class Bridge {
     FlutterBridgePlatform.instance
         .getChannel()
         .setMethodCallHandler((MethodCall call) async {
-      // if (call.method == 'xxx') {
-
-      //   return true;
-      // }
+      if (call.method == 'screenUITypeChanged') {
+        int newScreenUIType = call.arguments as int;
+        Global.screenUIType = newScreenUIType == 1
+            ? ScreenUIType.FOLD_OPENED
+            : newScreenUIType == 2
+                ? ScreenUIType.PAD
+                : ScreenUIType.NORMAL;
+        eventBus.emit(SCREEN_UI_INFO_CHANGED_EVENT);
+        return true;
+      }
+      if (call.method == 'splitScreenSettingChanged') {
+        bool newSplitScreenSetting = call.arguments as bool;
+        Global.isSplitScreen = newSplitScreenSetting;
+        eventBus.emit(SCREEN_UI_INFO_CHANGED_EVENT);
+        return true;
+      }
       return '${call.method} is not exist.';
     });
   }

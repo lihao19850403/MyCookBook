@@ -39,4 +39,14 @@ export default class FlutterWrapEntry extends FlutterEntry {
   callFlutterBack(params?: Object, callback?: MethodResult) {
     this.flutterRouterPlugin.getChannel()?.invokeMethod('back', params, callback);
   }
+
+  /**
+   * 调用Flutter的桥方法。
+   * @param methodName 方法名。
+   * @param params 方法参数。
+   * @param callback 执行结果回调。
+   */
+  callFlutterBridgeMethod(methodName: string, params?: Object, callback?: MethodResult) {
+    this.flutterBridgePlugin.getChannel()?.invokeMethod(methodName, params, callback);
+  }
 }

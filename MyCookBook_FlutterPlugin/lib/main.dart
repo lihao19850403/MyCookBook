@@ -49,6 +49,17 @@ void _initGlobalParams(String pathInfo) {
     Global.screenBottomSafeZoneHeightVP =
         params['screenBottomSafeZoneHeightVP'] as double;
   }
+  if (params.containsKey('screenUIType')) {
+    int screenUIType = params['screenUIType'] as int;
+    Global.screenUIType = screenUIType == 1
+        ? ScreenUIType.FOLD_OPENED
+        : screenUIType == 2
+            ? ScreenUIType.PAD
+            : ScreenUIType.NORMAL;
+  }
+  if (params.containsKey('splitScreenSetting')) {
+    Global.isSplitScreen = params['splitScreenSetting'] as bool;
+  }
 }
 
 /// 在build方法中初始化Flutter方法回到监听。

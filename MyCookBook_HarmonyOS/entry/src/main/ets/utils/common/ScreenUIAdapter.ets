@@ -13,9 +13,9 @@ export const SCREEN_UI_NEW_TYPE: string = 'SCREEN_UI_NEW_TYPE';
 
 /** 屏幕类型。 */
 export const enum ScreenUIType {
-  /** 直板单屏、折叠屏设备已合上、默认状态。 */ NORMAL,
-  /** 折叠屏设备已打开状态。 */ FOLD_OPENED,
-  /** 平板类型设备屏幕。 */ PAD
+  /** 直板单屏、折叠屏设备已合上、默认状态。 */ NORMAL = 0,
+  /** 折叠屏设备已打开状态。 */ FOLD_OPENED = 1,
+  /** 平板类型设备屏幕。 */ PAD = 2
 }
 
 /**
