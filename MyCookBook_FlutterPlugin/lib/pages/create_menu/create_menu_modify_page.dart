@@ -25,6 +25,27 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   /// 菜谱标题。
   String? _menuTitle;
 
+  /// 作者名字。
+  String? _author;
+
+  /// 菜谱分类。
+  String? _category;
+
+  /// 菜谱特性。
+  String? _texing;
+
+  /// 菜谱原料。
+  String? _yuanliao;
+
+  /// 菜谱调料。
+  String? _tiaoliao;
+
+  /// 菜谱做法。
+  String? _zuofa;
+
+  /// 菜谱温馨提示。
+  String? _wenxintishi;
+
   @override
   void initState() {
     super.initState();
@@ -124,7 +145,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
       child: Image(
           width: 224,
           height: 126,
-          image: AssetImage(Resources_media.ic_create_menu_default_bg),
+          image: AssetImage(Resources_media.ic_menu_default_bg),
           fit: BoxFit.contain),
       onTap: () {},
     );
@@ -145,13 +166,106 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  const Text('${Resources_string.detail_page_author}：',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.normal))
+                  _tip(buildContext, '${Resources_string.detail_page_author}：'),
+                  _singleLineInput(
+                      buildContext,
+                      Resources_string.modify_page_author_hint,
+                      (String value) => _author = value)
                 ]),
+            // 分类。
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _tip(buildContext,
+                          '${Resources_string.detail_page_category}：'),
+                      // TODO 分类选择。
+                    ])),
+            // 特性。
+            _otherInfoZone(
+                buildContext,
+                Resources_string.detail_page_texing,
+                Resources_string.modify_page_texing_hint,
+                (String value) => _texing = value),
+            // 原料。
+            _otherInfoZone(
+                buildContext,
+                Resources_string.detail_page_yuanliao,
+                Resources_string.modify_page_yuanliao_hint,
+                (String value) => _yuanliao = value),
+            // 调料。
+            _otherInfoZone(
+                buildContext,
+                Resources_string.detail_page_tiaoliao,
+                Resources_string.modify_page_tiaoliao_hint,
+                (String value) => _tiaoliao = value),
+            // 做法。
+            _otherInfoZone(
+                buildContext,
+                Resources_string.detail_page_zuofa,
+                Resources_string.modify_page_zuofa_hint,
+                (String value) => _zuofa = value),
+            // 温馨提示。
+            _otherInfoZone(
+                buildContext,
+                Resources_string.detail_page_wenxintishi,
+                Resources_string.modify_page_wenxintishi_hint,
+                (String value) => _wenxintishi = value),
           ],
         ));
+  }
+
+  /// 提示语。
+  Widget _tip(BuildContext buildContext, String tipContent) {
+    return Text(tipContent,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal));
+  }
+
+  /// 构造一个单行输入框。
+  Widget _singleLineInput(BuildContext buildContext, String tipContent,
+      ValueChanged<String>? onChangedCallback) {
+    return TextField(
+        decoration: InputDecoration(
+            hintText: tipContent,
+            hintStyle: const TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
+                fontWeight: FontWeight.normal)),
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+        onChanged: onChangedCallback);
+  }
+
+  /// 构造一个多行输入区。
+  Widget _multiLinesInputZone(BuildContext buildContext, String tipContent,
+      ValueChanged<String>? onChangedCallback) {
+    return TextField(
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+        decoration: InputDecoration(
+            hintText: tipContent,
+            hintStyle: const TextStyle(
+                color: Colors.grey,
+                fontSize: 14,
+                fontWeight: FontWeight.normal)),
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+        onChanged: onChangedCallback);
+  }
+
+  /// 作者&分类外的输入条目。
+  Widget _otherInfoZone(BuildContext buildContext, String title,
+      String tipContent, ValueChanged<String>? onChangedCallback) {
+    return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _tip(buildContext, title),
+              _multiLinesInputZone(buildContext, tipContent, onChangedCallback)
+            ]));
   }
 }

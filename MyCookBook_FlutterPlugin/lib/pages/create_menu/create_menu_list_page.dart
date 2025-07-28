@@ -39,13 +39,11 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
     super.initState();
     eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
       safeUpdate(() {
-        if (Global.screenUIType == ScreenUIType.NORMAL ||
-            (Global.isSplitScreen &&
-                Global.screenUIType == ScreenUIType.FOLD_OPENED)) {
-          _columnCount = 2;
-        } else {
-          _columnCount = 4;
-        }
+        _columnCount = Global.screenUIType == ScreenUIType.NORMAL ||
+                (Global.isSplitScreen &&
+                    Global.screenUIType == ScreenUIType.FOLD_OPENED)
+            ? 2
+            : 4;
       });
     });
     Bridge.queryAllCreatedMenus()
@@ -87,7 +85,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Image.asset(
-                              Resources_media.ic_create_menu_add_green))),
+                              Resources_media.ic_add_green))),
                   onTap: () => FlutterRouter().go(context, 'ModifyMenu'),
                 ))
           ],
@@ -189,7 +187,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       child: Column(children: <Widget>[
                         Image(
                             image: AssetImage(
-                                Resources_media.ic_create_menu_default_bg),
+                                Resources_media.ic_menu_default_bg),
                             fit: BoxFit.contain),
                         Container(
                             alignment: Alignment.topLeft,
