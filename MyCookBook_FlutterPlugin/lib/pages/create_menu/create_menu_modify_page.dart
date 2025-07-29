@@ -18,6 +18,9 @@ class CreateMenuModifyPage extends StatefulWidget {
 }
 
 class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
+  /// 内容滚动视图controller。
+  ScrollController _contentScrollController = ScrollController();
+
   /// 窄屏模式。
   bool _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
       (Global.isSplitScreen && Global.screenUIType == ScreenUIType.FOLD_OPENED);
@@ -72,7 +75,17 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                   color: Colors.grey,
                   fontSize: 18,
                   fontWeight: FontWeight.normal),
-              border: InputBorder.none),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Resources_color.main_selected_light_color,
+                      width: 1)),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Resources_color.main_selected_color, width: 1))),
+          cursorColor: Resources_color.main_selected_color,
+          cursorWidth: 1,
+          minLines: 1,
+          textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
           onChanged: (String value) => _menuTitle = value,
         ),
@@ -100,36 +113,34 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
               ))
         ],
       ),
-      body: SafeArea(
-          child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                        left: 8,
-                        right: 8,
-                        top: 24,
-                        bottom: 24 + Global.screenBottomSafeZoneHeightVP),
-                    decoration: const BoxDecoration(color: Colors.white),
-                    child: _normalScreenMode
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              _thumbnail(context),
-                              _content(context)
-                            ],
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              _thumbnail(context),
-                              _content(context)
-                            ],
-                          ),
-                  )))),
+      body: SingleChildScrollView(
+          controller: _contentScrollController,
+          child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Container(
+                padding: const EdgeInsets.only(
+                    left: 8, right: 8, top: 24, bottom: 24),
+                margin: EdgeInsets.only(
+                    bottom: Global.screenBottomSafeZoneHeightVP),
+                decoration: const BoxDecoration(color: Colors.white),
+                child: _normalScreenMode
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          _thumbnail(context),
+                          _content(context)
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          _thumbnail(context),
+                          _content(context)
+                        ],
+                      ),
+              ))),
     );
   }
 
@@ -162,16 +173,12 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             // 作者。
-            Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  _tip(buildContext, '${Resources_string.detail_page_author}：'),
-                  _singleLineInput(
-                      buildContext,
-                      Resources_string.modify_page_author_hint,
-                      (String value) => _author = value)
-                ]),
+            _inputText(
+                buildContext,
+                Resources_string.detail_page_author,
+                Resources_string.modify_page_author_hint,
+                false,
+                (String value) => _author = value),
             // 分类。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
@@ -179,93 +186,97 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      _tip(buildContext,
-                          '${Resources_string.detail_page_category}：'),
+                      _tip(buildContext, Resources_string.detail_page_category),
                       // TODO 分类选择。
                     ])),
             // 特性。
-            _otherInfoZone(
-                buildContext,
-                Resources_string.detail_page_texing,
-                Resources_string.modify_page_texing_hint,
-                (String value) => _texing = value),
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: _inputText(
+                    buildContext,
+                    Resources_string.detail_page_texing,
+                    Resources_string.modify_page_texing_hint,
+                    true,
+                    (String value) => _texing = value)),
             // 原料。
-            _otherInfoZone(
-                buildContext,
-                Resources_string.detail_page_yuanliao,
-                Resources_string.modify_page_yuanliao_hint,
-                (String value) => _yuanliao = value),
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: _inputText(
+                    buildContext,
+                    Resources_string.detail_page_yuanliao,
+                    Resources_string.modify_page_yuanliao_hint,
+                    true,
+                    (String value) => _yuanliao = value)),
             // 调料。
-            _otherInfoZone(
-                buildContext,
-                Resources_string.detail_page_tiaoliao,
-                Resources_string.modify_page_tiaoliao_hint,
-                (String value) => _tiaoliao = value),
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: _inputText(
+                    buildContext,
+                    Resources_string.detail_page_tiaoliao,
+                    Resources_string.modify_page_tiaoliao_hint,
+                    true,
+                    (String value) => _tiaoliao = value)),
             // 做法。
-            _otherInfoZone(
-                buildContext,
-                Resources_string.detail_page_zuofa,
-                Resources_string.modify_page_zuofa_hint,
-                (String value) => _zuofa = value),
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: _inputText(
+                    buildContext,
+                    Resources_string.detail_page_zuofa,
+                    Resources_string.modify_page_zuofa_hint,
+                    true,
+                    (String value) => _zuofa = value)),
             // 温馨提示。
-            _otherInfoZone(
-                buildContext,
-                Resources_string.detail_page_wenxintishi,
-                Resources_string.modify_page_wenxintishi_hint,
-                (String value) => _wenxintishi = value),
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: _inputText(
+                    buildContext,
+                    Resources_string.detail_page_wenxintishi,
+                    Resources_string.modify_page_wenxintishi_hint,
+                    true,
+                    (String value) => _wenxintishi = value)),
           ],
         ));
   }
 
   /// 提示语。
   Widget _tip(BuildContext buildContext, String tipContent) {
-    return Text(tipContent,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal));
+    return Container(
+        constraints: const BoxConstraints(minHeight: 50),
+        alignment: Alignment.center,
+        child: Text('$tipContent：',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style:
+                const TextStyle(fontSize: 14, fontWeight: FontWeight.normal)));
   }
 
-  /// 构造一个单行输入框。
-  Widget _singleLineInput(BuildContext buildContext, String tipContent,
+  /// 构建输入框。
+  Widget _inputText(
+      BuildContext buildContext,
+      String titleContent,
+      String tipContent,
+      bool isMultiLine,
       ValueChanged<String>? onChangedCallback) {
     return TextField(
-        decoration: InputDecoration(
-            hintText: tipContent,
-            hintStyle: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-                fontWeight: FontWeight.normal)),
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-        onChanged: onChangedCallback);
-  }
-
-  /// 构造一个多行输入区。
-  Widget _multiLinesInputZone(BuildContext buildContext, String tipContent,
-      ValueChanged<String>? onChangedCallback) {
-    return TextField(
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
-        decoration: InputDecoration(
-            hintText: tipContent,
-            hintStyle: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-                fontWeight: FontWeight.normal)),
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-        onChanged: onChangedCallback);
-  }
-
-  /// 作者&分类外的输入条目。
-  Widget _otherInfoZone(BuildContext buildContext, String title,
-      String tipContent, ValueChanged<String>? onChangedCallback) {
-    return Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _tip(buildContext, title),
-              _multiLinesInputZone(buildContext, tipContent, onChangedCallback)
-            ]));
+      decoration: InputDecoration(
+          labelText: '$titleContent：',
+          labelStyle: const TextStyle(
+              color: Resources_color.main_selected_color, fontSize: 14),
+          hintText: tipContent,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+          border: const OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: Resources_color.main_selected_light_color, width: 1)),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: Resources_color.main_selected_color, width: 1))),
+      cursorColor: Resources_color.main_selected_color,
+      cursorWidth: 1,
+      minLines: 1,
+      maxLines: isMultiLine ? null : 1,
+      keyboardType: isMultiLine ? TextInputType.multiline : null,
+      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+      onChanged: onChangedCallback,
+    );
   }
 }
