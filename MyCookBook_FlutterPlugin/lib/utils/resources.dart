@@ -42,4 +42,6 @@ class Resources_media {
       'assets/images/ic_menu_default_bg.webp';
   static const String ic_right_green = 'assets/images/ic_right_green.webp';
   static const String ic_wrong_green = 'assets/images/ic_wrong_green.webp';
+  static const String ic_right_arrow_green =
+      'assets/images/ic_right_arrow_green.webp';
 }

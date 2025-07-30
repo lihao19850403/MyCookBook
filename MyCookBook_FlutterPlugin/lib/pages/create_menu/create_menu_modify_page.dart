@@ -4,7 +4,9 @@ import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/common_dialog.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
+import 'package:my_cook_book_flutter_plugin/views/select_menu_categories_dialog_content.dart';
 
 class CreateMenuModifyPage extends StatefulWidget {
   const CreateMenuModifyPage({Key? key, this.params}) : super(key: key);
@@ -174,7 +176,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             // 作者。
-            _inputText(
+            _inputTextZone(
                 buildContext,
                 Resources_string.detail_page_author,
                 Resources_string.modify_page_author_hint,
@@ -183,17 +185,14 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
             // 分类。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      _tip(buildContext, Resources_string.detail_page_category),
-                      // TODO 分类选择。
-                    ])),
+                child: _selectZone(
+                    buildContext,
+                    Resources_string.detail_page_category,
+                    Resources_string.modify_page_category_hint)),
             // 特性。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputText(
+                child: _inputTextZone(
                     buildContext,
                     Resources_string.detail_page_texing,
                     Resources_string.modify_page_texing_hint,
@@ -202,7 +201,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
             // 原料。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputText(
+                child: _inputTextZone(
                     buildContext,
                     Resources_string.detail_page_yuanliao,
                     Resources_string.modify_page_yuanliao_hint,
@@ -211,7 +210,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
             // 调料。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputText(
+                child: _inputTextZone(
                     buildContext,
                     Resources_string.detail_page_tiaoliao,
                     Resources_string.modify_page_tiaoliao_hint,
@@ -220,7 +219,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
             // 做法。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputText(
+                child: _inputTextZone(
                     buildContext,
                     Resources_string.detail_page_zuofa,
                     Resources_string.modify_page_zuofa_hint,
@@ -229,7 +228,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
             // 温馨提示。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputText(
+                child: _inputTextZone(
                     buildContext,
                     Resources_string.detail_page_wenxintishi,
                     Resources_string.modify_page_wenxintishi_hint,
@@ -239,20 +238,43 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
         ));
   }
 
-  /// 提示语。
-  Widget _tip(BuildContext buildContext, String tipContent) {
-    return Container(
-        constraints: const BoxConstraints(minHeight: 50),
-        alignment: Alignment.center,
-        child: Text('$tipContent：',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style:
-                const TextStyle(fontSize: 14, fontWeight: FontWeight.normal)));
+  /// 构建选择区。
+  Widget _selectZone(
+      BuildContext buildContext, String titleContent, String tipContent) {
+    return TextField(
+        decoration: InputDecoration(
+          labelText: '$titleContent：',
+          labelStyle: const TextStyle(
+              color: Resources_color.main_selected_color, fontSize: 14),
+          hintText: tipContent,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+          suffixIcon: const SizedBox(
+              width: 14,
+              height: 14,
+              child: Image(
+                  width: 14,
+                  height: 14,
+                  image: AssetImage(Resources_media.ic_right_arrow_green),
+                  fit: BoxFit.contain)),
+          border: const OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: Resources_color.main_selected_light_color, width: 1)),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: Resources_color.main_selected_color, width: 1)),
+        ),
+        cursorColor: Colors.transparent,
+        cursorWidth: 0,
+        keyboardType: TextInputType.none,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+        onTap: () {
+          Widget content = const SelectMenuCategoriesDialogContent();
+          showCustomDialog(buildContext, content);
+        });
   }
 
   /// 构建输入框。
-  Widget _inputText(
+  Widget _inputTextZone(
       BuildContext buildContext,
       String titleContent,
       String tipContent,
@@ -260,9 +282,14 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
       ValueChanged<String>? onChangedCallback) {
     return TextField(
       decoration: InputDecoration(
-        labelText: '$titleContent：',
-        labelStyle: const TextStyle(
-            color: Resources_color.main_selected_color, fontSize: 14),
+        prefixIcon: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Text('$titleContent：',
+                  style: const TextStyle(
+                      color: Resources_color.main_selected_color,
+                      fontSize: 14)))
+        ]),
         hintText: tipContent,
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
         border: const OutlineInputBorder(

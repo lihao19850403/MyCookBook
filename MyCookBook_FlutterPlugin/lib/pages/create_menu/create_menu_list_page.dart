@@ -84,8 +84,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       height: 48,
                       child: Padding(
                           padding: const EdgeInsets.all(12),
-                          child: Image.asset(
-                              Resources_media.ic_add_green))),
+                          child: Image.asset(Resources_media.ic_add_green))),
                   onTap: () => FlutterRouter().go(context, 'ModifyMenu'),
                 ))
           ],
@@ -186,8 +185,8 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       alignment: Alignment.topCenter,
                       child: Column(children: <Widget>[
                         Image(
-                            image: AssetImage(
-                                Resources_media.ic_menu_default_bg),
+                            image:
+                                AssetImage(Resources_media.ic_menu_default_bg),
                             fit: BoxFit.contain),
                         Container(
                             alignment: Alignment.topLeft,
