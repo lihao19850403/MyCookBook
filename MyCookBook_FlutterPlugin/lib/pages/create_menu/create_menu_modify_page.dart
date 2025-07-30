@@ -241,32 +241,48 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   /// 构建选择区。
   Widget _selectZone(
       BuildContext buildContext, String titleContent, String tipContent) {
-    return TextField(
-        decoration: InputDecoration(
-          labelText: '$titleContent：',
-          labelStyle: const TextStyle(
-              color: Resources_color.main_selected_color, fontSize: 14),
-          hintText: tipContent,
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-          suffixIcon: const SizedBox(
-              width: 14,
-              height: 14,
-              child: Image(
-                  width: 14,
-                  height: 14,
-                  image: AssetImage(Resources_media.ic_right_arrow_green),
-                  fit: BoxFit.contain)),
-          border: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Resources_color.main_selected_light_color, width: 1)),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Resources_color.main_selected_color, width: 1)),
-        ),
-        cursorColor: Colors.transparent,
-        cursorWidth: 0,
-        keyboardType: TextInputType.none,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+    return InkWell(
+        child: Row(children: <Widget>[
+          TextField(
+              decoration: InputDecoration(
+                prefixIcon:
+                    Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Text('$titleContent：',
+                          style: const TextStyle(
+                              color: Resources_color.main_selected_color,
+                              fontSize: 14)))
+                ]),
+                hintText: tipContent,
+                hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                suffixIcon: const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: Image(
+                        width: 14,
+                        height: 14,
+                        image: AssetImage(Resources_media.ic_right_arrow_green),
+                        fit: BoxFit.contain)),
+                border: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Resources_color.main_selected_light_color,
+                        width: 1)),
+                disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Resources_color.main_selected_light_color,
+                        width: 1)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Resources_color.main_selected_color, width: 1)),
+              ),
+              cursorColor: Colors.transparent,
+              cursorWidth: 0,
+              keyboardType: TextInputType.none,
+              enabled: false,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal))
+        ]),
         onTap: () {
           Widget content = const SelectMenuCategoriesDialogContent();
           showCustomDialog(buildContext, content);

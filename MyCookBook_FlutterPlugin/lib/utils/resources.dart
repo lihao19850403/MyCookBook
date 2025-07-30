@@ -38,6 +38,7 @@ class Resources_media {
   static const String ic_main_back_arrow =
       'assets/images/ic_main_back_arrow.webp';
   static const String ic_add_green = 'assets/images/ic_add_green.webp';
+  static const String ic_edit_green = 'assets/images/ic_edit_green.webp';
   static const String ic_menu_default_bg =
       'assets/images/ic_menu_default_bg.webp';
   static const String ic_right_green = 'assets/images/ic_right_green.webp';
