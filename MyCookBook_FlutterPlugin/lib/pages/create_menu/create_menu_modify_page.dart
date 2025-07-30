@@ -18,8 +18,11 @@ class CreateMenuModifyPage extends StatefulWidget {
 }
 
 class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
+  final double _imageFrameWidth = 224;
+  final double _imageFrameHeight = 126;
+
   /// 内容滚动视图controller。
-  ScrollController _contentScrollController = ScrollController();
+  final ScrollController _contentScrollController = ScrollController();
 
   /// 窄屏模式。
   bool _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
@@ -118,29 +121,26 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
           child: SizedBox(
               width: MediaQuery.of(context).size.width,
               child: Container(
-                padding: const EdgeInsets.only(
-                    left: 8, right: 8, top: 24, bottom: 24),
-                margin: EdgeInsets.only(
-                    bottom: Global.screenBottomSafeZoneHeightVP),
-                decoration: const BoxDecoration(color: Colors.white),
-                child: _normalScreenMode
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          _thumbnail(context),
-                          _content(context)
-                        ],
+                  padding: const EdgeInsets.only(
+                      left: 8, right: 8, top: 24, bottom: 24),
+                  margin: EdgeInsets.only(
+                      bottom: Global.screenBottomSafeZoneHeightVP),
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Positioned(
+                          top: _normalScreenMode ? 0 : null,
+                          left: _normalScreenMode ? null : 0,
+                          child: _thumbnail(context)),
+                      Align(
+                        alignment: _normalScreenMode
+                            ? Alignment.bottomCenter
+                            : Alignment.centerRight,
+                        child: _content(context),
                       )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          _thumbnail(context),
-                          _content(context)
-                        ],
-                      ),
-              ))),
+                    ],
+                  )))),
     );
   }
 
@@ -154,8 +154,8 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   Widget _thumbnail(BuildContext buildContext) {
     return InkWell(
       child: Image(
-          width: 224,
-          height: 126,
+          width: _imageFrameWidth,
+          height: _imageFrameHeight,
           image: AssetImage(Resources_media.ic_menu_default_bg),
           fit: BoxFit.contain),
       onTap: () {},
@@ -167,7 +167,8 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   Widget _content(BuildContext buildContext) {
     return Padding(
         padding: EdgeInsets.only(
-            left: _normalScreenMode ? 0 : 8, top: _normalScreenMode ? 8 : 0),
+            left: _normalScreenMode ? 0 : 8 + _imageFrameWidth,
+            top: _normalScreenMode ? 8 + _imageFrameHeight : 0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,17 +260,18 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
       ValueChanged<String>? onChangedCallback) {
     return TextField(
       decoration: InputDecoration(
-          labelText: '$titleContent：',
-          labelStyle: const TextStyle(
-              color: Resources_color.main_selected_color, fontSize: 14),
-          hintText: tipContent,
-          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-          border: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Resources_color.main_selected_light_color, width: 1)),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Resources_color.main_selected_color, width: 1))),
+        labelText: '$titleContent：',
+        labelStyle: const TextStyle(
+            color: Resources_color.main_selected_color, fontSize: 14),
+        hintText: tipContent,
+        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+        border: const OutlineInputBorder(
+            borderSide: BorderSide(
+                color: Resources_color.main_selected_light_color, width: 1)),
+        focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+                color: Resources_color.main_selected_color, width: 1)),
+      ),
       cursorColor: Resources_color.main_selected_color,
       cursorWidth: 1,
       minLines: 1,
