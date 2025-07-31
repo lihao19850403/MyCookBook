@@ -17,6 +17,10 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       result.success(allCreatedMenus);
       return;
     }
+    if (methodName === 'selectCategory') {
+      result.success('Demo');
+      return;
+    }
     result.notImplemented();
   };
 

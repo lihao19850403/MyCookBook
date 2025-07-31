@@ -184,10 +184,11 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       padding: const EdgeInsets.all(4),
                       alignment: Alignment.topCenter,
                       child: Column(children: <Widget>[
-                        Image(
+                        const Image(
                             image:
                                 AssetImage(Resources_media.ic_menu_default_bg),
-                            fit: BoxFit.contain),
+                            fit:
+                                BoxFit.contain), // [Flutter TODO] Image Picker.
                         Container(
                             alignment: Alignment.topLeft,
                             child: Column(

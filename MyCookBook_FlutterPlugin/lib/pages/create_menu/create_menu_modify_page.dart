@@ -4,9 +4,9 @@ import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
-import 'package:my_cook_book_flutter_plugin/views/common/common_dialog.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
-import 'package:my_cook_book_flutter_plugin/views/select_menu_categories_dialog_content.dart';
+import 'package:my_cook_book_flutter_plugin/views/input_text_zone.dart';
+import 'package:my_cook_book_flutter_plugin/views/select_zone.dart';
 
 class CreateMenuModifyPage extends StatefulWidget {
   const CreateMenuModifyPage({Key? key, this.params}) : super(key: key);
@@ -158,7 +158,8 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
       child: Image(
           width: _imageFrameWidth,
           height: _imageFrameHeight,
-          image: AssetImage(Resources_media.ic_menu_default_bg),
+          image: const AssetImage(Resources_media
+              .ic_menu_default_bg), // [Flutter TODO] Image Picker.
           fit: BoxFit.contain),
       onTap: () {},
     );
@@ -176,152 +177,72 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             // 作者。
-            _inputTextZone(
-                buildContext,
-                Resources_string.detail_page_author,
-                Resources_string.modify_page_author_hint,
-                false,
-                (String value) => _author = value),
+            InputTextZone(
+                titleContent: Resources_string.detail_page_author,
+                tipContent: Resources_string.modify_page_author_hint,
+                contentText: _author,
+                isMultiLine: false,
+                onChangedCallback: (String value) => _author = value),
             // 分类。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _selectZone(
-                    buildContext,
-                    Resources_string.detail_page_category,
-                    Resources_string.modify_page_category_hint)),
+                child: SelectZone(
+                    titleContent: Resources_string.detail_page_category,
+                    tipContent: Resources_string.modify_page_category_hint,
+                    contentText: _category,
+                    clickEvent: () {
+                      Bridge.selectCategory().then((String? newCategory) {
+                        safeUpdate(() {
+                          _category = newCategory;
+                        });
+                      });
+                    })),
             // 特性。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputTextZone(
-                    buildContext,
-                    Resources_string.detail_page_texing,
-                    Resources_string.modify_page_texing_hint,
-                    true,
-                    (String value) => _texing = value)),
+                child: InputTextZone(
+                    titleContent: Resources_string.detail_page_texing,
+                    tipContent: Resources_string.modify_page_texing_hint,
+                    contentText: _texing,
+                    isMultiLine: true,
+                    onChangedCallback: (String value) => _texing = value)),
             // 原料。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputTextZone(
-                    buildContext,
-                    Resources_string.detail_page_yuanliao,
-                    Resources_string.modify_page_yuanliao_hint,
-                    true,
-                    (String value) => _yuanliao = value)),
+                child: InputTextZone(
+                    titleContent: Resources_string.detail_page_yuanliao,
+                    tipContent: Resources_string.modify_page_yuanliao_hint,
+                    contentText: _yuanliao,
+                    isMultiLine: true,
+                    onChangedCallback: (String value) => _yuanliao = value)),
             // 调料。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputTextZone(
-                    buildContext,
-                    Resources_string.detail_page_tiaoliao,
-                    Resources_string.modify_page_tiaoliao_hint,
-                    true,
-                    (String value) => _tiaoliao = value)),
+                child: InputTextZone(
+                    titleContent: Resources_string.detail_page_tiaoliao,
+                    tipContent: Resources_string.modify_page_tiaoliao_hint,
+                    contentText: _tiaoliao,
+                    isMultiLine: true,
+                    onChangedCallback: (String value) => _tiaoliao = value)),
             // 做法。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputTextZone(
-                    buildContext,
-                    Resources_string.detail_page_zuofa,
-                    Resources_string.modify_page_zuofa_hint,
-                    true,
-                    (String value) => _zuofa = value)),
+                child: InputTextZone(
+                    titleContent: Resources_string.detail_page_zuofa,
+                    tipContent: Resources_string.modify_page_zuofa_hint,
+                    contentText: _zuofa,
+                    isMultiLine: true,
+                    onChangedCallback: (String value) => _zuofa = value)),
             // 温馨提示。
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _inputTextZone(
-                    buildContext,
-                    Resources_string.detail_page_wenxintishi,
-                    Resources_string.modify_page_wenxintishi_hint,
-                    true,
-                    (String value) => _wenxintishi = value)),
+                child: InputTextZone(
+                    titleContent: Resources_string.detail_page_wenxintishi,
+                    tipContent: Resources_string.modify_page_wenxintishi_hint,
+                    contentText: _wenxintishi,
+                    isMultiLine: true,
+                    onChangedCallback: (String value) => _wenxintishi = value))
           ],
         ));
-  }
-
-  /// 构建选择区。
-  Widget _selectZone(
-      BuildContext buildContext, String titleContent, String tipContent) {
-    return InkWell(
-        child: Row(children: <Widget>[
-          TextField(
-              decoration: InputDecoration(
-                prefixIcon:
-                    Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: Text('$titleContent：',
-                          style: const TextStyle(
-                              color: Resources_color.main_selected_color,
-                              fontSize: 14)))
-                ]),
-                hintText: tipContent,
-                hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                suffixIcon: const SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: Image(
-                        width: 14,
-                        height: 14,
-                        image: AssetImage(Resources_media.ic_right_arrow_green),
-                        fit: BoxFit.contain)),
-                border: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Resources_color.main_selected_light_color,
-                        width: 1)),
-                disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Resources_color.main_selected_light_color,
-                        width: 1)),
-                focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Resources_color.main_selected_color, width: 1)),
-              ),
-              cursorColor: Colors.transparent,
-              cursorWidth: 0,
-              keyboardType: TextInputType.none,
-              enabled: false,
-              style:
-                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal))
-        ]),
-        onTap: () {
-          Widget content = const SelectMenuCategoriesDialogContent();
-          showCustomDialog(buildContext, content);
-        });
-  }
-
-  /// 构建输入框。
-  Widget _inputTextZone(
-      BuildContext buildContext,
-      String titleContent,
-      String tipContent,
-      bool isMultiLine,
-      ValueChanged<String>? onChangedCallback) {
-    return TextField(
-      decoration: InputDecoration(
-        prefixIcon: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Text('$titleContent：',
-                  style: const TextStyle(
-                      color: Resources_color.main_selected_color,
-                      fontSize: 14)))
-        ]),
-        hintText: tipContent,
-        hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-        border: const OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Resources_color.main_selected_light_color, width: 1)),
-        focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Resources_color.main_selected_color, width: 1)),
-      ),
-      cursorColor: Resources_color.main_selected_color,
-      cursorWidth: 1,
-      minLines: 1,
-      maxLines: isMultiLine ? null : 1,
-      keyboardType: isMultiLine ? TextInputType.multiline : null,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-      onChanged: onChangedCallback,
-    );
   }
 }

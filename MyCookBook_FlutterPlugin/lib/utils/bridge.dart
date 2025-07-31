@@ -54,4 +54,14 @@ class Bridge {
     }
     return Future.value(data);
   }
+
+  /// 选择一个分类。
+  static Future<String?> selectCategory() async {
+    final String? result =
+        await FlutterBridgePlatform.instance.callNativeMethod('selectCategory');
+    if (result == null || result.isEmpty) {
+      return Future.value(null);
+    }
+    return Future.value(result);
+  }
 }
