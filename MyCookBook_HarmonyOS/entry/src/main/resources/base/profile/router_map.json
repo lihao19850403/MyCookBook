@@ -29,6 +29,11 @@
       "name": "FlutterIndexPage",
       "pageSourceFile": "src/main/ets/flutter/pages/FlutterIndexPage.ets",
       "buildFunction": "FlutterIndexPageBuilder"
+    },
+    {
+      "name": "LHDialogContainer",
+      "pageSourceFile": "src/main/ets/pages/common/dialogcontainer/LHDialogContainer.ets",
+      "buildFunction": "LHDialogContainerBuilder"
     }
   ]
 }

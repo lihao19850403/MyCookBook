@@ -1,6 +1,7 @@
 import { MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import { CreatedMenuItem } from "../../models/CreatedMenuItem";
+import { LHDialogContainer } from "../../pages/common/dialogcontainer/LHDialogContainer";
 import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 
@@ -18,7 +19,7 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       return;
     }
     if (methodName === 'selectCategory') {
-      result.success('Demo');
+      selectCategory(result);
       return;
     }
     result.notImplemented();
@@ -64,4 +65,20 @@ function queryAllCreatedMenus(): Array<CreatedMenuItem> {
     }
   }
   return menuItems;
+}
+
+/**
+ * 为自创菜谱选择分类。
+ * @param result 运行结果，用于向Flutter页面返回参数。
+ */
+function selectCategory(result: MethodResult) {
+  LHDialogContainer.open({
+    builder: wrapBuilder(selectCategoryDialogBuilder),
+    data: result
+  });
+}
+
+@Builder
+function selectCategoryDialogBuilder(params: object) {
+  Text(`${JSON.stringify(params as MethodResult)}`)
 }

@@ -22,7 +22,7 @@ class SelectZone extends StatefulWidget {
   String? contentText;
 
   /// 单击回调。
-  GestureTapCallback? clickEvent;
+  void Function(TextEditingController)? clickEvent;
 
   @override
   State<StatefulWidget> createState() {
@@ -79,7 +79,7 @@ class _SelectZone extends SafeState<SelectZone> {
         keyboardType: TextInputType.none,
         readOnly: true,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-        onTap: widget.clickEvent);
+        onTap: () => widget.clickEvent?.call(_controller));
   }
 
   @override
