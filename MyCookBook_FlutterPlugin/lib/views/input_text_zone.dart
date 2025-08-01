@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 
 /// 构建输入框。
-class InputTextZone extends StatelessWidget {
+class InputTextZone extends StatefulWidget {
   InputTextZone(
       {Key? key,
       this.titleContent,
@@ -10,9 +11,7 @@ class InputTextZone extends StatelessWidget {
       required this.contentText,
       this.isMultiLine = false,
       this.onChangedCallback})
-      : super(key: key) {
-    _controller.text = contentText ?? '';
-  }
+      : super(key: key);
 
   /// 前缀文字。
   final String? titleContent;
@@ -29,8 +28,21 @@ class InputTextZone extends StatelessWidget {
   /// 文字内容改变回调。
   ValueChanged<String>? onChangedCallback;
 
+  @override
+  State<StatefulWidget> createState() {
+    return _InputTextZone();
+  }
+}
+
+class _InputTextZone extends SafeState<InputTextZone> {
   /// 输入框控制器。
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.contentText ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +52,12 @@ class InputTextZone extends StatelessWidget {
         prefixIcon: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
           Padding(
               padding: const EdgeInsets.only(left: 12),
-              child: Text('$titleContent：',
+              child: Text('${widget.titleContent}：',
                   style: const TextStyle(
                       color: Resources_color.main_selected_color,
                       fontSize: 14)))
         ]),
-        hintText: tipContent,
+        hintText: widget.tipContent,
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
         enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(
@@ -57,10 +69,15 @@ class InputTextZone extends StatelessWidget {
       cursorColor: Resources_color.main_selected_color,
       cursorWidth: 1,
       minLines: 1,
-      maxLines: isMultiLine ? null : 1,
-      keyboardType: isMultiLine ? TextInputType.multiline : null,
+      maxLines: widget.isMultiLine ? null : 1,
+      keyboardType: widget.isMultiLine ? TextInputType.multiline : null,
       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-      onChanged: onChangedCallback,
+      onChanged: widget.onChangedCallback,
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

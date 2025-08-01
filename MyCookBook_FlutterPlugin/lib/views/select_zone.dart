@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 
 /// 选择区控件。
-class SelectZone extends StatelessWidget {
+class SelectZone extends StatefulWidget {
   SelectZone(
       {Key? key,
       this.titleContent,
       this.tipContent,
       required this.contentText,
       this.clickEvent})
-      : super(key: key) {
-    _controller.text = contentText ?? '';
-  }
+      : super(key: key);
 
   /// 前缀文字。
   final String? titleContent;
@@ -25,8 +24,21 @@ class SelectZone extends StatelessWidget {
   /// 单击回调。
   GestureTapCallback? clickEvent;
 
+  @override
+  State<StatefulWidget> createState() {
+    return _SelectZone();
+  }
+}
+
+class _SelectZone extends SafeState<SelectZone> {
   /// 输入框控制器。
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.contentText ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +48,12 @@ class SelectZone extends StatelessWidget {
           prefixIcon: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
             Padding(
                 padding: const EdgeInsets.only(left: 12),
-                child: Text('$titleContent：',
+                child: Text('${widget.titleContent}：',
                     style: const TextStyle(
                         color: Resources_color.main_selected_color,
                         fontSize: 14)))
           ]),
-          hintText: tipContent,
+          hintText: widget.tipContent,
           hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
           suffixIcon: const Row(
               mainAxisSize: MainAxisSize.min,
@@ -67,6 +79,11 @@ class SelectZone extends StatelessWidget {
         keyboardType: TextInputType.none,
         readOnly: true,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-        onTap: clickEvent);
+        onTap: widget.clickEvent);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
