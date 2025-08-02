@@ -4,6 +4,7 @@ import { CreatedMenuItem } from "../../models/CreatedMenuItem";
 import { LHDialogContainer } from "../../pages/common/dialogcontainer/LHDialogContainer";
 import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
+import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -79,6 +80,9 @@ function selectCategory(result: MethodResult) {
 }
 
 @Builder
-function selectCategoryDialogBuilder(params: object) {
-  Text(`${JSON.stringify(params as MethodResult)}`)
+function selectCategoryDialogBuilder(params: object, closeCallback: Callback<void, void>) {
+  CreatedMenuCategorySelect({
+    result: params as MethodResult,
+    closeCallback: closeCallback
+  })
 }

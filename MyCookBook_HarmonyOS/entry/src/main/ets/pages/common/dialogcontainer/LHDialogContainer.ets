@@ -13,11 +13,18 @@ export function LHDialogContainerBuilder() {
 
 /** 对话框容器需要的参数。 */
 export interface DialogContainerParams {
-  /** 对话框视图构造器。 */
-  builder: WrappedBuilder<[object]>;
+  /**
+   * 对话框视图构造器。
+   * 第一个参数为对话框需要操作的数据，由DialogContainerParams.data属性提供；
+   * 第二个参数为关闭对话框的回调，由框架自动填充，自定义对话框视图内仅调用即可。
+   */
+  builder: WrappedBuilder<[object, Callback<void, void>]>;
 
   /** 额外需要的参数。 */
-  data?: object
+  data?: object;
+
+  /** 设置点击对话框外部(蒙层)是否关闭对话框，默认关闭。 */
+  autoCancel?: boolean;
 }
 
 /**
@@ -34,15 +41,23 @@ export struct LHDialogContainerComponent {
     .mode(NavDestinationMode.DIALOG)
     .onReady((context: NavDestinationContext) => {
       let params: DialogContainerParams = RouterUtils.navGetParams(context) as DialogContainerParams;
-      let builder: WrappedBuilder<[object]> = params.builder;
+      let builder: WrappedBuilder<[object, Callback<void, void>]> = params.builder;
       let data: object | undefined = params.data;
+      let autoCancel: boolean = params.autoCancel ?? true;
       // 打开对话框。
+      let closeCallback: Callback<void, void> = () => {
+        customDialogController.close();
+        RouterUtils.navBack();
+      };
       let customDialogController: CustomDialogController = new CustomDialogController({
         builder: LHDialogContainerWrap({
           builder: builder,
-          data: data
+          data: data,
+          closeCallback: closeCallback
         }),
-
+        autoCancel: autoCancel,
+        customStyle: true,
+        onWillDismiss: (action: DismissDialogAction) => closeCallback()
       });
       customDialogController.open();
     })
@@ -51,14 +66,15 @@ export struct LHDialogContainerComponent {
 
 @CustomDialog
 struct LHDialogContainerWrap {
-  controller: CustomDialogController;
+  controller?: CustomDialogController;
   /** 对话框视图构造器。 */
-  builder?: WrappedBuilder<[object]>
+  builder?: WrappedBuilder<[object, Callback<void, void>]>
   /** 对话框需要的参数。 */
   data?: object = undefined
+  /** 对话框关闭回调。 */
+  closeCallback?: Callback<void, void> = undefined;
 
   build() {
-    this.builder?.builder(this.data)
+    this.builder?.builder(this.data, this.closeCallback)
   }
 }
-

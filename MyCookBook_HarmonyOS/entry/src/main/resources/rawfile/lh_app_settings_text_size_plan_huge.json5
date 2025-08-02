@@ -28,5 +28,8 @@
   "homeTabMineHealthTipsTextSize": 22,
   "homeTabMineSettingsTitleTextSize": 15,
   "homeTabMineSettingsTipsTextSize": 15,
-  "homeTabMinePopupTipsTextSize": 15
+  "homeTabMinePopupTipsTextSize": 15,
+  "createdMenuSelectCategoryTitle": 19,
+  "createdMenuSelectCategoryContent": 17,
+  "createdMenuSelectCategoryButton": 18
 }

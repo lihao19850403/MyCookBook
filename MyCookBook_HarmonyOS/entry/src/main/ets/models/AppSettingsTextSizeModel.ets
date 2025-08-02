@@ -89,4 +89,15 @@ export interface AppSettingsTextSizePlanModel extends LHAppSettingsTextSizePlanM
 
   /** 我的页面设置气泡弹出框文字提示字号。 */
   homeTabMinePopupTipsTextSize: number;
+
+  /* ---------- 自创菜谱 - 设置分类。 ---------- */
+
+  /** 标题。 */
+  createdMenuSelectCategoryTitle: number;
+
+  /** 备选分类条目及提示。 */
+  createdMenuSelectCategoryContent: number;
+
+  /** 按钮。 */
+  createdMenuSelectCategoryButton: number;
 }

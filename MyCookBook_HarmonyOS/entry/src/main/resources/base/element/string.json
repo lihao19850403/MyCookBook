@@ -179,6 +179,18 @@
     {
       "name": "home_tab_mine_settings_split_screen_off_tips",
       "value": "关闭"
+    },
+    {
+      "name": "created_menu_select_category_title",
+      "value": "选择分类"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "confirm",
+      "value": "确定"
     }
   ]
 }
