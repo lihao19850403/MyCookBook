@@ -11,10 +11,14 @@ export const CREATED_MENU_CHANGE_EVENT_TYPE: string = 'CREATED_MENU_CHANGE_EVENT
 
 /** 创建的菜谱发生了怎样的变化。 */
 export const enum CreatedMenuChangeEventType {
-  /** 更新创建的菜谱条目顺序。 */ UPDATE_CREATED_ORDER,
-  /** 添加一个创建的菜谱。 */ ADD_ONE_CREATED_MENU,
-  /** 更新一个自创的菜谱。 */ UPDATE_ONE_CREATED_MENU,
-  /** 删除一个创建的菜谱。 */ REMOVE_ONE_CREATED_MENU
+  /** 更新创建的菜谱条目顺序。 */
+  UPDATE_CREATED_ORDER,
+  /** 添加一个创建的菜谱。 */
+  ADD_ONE_CREATED_MENU,
+  /** 更新一个自创的菜谱。 */
+  UPDATE_ONE_CREATED_MENU,
+  /** 删除一个创建的菜谱。 */
+  REMOVE_ONE_CREATED_MENU
 }
 
 /** 配置文件：已创建的菜谱。 */
@@ -23,12 +27,14 @@ const FILE_NAME_CREATED_MENU: string = 'created_menu';
 /** 字段：菜谱顺序。 */
 const KEY_CREATED_ORDER: string = 'created_order';
 
+/** 配置文件：所有菜谱分类。 */
+const FILE_NAME_CATEGORIES = 'created_menu_categories';
+
 /**
  * 创建菜谱工具类。
  * @author li.hao85
  */
 export class CreatedMenuUtils {
-
   /**
    * 查询给定ID的菜谱是否在创建菜谱列表中。
    * @param id 待查询菜谱的ID。
@@ -183,5 +189,63 @@ export class CreatedMenuUtils {
       emitter.emit(CREATED_MENU_CHANGE_EVENT, dataWrap);
     } catch (error) {
     }
+  }
+
+  /**
+   * 查询所有菜谱分类信息。
+   * @returns 所有菜谱分类信息：key：分类ID，value：分类名称。
+   */
+  public static queryAllCategories(): Record<number, string> {
+    let allCategoriesInfo: object = KVUtils.queryAllKVs(FILE_NAME_CATEGORIES);
+    let allIDStrings: Array<string> | undefined =
+      allCategoriesInfo === BLANK_OBJECT ? undefined : Object.keys(allCategoriesInfo);
+    // 没有分类的情况下初始化一份分类信息文件。
+    if (allIDStrings === undefined || allIDStrings.length === 0) {
+      let allMenusOrder: Array<number> | undefined = CreatedMenuUtils.queryCreatedOrder();
+      if (allMenusOrder === undefined || allMenusOrder.length === 0) {
+        return {};
+      }
+      let result: Record<number, string> = {};
+      allMenusOrder.forEach((id: number) => {
+        let menuItem: CreatedMenuItem | undefined = CreatedMenuUtils.queryOneCreatedMenu(id);
+        if (menuItem !== undefined && menuItem.type_id !== undefined && menuItem.type_name !== undefined &&
+          menuItem.type_name.length > 0) {
+          result[menuItem.type_id] = menuItem.type_name;
+          KVUtils.setKV(FILE_NAME_CATEGORIES, `${menuItem.type_id}`, menuItem.type_name);
+        }
+      });
+      return result;
+    }
+    // 有分类的情况下查询所有分类信息。
+    let result: Record<number, string> = {};
+    allIDStrings.forEach((idString: string) => {
+      if (KVUtils.hasKV(FILE_NAME_CATEGORIES, idString)) {
+        let name: string = KVUtils.queryKV(FILE_NAME_CATEGORIES, idString) as string;
+        let id: number = Number(idString);
+        result[id] = name;
+      }
+    });
+    return result;
+  }
+
+  /**
+   * 查询分类名称是否已存在。
+   * @param name 待查询的分类名称。
+   * @returns 查询结果。
+   */
+  public static queryIfCategoryNameExisted(name: string): boolean {
+    let allCategoriesInfo: object = KVUtils.queryAllKVs(FILE_NAME_CATEGORIES);
+    let allNames: Array<string> | undefined =
+      allCategoriesInfo === BLANK_OBJECT ? undefined : Object.values(allCategoriesInfo);
+    return allNames !== undefined && allNames.length > 0 && allNames.includes(name);
+  }
+
+  /**
+   * 增加一个新的分类。
+   * @param name 新分类名称。
+   */
+  public static addOneCategory(name: string) {
+    let idString: string = `${new Date().getTime()}`;
+    KVUtils.setKV(FILE_NAME_CATEGORIES, idString, name);
   }
 }
