@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bridge/flutter_bridge_platform_interface.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
@@ -114,7 +115,18 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Image.asset(Resources_media.ic_right_green))),
-                onTap: () {},
+                onTap: () {
+                  Bridge.addOneCreatedMenu(
+                          menuTitle: _menuTitle,
+                          author: _author,
+                          category: _category,
+                          texing: _texing,
+                          yuanliao: _yuanliao,
+                          tiaoliao: _tiaoliao,
+                          zuofa: _zuofa,
+                          wenxintishi: _wenxintishi)
+                      .then((bool? result) => {});
+                },
               ))
         ],
       ),

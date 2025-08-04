@@ -5,6 +5,7 @@ import { LHDialogContainer } from "../../pages/common/dialogcontainer/LHDialogCo
 import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
+import { HashMap } from '@kit.ArkTS';
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -22,6 +23,12 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
     if (methodName === 'selectCategory') {
       let curCategory: string | undefined = methodParams ? (methodParams as ESObject as string) : undefined;
       selectCategory(result, curCategory);
+      return;
+    }
+    if (methodName === 'addOneCreatedMenu') {
+      let data: HashMap<string, string | undefined> | undefined = methodParams as HashMap<string, string | undefined>;
+      let addResult: boolean = addOneCreatedMenu(data);
+      result.success(addResult);
       return;
     }
     result.notImplemented();
@@ -90,4 +97,29 @@ function selectCategoryDialogBuilder(params: object, closeCallback: Callback<voi
     currentSelectedCategoryName: (params as Array<object>)[1] as ESObject as string,
     closeCallback: closeCallback
   })
+}
+
+
+/**
+ * 添加一个自创菜谱。
+ * @param data 原始数据。
+ * @return 添加结果。
+ */
+function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean {
+  if (data === undefined) {
+    return false;
+  }
+  let cp_name: string | undefined = data.hasKey('cp_name') ? data.get('cp_name') : undefined;
+  let author: string | undefined = data.hasKey('author') ? data.get('author') : undefined;
+  let type_name: string | undefined = data.hasKey('type_name') ? data.get('type_name') : undefined;
+  let texing: string | undefined = data.hasKey('texing') ? data.get('texing') : undefined;
+  let yuanliao: string | undefined = data.hasKey('yuanliao') ? data.get('yuanliao') : undefined;
+  let tiaoliao: string | undefined = data.hasKey('tiaoliao') ? data.get('tiaoliao') : undefined;
+  let zuofa: string | undefined = data.hasKey('zuofa') ? data.get('zuofa') : undefined;
+  let tishi: string | undefined = data.hasKey('tishi') ? data.get('tishi') : undefined;
+  if (!cp_name && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
+    return false;
+  }
+  
+  return true;
 }

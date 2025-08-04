@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bridge/flutter_bridge_platform_interface.dart';
@@ -62,6 +64,30 @@ class Bridge {
     if (result == null || result.isEmpty) {
       return Future.value(null);
     }
+    return Future.value(result);
+  }
+
+  /// 添加一个自创菜谱。
+  static Future<bool?> addOneCreatedMenu(
+      {String? menuTitle,
+      String? author,
+      String? category,
+      String? texing,
+      String? yuanliao,
+      String? tiaoliao,
+      String? zuofa,
+      String? wenxintishi}) async {
+    Map<String, String?> data = HashMap();
+    data['cp_name'] = menuTitle;
+    data['author'] = author;
+    data['type_name'] = category;
+    data['texing'] = texing;
+    data['yuanliao'] = yuanliao;
+    data['tiaoliao'] = tiaoliao;
+    data['zuofa'] = zuofa;
+    data['tishi'] = wenxintishi;
+    final bool? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('addOneCreatedMenu', methodParams: data);
     return Future.value(result);
   }
 }
