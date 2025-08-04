@@ -20,7 +20,8 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       return;
     }
     if (methodName === 'selectCategory') {
-      selectCategory(result);
+      let curCategory: string | undefined = methodParams ? (methodParams as ESObject as string) : undefined;
+      selectCategory(result, curCategory);
       return;
     }
     result.notImplemented();
@@ -60,7 +61,8 @@ function queryAllCreatedMenus(): Array<CreatedMenuItem> {
   });
   if (menuItems.length === 0) { // 无自创菜谱数据时，使用mock数据。
     let dataResult: CreateMenuMockResult = readRawFileSync<CreateMenuMockResult>(CREATE_MENU_MOCK_DATA);
-    if (dataResult !== undefined && dataResult !== BLANK_OBJECT && dataResult.list !== undefined && dataResult.list.length > 0) {
+    if (dataResult !== undefined && dataResult !== BLANK_OBJECT && dataResult.list !== undefined &&
+      dataResult.list.length > 0) {
       dataResult.list.forEach((menuItem: CreatedMenuItem): void => CreatedMenuUtils.addOneCreatedMenu(menuItem));
       menuItems = dataResult.list;
     }
@@ -71,18 +73,21 @@ function queryAllCreatedMenus(): Array<CreatedMenuItem> {
 /**
  * 为自创菜谱选择分类。
  * @param result 运行结果，用于向Flutter页面返回参数。
+ * @param curCategory 当前选中的分类名称。
  */
-function selectCategory(result: MethodResult) {
+function selectCategory(result: MethodResult, curCategory?: string) {
   LHDialogContainer.open({
     builder: wrapBuilder(selectCategoryDialogBuilder),
-    data: result
+    data: [result, curCategory],
+    cancelCallback: () => result.success(undefined) // 用户取消了对话框，返回空结果。
   });
 }
 
 @Builder
 function selectCategoryDialogBuilder(params: object, closeCallback: Callback<void, void>) {
   CreatedMenuCategorySelect({
-    result: params as MethodResult,
+    result: (params as Array<object>)[0] as MethodResult,
+    currentSelectedCategoryName: (params as Array<object>)[1] as ESObject as string,
     closeCallback: closeCallback
   })
 }

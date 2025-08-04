@@ -191,9 +191,12 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     tipContent: Resources_string.modify_page_category_hint,
                     contentText: _category,
                     clickEvent: (TextEditingController controller) {
-                      Bridge.selectCategory().then((String? newCategory) {
-                        _category = newCategory;
-                        controller.text = newCategory ?? '';
+                      Bridge.selectCategory(_category)
+                          .then((String? newCategory) {
+                        if (newCategory != null && newCategory.isNotEmpty) {
+                          _category = newCategory;
+                          controller.text = newCategory;
+                        }
                       });
                     })),
             // 特性。

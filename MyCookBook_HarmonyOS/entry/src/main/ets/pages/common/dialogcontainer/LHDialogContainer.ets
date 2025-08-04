@@ -23,6 +23,9 @@ export interface DialogContainerParams {
   /** 额外需要的参数。 */
   data?: object;
 
+  /** 对话框被取消时候的回调，当用户点击物理返回键、从屏幕边缘向中心滑动触发返回手势、或点击蒙层关闭对话框时被调用。 */
+  cancelCallback?: Callback<void, void>;
+
   /** 设置点击对话框外部(蒙层)是否关闭对话框，默认关闭。 */
   autoCancel?: boolean;
 }
@@ -43,6 +46,7 @@ export struct LHDialogContainerComponent {
       let params: DialogContainerParams = RouterUtils.navGetParams(context) as DialogContainerParams;
       let builder: WrappedBuilder<[object, Callback<void, void>]> = params.builder;
       let data: object | undefined = params.data;
+      let cancelCallback: Callback<void, void> | undefined = params.cancelCallback;
       let autoCancel: boolean = params.autoCancel ?? true;
       // 打开对话框。
       let closeCallback: Callback<void, void> = () => {
@@ -57,7 +61,10 @@ export struct LHDialogContainerComponent {
         }),
         autoCancel: autoCancel,
         customStyle: true,
-        onWillDismiss: (action: DismissDialogAction) => closeCallback()
+        onWillDismiss: (action: DismissDialogAction) => {
+          cancelCallback?.();
+          closeCallback();
+        }
       });
       customDialogController.open();
     })

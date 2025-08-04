@@ -185,6 +185,14 @@
       "value": "选择分类"
     },
     {
+      "name": "created_menu_select_category_new_tip",
+      "value": "添加新分类"
+    },
+    {
+      "name": "created_menu_select_category_existed_tip",
+      "value": "已存在同名分类"
+    },
+    {
       "name": "cancel",
       "value": "取消"
     },

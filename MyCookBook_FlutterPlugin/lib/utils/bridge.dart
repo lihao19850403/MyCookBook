@@ -56,9 +56,9 @@ class Bridge {
   }
 
   /// 选择一个分类。
-  static Future<String?> selectCategory() async {
-    final String? result =
-        await FlutterBridgePlatform.instance.callNativeMethod('selectCategory');
+  static Future<String?> selectCategory(String? curCategoryName) async {
+    final String? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('selectCategory', methodParams: curCategoryName);
     if (result == null || result.isEmpty) {
       return Future.value(null);
     }
