@@ -6,6 +6,8 @@ import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
 import { HashMap } from '@kit.ArkTS';
+import promptAction from "@ohos.promptAction";
+import { DateUtils, DATE_FORMAT } from "../../utils/common/DateUtils";
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -107,19 +109,50 @@ function selectCategoryDialogBuilder(params: object, closeCallback: Callback<voi
  */
 function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean {
   if (data === undefined) {
+    promptAction.showToast({
+      message: $r("app.string.created_menu_add_category_failure_tip"),
+    })
     return false;
   }
-  let cp_name: string | undefined = data.hasKey('cp_name') ? data.get('cp_name') : undefined;
-  let author: string | undefined = data.hasKey('author') ? data.get('author') : undefined;
-  let type_name: string | undefined = data.hasKey('type_name') ? data.get('type_name') : undefined;
-  let texing: string | undefined = data.hasKey('texing') ? data.get('texing') : undefined;
-  let yuanliao: string | undefined = data.hasKey('yuanliao') ? data.get('yuanliao') : undefined;
-  let tiaoliao: string | undefined = data.hasKey('tiaoliao') ? data.get('tiaoliao') : undefined;
-  let zuofa: string | undefined = data.hasKey('zuofa') ? data.get('zuofa') : undefined;
-  let tishi: string | undefined = data.hasKey('tishi') ? data.get('tishi') : undefined;
+  /* 解析数据。 */
+  let cp_name: string | undefined = data.get('cp_name') ?? undefined;
+  let author: string | undefined = data.get('author') ?? undefined;
+  let type_name: string | undefined = data.get('type_name') ?? undefined;
+  let texing: string | undefined = data.get('texing') ?? undefined;
+  let yuanliao: string | undefined = data.get('yuanliao') ?? undefined;
+  let tiaoliao: string | undefined = data.get('tiaoliao') ?? undefined;
+  let zuofa: string | undefined = data.get('zuofa') ?? undefined;
+  let tishi: string | undefined = data.get('tishi') ?? undefined;
   if (!cp_name && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
+    promptAction.showToast({
+      message: $r("app.string.created_menu_add_category_failure_tip"),
+    })
     return false;
   }
-  
+  let categoryID: number | undefined = type_name === undefined ? undefined : CreatedMenuUtils.queryCategoryIDbyName(type_name);
+  if (categoryID === undefined) {
+    promptAction.showToast({
+      message: $r("app.string.created_menu_add_category_failure_tip"),
+    })
+    return false;
+  }
+  /* 增加新菜谱。 */
+  let newCreatedMenu: CreatedMenuItem = {};
+  newCreatedMenu.id = new Date().getTime();
+  newCreatedMenu.type_id = categoryID;
+  newCreatedMenu.type_name = type_name;
+  newCreatedMenu.cp_name = cp_name;
+  newCreatedMenu.cp_thumbnail = undefined; // TODO：添加菜谱缩略图。
+  newCreatedMenu.zuofa = zuofa;
+  newCreatedMenu.texing = texing;
+  newCreatedMenu.tishi = tishi;
+  newCreatedMenu.tiaoliao = tiaoliao;
+  newCreatedMenu.yuanliao = yuanliao;
+  newCreatedMenu.author = author;
+  newCreatedMenu.createdTime = DateUtils.formatDate(new Date(), DATE_FORMAT.YYYY_MM_DD);
+  CreatedMenuUtils.addOneCreatedMenu(newCreatedMenu);
+  promptAction.showToast({
+    message: $r("app.string.created_menu_add_category_success_tip"),
+  })
   return true;
 }

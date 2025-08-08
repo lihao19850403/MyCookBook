@@ -46,13 +46,9 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
             : 4;
       });
     });
-    Bridge.queryAllCreatedMenus()
-        .then((List<CreatedMenuItem>? result) => safeUpdate(() {
-              _createdMenuList.clear();
-              if (result != null) {
-                _createdMenuList.addAll(result);
-              }
-            }));
+    eventBus.on(REFRESH_CREATED_MENUS_LIST_EVENT,
+        (Object? arguments) => _initCreatedMenusList());
+    _initCreatedMenusList();
   }
 
   @override
@@ -109,6 +105,17 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
     super.dispose();
   }
 
+  Future<void> _initCreatedMenusList() async {
+    List<CreatedMenuItem>? refreshedData = await Bridge.queryAllCreatedMenus();
+    safeUpdate(() {
+      _createdMenuList.clear();
+      if (refreshedData != null) {
+        _createdMenuList.addAll(refreshedData);
+      }
+    });
+    return Future.value();
+  }
+
   /* ---------- 页面主体内容。 ---------- */
 
   /// 页面主体内容，使用瀑布流+下拉刷新组件实现。
@@ -142,13 +149,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
 
   /// 下拉刷新整个页面。
   void _onRefresh() async {
-    List<CreatedMenuItem>? refreshedData = await Bridge.queryAllCreatedMenus();
-    safeUpdate(() {
-      _createdMenuList.clear();
-      if (refreshedData != null) {
-        _createdMenuList.addAll(refreshedData);
-      }
-    });
+    await _initCreatedMenusList();
     _refreshController.refreshCompleted();
     print('下拉刷新-完成');
   }

@@ -241,6 +241,29 @@ export class CreatedMenuUtils {
   }
 
   /**
+   * 通过分类名称查询分类ID。
+   * @param name 分类名称。
+   * @returns 对应的分类ID。
+   */
+  public static queryCategoryIDbyName(name: string): number | undefined {
+    let allCategoriesInfo: object = KVUtils.queryAllKVs(FILE_NAME_CATEGORIES);
+    let allEntries: Array<[string, string]> | undefined =
+      allCategoriesInfo === BLANK_OBJECT ? undefined : Object.entries(allCategoriesInfo);
+    if (allEntries === undefined || allEntries.length === 0) {
+      return undefined;
+    }
+    for (let index: number = 0; index < allEntries.length; index++) {
+      let entry: [string, string] = allEntries[index];
+      let entryID: number = Number(entry[0]);
+      let entryName: string = entry[1];
+      if (entryName === name) {
+        return entryID;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * 增加一个新的分类。
    * @param name 新分类名称。
    */

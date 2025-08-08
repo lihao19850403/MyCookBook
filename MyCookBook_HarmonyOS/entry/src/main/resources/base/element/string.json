@@ -193,6 +193,14 @@
       "value": "已存在同名分类"
     },
     {
+      "name": "created_menu_add_category_failure_tip",
+      "value": "数据为空或有异常"
+    },
+    {
+      "name": "created_menu_add_category_success_tip",
+      "value": "创建了新的菜谱"
+    },
+    {
       "name": "cancel",
       "value": "取消"
     },

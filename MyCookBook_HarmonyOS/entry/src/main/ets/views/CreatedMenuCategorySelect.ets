@@ -28,6 +28,18 @@ export struct CreatedMenuCategorySelect {
 
   aboutToAppear(): void {
     this.initAllCategories();
+    if (this.currentSelectedCategoryName != undefined && this.currentSelectedCategoryName.length > 0) {
+      setTimeout(() => {
+        let index: number = 0;
+        for (let i: number = 0; i < this.categories.length; i++) {
+          if (this.categories[i].name === this.currentSelectedCategoryName) {
+            index = i;
+            break;
+          }
+        }
+        this.categoriesListScroller.scrollToIndex(index, false, ScrollAlign.CENTER);
+      }, 0);
+    }
   }
 
   build() {

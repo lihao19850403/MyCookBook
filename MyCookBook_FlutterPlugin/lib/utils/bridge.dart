@@ -10,6 +10,9 @@ import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 /// 屏幕类型、分屏配置项变化事件。
 const String SCREEN_UI_INFO_CHANGED_EVENT = 'screenUIInfoChangedEvent';
 
+/// 重刷自创菜谱列表事件。
+const String REFRESH_CREATED_MENUS_LIST_EVENT = 'refreshCreatedMenusListEvent';
+
 /// Flutter与原生交互的桥方法集。
 class Bridge {
   /// 初始化Flutter层方法回调监听。

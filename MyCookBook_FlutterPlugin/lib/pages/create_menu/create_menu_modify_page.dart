@@ -125,7 +125,12 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                           tiaoliao: _tiaoliao,
                           zuofa: _zuofa,
                           wenxintishi: _wenxintishi)
-                      .then((bool? result) => {});
+                      .then((bool? result) {
+                    if (result == true) {
+                      eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
+                      FlutterRouter().back(context);
+                    }
+                  });
                 },
               ))
         ],
