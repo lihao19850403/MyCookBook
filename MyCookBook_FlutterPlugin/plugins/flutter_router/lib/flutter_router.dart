@@ -12,10 +12,13 @@ import 'package:flutter_router/router_manager.dart';
 import 'flutter_router_platform_interface.dart';
 
 class FlutterRouter {
+  /// 页面栈，存储页面名称。
+  static List<String> _pageNamesStack = [];
+
   /// 初始化Flutter层方法回调监听。
   ///
   /// 参数[navigatorKey]可用来获取全局context。
-  void initOnMethodCallWhenBuild(GlobalKey navigatorKey) {
+  static void initOnMethodCallWhenBuild(GlobalKey navigatorKey) {
     FlutterRouterPlatform.instance
         .getChannel()
         .setMethodCallHandler((MethodCall call) async {
@@ -32,15 +35,16 @@ class FlutterRouter {
   /// 根据给定的路由路径[path]和路由参数[params]跳转至目标页面。
   ///
   /// 注：如果目标页面是Flutter页面，则使用Flutter的Navigator跳转，需要借助布局上下文[context]；如果目标页面不在Flutter路由表中，那么就尝试跳转入原生页面。
-  Future<T> go<T extends Object?>(BuildContext context, String path,
+  static Future<T> go<T extends Object?>(BuildContext context, String path,
       {Object? params}) async {
     final bool isFlutterPage = RouterManager.instance.isFlutterPage(path);
     if (isFlutterPage) {
-      Widget widget =
-          RouterManager.instance.getRouterWidget(path, defaultParams: params);
-      return Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => widget))
-          .then((result) => result);
+      String routePath = path.startsWith('/') ? path : '/$path';
+      return Navigator.pushNamed(context, routePath, arguments: params)
+          .then((result) {
+        _pageNamesStack.add(path);
+        return result as T;
+      });
     } else {
       return FlutterRouterPlatform.instance
           .go<T>(path, params: params)
@@ -51,7 +55,7 @@ class FlutterRouter {
   /// 页面返回方法。
   ///
   /// 注：如果上一个页面是Flutter页面，则使用Flutter的Navigator跳转，需要借助布局上下文[context]；如果上一个页面是原生平台页面，那么就尝试跳转入原生页面。
-  void back(BuildContext context, {Object? params}) {
+  static void back(BuildContext context, {Object? params}) {
     if (Navigator.of(context).canPop()) {
       Navigator.of(context).pop(params);
     } else {

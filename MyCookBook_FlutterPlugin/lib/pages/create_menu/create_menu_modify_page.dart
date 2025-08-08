@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bridge/flutter_bridge_platform_interface.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
@@ -104,7 +103,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Image.asset(Resources_media.ic_wrong_green))),
-                onTap: () => FlutterRouter().back(context))),
+                onTap: () => FlutterRouter.back(context))),
         actions: <Widget>[
           Container(
               alignment: Alignment.centerRight,
@@ -128,7 +127,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                       .then((bool? result) {
                     if (result == true) {
                       eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
-                      FlutterRouter().back(context);
+                      FlutterRouter.back(context);
                     }
                   });
                 },

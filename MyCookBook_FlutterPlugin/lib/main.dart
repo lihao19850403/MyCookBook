@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'FlutterPlugin',
       navigatorKey: Global.navigatorkey,
       home: RouterManager.instance.getRouterWidget(pathInfo),
+      routes: RouterManager.instance.getRoutesMap(),
     );
   }
 }
@@ -71,6 +72,6 @@ void _initGlobalParams(String pathInfo) {
 
 /// 在build方法中初始化Flutter方法回到监听。
 void _initMethodCallHandlerWhenBuild() {
-  FlutterRouter().initOnMethodCallWhenBuild(Global.navigatorkey);
+  FlutterRouter.initOnMethodCallWhenBuild(Global.navigatorkey);
   Bridge.initOnMethodCallWhenBuild(Global.navigatorkey);
 }

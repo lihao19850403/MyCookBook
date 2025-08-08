@@ -59,7 +59,7 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                         padding: const EdgeInsets.all(12),
                         child:
                             Image.asset(Resources_media.ic_main_back_arrow))),
-                onTap: () => FlutterRouter().back(context))),
+                onTap: () => FlutterRouter.back(context))),
         actions: <Widget>[
           Container(
               alignment: Alignment.centerRight,
@@ -70,7 +70,7 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                     child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Image.asset(Resources_media.ic_edit_green))),
-                onTap: () => FlutterRouter().go(context, 'ModifyMenu'),
+                onTap: () => FlutterRouter.go(context, 'ModifyMenu'),
               ))
         ],
       ),

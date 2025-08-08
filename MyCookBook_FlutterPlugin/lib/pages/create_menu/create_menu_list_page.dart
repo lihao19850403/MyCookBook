@@ -70,7 +70,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                           padding: const EdgeInsets.all(12),
                           child:
                               Image.asset(Resources_media.ic_main_back_arrow))),
-                  onTap: () => FlutterRouter().back(context))),
+                  onTap: () => FlutterRouter.back(context))),
           actions: <Widget>[
             Container(
                 alignment: Alignment.centerRight,
@@ -81,7 +81,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Image.asset(Resources_media.ic_add_green))),
-                  onTap: () => FlutterRouter().go(context, 'ModifyMenu'),
+                  onTap: () => FlutterRouter.go(context, 'ModifyMenu'),
                 ))
           ],
         ),
@@ -105,6 +105,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
     super.dispose();
   }
 
+  /// 初始化自创菜谱列表。
   Future<void> _initCreatedMenusList() async {
     List<CreatedMenuItem>? refreshedData = await Bridge.queryAllCreatedMenus();
     safeUpdate(() {

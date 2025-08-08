@@ -79,4 +79,14 @@ class RouterManager {
       return null;
     }
   }
+
+  /// 将已登记的路由信息转换为MaterialApp可用的routes属性。
+  Map<String, WidgetBuilder> getRoutesMap() {
+    Map<String, WidgetBuilder> routesMap = {};
+    _routerMap.forEach((String path, RouterWidgetBuilder builder) {
+      String routePath = path.startsWith('/') ? path : '/$path';
+      routesMap[routePath] = (context, {arguments}) => builder(arguments);
+    });
+    return routesMap;
+  }
 }
