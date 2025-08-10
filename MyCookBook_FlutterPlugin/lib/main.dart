@@ -12,12 +12,12 @@ import 'package:my_cook_book_flutter_plugin/utils/common/error_handler.dart';
 void main() {
   safeRun(() {
     // 初始化路由。
-    RouterManager.instance.addRouter(
-        'CreateMenu', (params) => CreateMenuListPage(params: params));
-    RouterManager.instance.addRouter(
-        'ModifyMenu', (params) => CreateMenuModifyPage(params: params));
-    RouterManager.instance.addRouter(
-        'DetailMenu', (params) => CreateMenuDetailPage(params: params));
+    RouterManager.instance.addRouter(CreateMenuListPage.PAGE_NAME,
+        (params) => CreateMenuListPage(params: params));
+    RouterManager.instance.addRouter(CreateMenuModifyPage.PAGE_NAME,
+        (params) => CreateMenuModifyPage(params: params));
+    RouterManager.instance.addRouter(CreateMenuDetailPage.PAGE_NAME,
+        (params) => CreateMenuDetailPage(params: params));
 
     // 加载内容页。
     var pathInfo = PlatformDispatcher.instance.defaultRouteName;

@@ -4,12 +4,16 @@ import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/common_stateful_page.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 import 'package:my_cook_book_flutter_plugin/views/input_text_zone.dart';
 import 'package:my_cook_book_flutter_plugin/views/select_zone.dart';
 
-class CreateMenuModifyPage extends StatefulWidget {
-  const CreateMenuModifyPage({Key? key, this.params}) : super(key: key);
+class CreateMenuModifyPage extends CommonStatefulPage {
+  static const String PAGE_NAME = 'ModifyMenu';
+
+  CreateMenuModifyPage({Key? key, this.params})
+      : super(key: key, path: PAGE_NAME);
 
   final Map<String, dynamic>? params;
 

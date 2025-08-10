@@ -16,6 +16,9 @@ class RouterManager {
   /// 路由路径与Widget构造方法的对应Map。
   final Map<String, RouterWidgetBuilder> _routerMap = {};
 
+  /// 路由路径与页面返回方法的对应Map。
+  final Map<String, Function> _backPressMap = {};
+
   /// 添加新的路由路径[path]与对应的Widget构造方法[routerWidgetBuilder]。
   bool addRouter(String path, RouterWidgetBuilder routerWidgetBuilder) {
     _routerMap[path] = routerWidgetBuilder;
@@ -88,5 +91,16 @@ class RouterManager {
       routesMap[routePath] = (context, {arguments}) => builder(arguments);
     });
     return routesMap;
+  }
+
+  /// 添加新的路由路径[path]与对应页面的返回方法[backPressFunc]。
+  bool addBackPressFunc(String path, Function backPressFunc) {
+    _backPressMap[path] = backPressFunc;
+    return true;
+  }
+
+  /// 获取指定路由路径[path]对应页面的返回方法。
+  Function? getBackPressFunc(String path) {
+    return _backPressMap[path];
   }
 }

@@ -9,8 +9,13 @@ import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
-class CreateMenuListPage extends StatefulWidget {
-  const CreateMenuListPage({Key? key, this.params}) : super(key: key);
+import '../../views/common/common_stateful_page.dart';
+
+class CreateMenuListPage extends CommonStatefulPage {
+  static const String PAGE_NAME = 'CreateMenu';
+
+  CreateMenuListPage({Key? key, this.params})
+      : super(key: key, path: PAGE_NAME);
 
   final Map<String, dynamic>? params;
 

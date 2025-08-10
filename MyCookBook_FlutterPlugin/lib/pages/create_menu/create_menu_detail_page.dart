@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/common_stateful_page.dart';
 import '../../utils/bridge.dart';
 import '../../utils/common/event_bus.dart';
 import '../../utils/common/global.dart';
 import '../../utils/resources.dart';
 import '../../views/common/safe_update.dart';
 
-class CreateMenuDetailPage extends StatefulWidget {
-  const CreateMenuDetailPage({Key? key, this.params}) : super(key: key);
+class CreateMenuDetailPage extends CommonStatefulPage {
+  static const String PAGE_NAME = 'DetailMenu';
+
+  CreateMenuDetailPage({Key? key, this.params})
+      : super(key: key, path: PAGE_NAME);
 
   final Map<String, dynamic>? params;
 
