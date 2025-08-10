@@ -13,9 +13,6 @@ abstract class CommonStatefulPage extends StatefulWidget {
     return whenBackPressed();
   }
 
-  /// 对返回事件进行拦截。当返回true时(默认)，表示可以正常返回；当返回false时，停止页面的返回动作。
-  @protected
-  bool whenBackPressed() {
-    return true;
-  }
+  /// 对返回事件进行拦截。当返回true时(默认)，可以正常返回；当返回false时，停止页面的返回动作。
+  Function whenBackPressed = () => true;
 }

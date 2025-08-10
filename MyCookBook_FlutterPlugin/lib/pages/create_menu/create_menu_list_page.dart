@@ -5,11 +5,16 @@ import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/custom_check_box.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 import '../../views/common/common_stateful_page.dart';
+import 'create_menu_modify_page.dart';
+
+/// 页面展示模式，有两种：列表浏览模式、删除菜谱模式。
+enum _MODE { BROWSE, DELETE }
 
 class CreateMenuListPage extends CommonStatefulPage {
   static const String PAGE_NAME = 'CreateMenu';
@@ -39,9 +44,19 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   /// 自创菜谱列表。
   final List<CreatedMenuItem> _createdMenuList = <CreatedMenuItem>[];
 
+  /// 页面展示模式，默认是列表浏览模式。
+  _MODE _mode = _MODE.BROWSE;
+
   @override
   void initState() {
     super.initState();
+    widget.whenBackPressed = () {
+      if (_mode == _MODE.BROWSE) {
+        return true;
+      }
+      safeUpdate(() => _mode == _MODE.BROWSE);
+      return false;
+    };
     eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
       safeUpdate(() {
         _columnCount = Global.screenUIType == ScreenUIType.NORMAL ||
@@ -73,9 +88,16 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       height: 48,
                       child: Padding(
                           padding: const EdgeInsets.all(12),
-                          child:
-                              Image.asset(Resources_media.ic_main_back_arrow))),
-                  onTap: () => FlutterRouter.back(context))),
+                          child: Image.asset(_mode == _MODE.BROWSE
+                              ? Resources_media.ic_main_back_arrow
+                              : Resources_media.ic_wrong_green))),
+                  onTap: () {
+                    if (_mode == _MODE.BROWSE) {
+                      FlutterRouter.back(context);
+                    } else {
+                      safeUpdate(() => _mode = _MODE.BROWSE);
+                    }
+                  })),
           actions: <Widget>[
             Container(
                 alignment: Alignment.centerRight,
@@ -85,8 +107,16 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       height: 48,
                       child: Padding(
                           padding: const EdgeInsets.all(12),
-                          child: Image.asset(Resources_media.ic_add_green))),
-                  onTap: () => FlutterRouter.go(context, 'ModifyMenu'),
+                          child: Image.asset(_mode == _MODE.BROWSE
+                              ? Resources_media.ic_add_green
+                              : Resources_media.ic_right_green))),
+                  onTap: () {
+                    if (_mode == _MODE.BROWSE) {
+                      FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME);
+                    } else {
+                      // TODO：批量删除菜谱。
+                    }
+                  },
                 ))
           ],
         ),
@@ -174,6 +204,31 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   Widget _oneMenuItem(BuildContext buildContext, int index) {
     CreatedMenuItem menuItem = _createdMenuList[index];
     bool isLast = index == _createdMenuList.length - 1;
+    List<Widget> children = <Widget>[
+      Container(
+          padding: const EdgeInsets.all(4),
+          alignment: Alignment.topCenter,
+          child: Column(children: <Widget>[
+            const Image(
+                image: AssetImage(Resources_media.ic_menu_default_bg),
+                fit: BoxFit.contain), // [Flutter TODO] Image Picker.
+            Container(
+                alignment: Alignment.topLeft,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _textContent(menuItem, index)))
+          ]))
+    ];
+    if (_mode == _MODE.BROWSE) {
+      if (children.length > 1) {
+        children.removeLast();
+      }
+    } else {
+      if (children.length == 1) {
+        children.add(CustomCheckBox());
+      }
+    }
     return Container(
         margin: isLast
             ? EdgeInsets.only(bottom: Global.screenBottomSafeZoneHeightVP)
@@ -186,27 +241,13 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                   borderRadius: BorderRadius.all(Radius.circular(4))),
               child: Stack(
                 alignment: Alignment.topRight,
-                children: <Widget>[
-                  Container(
-                      padding: const EdgeInsets.all(4),
-                      alignment: Alignment.topCenter,
-                      child: Column(children: <Widget>[
-                        const Image(
-                            image:
-                                AssetImage(Resources_media.ic_menu_default_bg),
-                            fit:
-                                BoxFit.contain), // [Flutter TODO] Image Picker.
-                        Container(
-                            alignment: Alignment.topLeft,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: _textContent(menuItem, index)))
-                      ])),
-                ],
+                children: children,
               )),
           onLongPress: () {
             // 长按删除。
+            if (_mode != _MODE.DELETE) {
+              safeUpdate(() => _mode = _MODE.DELETE);
+            }
           },
           onTap: () {
             // 单击查看详情。

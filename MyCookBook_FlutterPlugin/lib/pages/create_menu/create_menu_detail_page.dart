@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
+import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_modify_page.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/common_stateful_page.dart';
 import '../../utils/bridge.dart';
 import '../../utils/common/event_bus.dart';
@@ -74,7 +75,8 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                     child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Image.asset(Resources_media.ic_edit_green))),
-                onTap: () => FlutterRouter.go(context, 'ModifyMenu'),
+                onTap: () =>
+                    FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME),
               ))
         ],
       ),
