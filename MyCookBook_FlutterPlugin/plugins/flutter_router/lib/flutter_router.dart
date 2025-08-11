@@ -39,12 +39,10 @@ class FlutterRouter {
       {Object? params}) async {
     final bool isFlutterPage = RouterManager.instance.isFlutterPage(path);
     if (isFlutterPage) {
+      _pageNamesStack.add(path);
       String routePath = path.startsWith('/') ? path : '/$path';
       return Navigator.pushNamed(context, routePath, arguments: params)
-          .then((result) {
-        _pageNamesStack.add(path);
-        return result as T;
-      });
+          .then((result) => result as T);
     } else {
       return FlutterRouterPlatform.instance
           .go<T>(path, params: params)
@@ -60,22 +58,38 @@ class FlutterRouter {
       String? curPath = _pageNamesStack.last;
       if (curPath.isEmpty) {
         _pageNamesStack.removeLast();
+        RouterManager.instance.removeBackPressFunc(curPath);
         Navigator.of(context).pop(params);
         return;
       }
-      Function? whenBackPressed = RouterManager.instance.getBackPressFunc(curPath);
+      Function? whenBackPressed =
+          RouterManager.instance.getBackPressFunc(curPath);
       if (whenBackPressed == null) {
         _pageNamesStack.removeLast();
+        RouterManager.instance.removeBackPressFunc(curPath);
         Navigator.of(context).pop(params);
         return;
       }
       bool canBack = whenBackPressed();
       if (canBack) {
         _pageNamesStack.removeLast();
+        RouterManager.instance.removeBackPressFunc(curPath);
         Navigator.of(context).pop(params);
       }
     } else {
-      FlutterRouterPlatform.instance.back(params: params);
+      // 首页可能有一个返回监听，进行测试。
+      List<Function> allFunctions =
+          RouterManager.instance.getAllBackPressFuncs();
+      if (allFunctions.length != 1) {
+        allFunctions.clear();
+        FlutterRouterPlatform.instance.back(params: params);
+        return;
+      }
+      bool canBack = allFunctions[0]();
+      if (canBack) {
+        allFunctions.clear();
+        FlutterRouterPlatform.instance.back(params: params);
+      }
     }
   }
 }

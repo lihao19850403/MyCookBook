@@ -100,7 +100,21 @@ class RouterManager {
   }
 
   /// 获取指定路由路径[path]对应页面的返回方法。
-  Function? getBackPressFunc(String path) {
+  Function? getBackPressFunc(String? path) {
     return _backPressMap[path];
+  }
+
+  /// 清除路由路径[path]对应页面的返回方法。
+  bool removeBackPressFunc(String? path) {
+    _backPressMap.remove(path);
+    return true;
+  }
+
+  /// 获取所有返回方法的列表。
+  List<Function> getAllBackPressFuncs() {
+    List<Function> allFunctions = [];
+    _backPressMap
+        .forEach((String key, Function value) => allFunctions.add(value));
+    return allFunctions;
   }
 }

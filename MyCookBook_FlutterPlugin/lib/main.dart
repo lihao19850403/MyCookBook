@@ -8,6 +8,7 @@ import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_list_p
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/error_handler.dart';
+import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 
 void main() {
   safeRun(() {
@@ -25,18 +26,25 @@ void main() {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key, required this.pathInfo}) : super(key: key);
   final String pathInfo;
 
   @override
+  State<StatefulWidget> createState() {
+    return _MyApp();
+  }
+}
+
+class _MyApp extends SafeState<MyApp> {
+  @override
   Widget build(BuildContext context) {
-    _initGlobalParams(pathInfo);
+    _initGlobalParams(widget.pathInfo);
     _initMethodCallHandlerWhenBuild();
     return MaterialApp(
       title: 'FlutterPlugin',
       navigatorKey: Global.navigatorkey,
-      home: RouterManager.instance.getRouterWidget(pathInfo),
+      home: RouterManager.instance.getRouterWidget(widget.pathInfo),
       routes: RouterManager.instance.getRoutesMap(),
     );
   }
