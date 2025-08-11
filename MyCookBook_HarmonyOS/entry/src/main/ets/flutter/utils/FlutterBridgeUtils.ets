@@ -1,13 +1,13 @@
 import { MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import { CreatedMenuItem } from "../../models/CreatedMenuItem";
-import { LHDialogContainer } from "../../pages/common/dialogcontainer/LHDialogContainer";
 import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
 import { HashMap } from '@kit.ArkTS';
 import promptAction from "@ohos.promptAction";
 import { DateUtils, DATE_FORMAT } from "../../utils/common/DateUtils";
+import { openCustomDialog } from "../../utils/common/DialogUtils";
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -85,7 +85,7 @@ function queryAllCreatedMenus(): Array<CreatedMenuItem> {
  * @param curCategory 当前选中的分类名称。
  */
 function selectCategory(result: MethodResult, curCategory?: string) {
-  LHDialogContainer.open({
+  openCustomDialog({
     builder: wrapBuilder(selectCategoryDialogBuilder),
     data: [result, curCategory],
     cancelCallback: () => result.success(undefined) // 用户取消了对话框，返回空结果。
