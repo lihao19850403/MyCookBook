@@ -47,6 +47,9 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   /// 页面展示模式，默认是列表浏览模式。
   _MODE _mode = _MODE.BROWSE;
 
+  /// 待删除菜谱的ID列表。
+  final List<num> _markToDeletedIDs = <num>[];
+
   @override
   void initState() {
     super.initState();
@@ -114,7 +117,12 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                     if (_mode == _MODE.BROWSE) {
                       FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME);
                     } else {
-                      // TODO：批量删除菜谱。
+                      Bridge.removeCreatedMenus(_markToDeletedIDs)
+                          .then((bool? result) {
+                        if (result == true) {
+                          eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
+                        }
+                      });
                     }
                   },
                 ))
@@ -226,7 +234,17 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       }
     } else {
       if (children.length == 1) {
-        children.add(CustomCheckBox());
+        children.add(CustomCheckBox(
+          onChanged: (bool isChecked) {
+            if (isChecked) {
+              if (menuItem.id != null) {
+                _markToDeletedIDs.add(menuItem.id!);
+              }
+            } else {
+              _markToDeletedIDs.remove(menuItem.id);
+            }
+          },
+        ));
       }
     }
     return Container(
@@ -246,6 +264,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
           onLongPress: () {
             // 长按删除。
             if (_mode != _MODE.DELETE) {
+              _markToDeletedIDs.clear();
               safeUpdate(() => _mode = _MODE.DELETE);
             }
           },

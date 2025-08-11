@@ -93,4 +93,11 @@ class Bridge {
         .callNativeMethod('addOneCreatedMenu', methodParams: data);
     return Future.value(result);
   }
+
+  /// 批量删除菜谱。
+  static Future<bool?> removeCreatedMenus(List<num> ids) async {
+    final bool? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('removeCreatedMenus', methodParams: ids);
+    return Future.value(result);
+  }
 }
