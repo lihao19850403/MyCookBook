@@ -8,11 +8,11 @@ import { GlobalAppSettings } from "../../utils/common/GlobalAppSettings";
 @Component
 export struct LHAlertDialogView {
   /** 应用文字字号方案。 */
-  private appTextSizePlan: LHAppSettingsTextSizePlanModel = GlobalAppSettings.textSizePlan();;
+  private appTextSizePlan: LHAppSettingsTextSizePlanModel = GlobalAppSettings.textSizePlan();
   /** 标题。 */
-  title?: string = undefined;
+  title?: ResourceStr = undefined;
   /** 内容。 */
-  content?: string = undefined;
+  content?: ResourceStr = undefined;
   /** 取消按钮动作。 */
   cancelAction?: Callback<void, void> = undefined;
   /** 确定按钮动作。 */
@@ -23,7 +23,7 @@ export struct LHAlertDialogView {
   build() {
     Column() {
       // 标题。
-      if (this.title !== undefined && this.title.length > 0) {
+      if (this.title !== undefined) {
         Text(this.title)
           .width('100%')
           .fontSize(this.appTextSizePlan.unifiedDialogTitleTextSize)
@@ -31,8 +31,8 @@ export struct LHAlertDialogView {
           .padding(12)
       }
       // 内容。
-      if (this.content !== undefined && this.content.length > 0) {
-        Text(this.title)
+      if (this.content !== undefined) {
+        Text(this.content)
           .width('100%')
           .layoutWeight(1)
           .fontSize(this.appTextSizePlan.unifiedDialogContentTextSize)

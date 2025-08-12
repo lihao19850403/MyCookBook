@@ -201,12 +201,20 @@
       "value": "创建了新的菜谱"
     },
     {
+      "name": "created_menu_delete_empty_tip",
+      "value": "请选择要删除的菜谱"
+    },
+    {
       "name": "cancel",
       "value": "取消"
     },
     {
       "name": "confirm",
       "value": "确定"
+    },
+    {
+      "name": "tip",
+      "value": "提示"
     }
   ]
 }

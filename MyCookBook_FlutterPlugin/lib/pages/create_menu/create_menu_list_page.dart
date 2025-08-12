@@ -5,7 +5,7 @@ import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
-import 'package:my_cook_book_flutter_plugin/views/common/custom_check_box.dart';
+import 'package:my_cook_book_flutter_plugin/views/check_zone.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -57,7 +57,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       if (_mode == _MODE.BROWSE) {
         return true;
       }
-      safeUpdate(() => _mode == _MODE.BROWSE);
+      safeUpdate(() => _mode = _MODE.BROWSE);
       return false;
     };
     eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
@@ -81,8 +81,18 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
         appBar: AppBar(
           toolbarHeight: 48,
           centerTitle: true,
-          title: const Text(Resources_string.create_menu_list_page_title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+          title: _mode == _MODE.BROWSE
+              ? const Text(Resources_string.create_menu_list_page_title,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal))
+              : (_markToDeletedIDs.isNotEmpty
+                  ? Text(
+                      '${Resources_string.create_menu_list_page_delete_title}(${_markToDeletedIDs.length})',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.normal))
+                  : const Text(
+                      Resources_string.create_menu_list_page_delete_title,
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.normal))),
           leading: Container(
               alignment: Alignment.centerLeft,
               child: InkWell(
@@ -120,6 +130,10 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                       Bridge.removeCreatedMenus(_markToDeletedIDs)
                           .then((bool? result) {
                         if (result == true) {
+                          safeUpdate(() {
+                            _mode = _MODE.BROWSE;
+                            _markToDeletedIDs.clear();
+                          });
                           eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
                         }
                       });
@@ -213,20 +227,34 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
     CreatedMenuItem menuItem = _createdMenuList[index];
     bool isLast = index == _createdMenuList.length - 1;
     List<Widget> children = <Widget>[
-      Container(
-          padding: const EdgeInsets.all(4),
-          alignment: Alignment.topCenter,
-          child: Column(children: <Widget>[
-            const Image(
-                image: AssetImage(Resources_media.ic_menu_default_bg),
-                fit: BoxFit.contain), // [Flutter TODO] Image Picker.
-            Container(
-                alignment: Alignment.topLeft,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _textContent(menuItem, index)))
-          ]))
+      InkWell(
+        child: Container(
+            padding: const EdgeInsets.all(4),
+            alignment: Alignment.topCenter,
+            child: Column(children: <Widget>[
+              const Image(
+                  image: AssetImage(Resources_media.ic_menu_default_bg),
+                  fit: BoxFit.contain), // [Flutter TODO] Image Picker.
+              Container(
+                  alignment: Alignment.topLeft,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _textContent(menuItem, index)))
+            ])),
+        onLongPress: () {
+          // 长按删除。
+          if (_mode != _MODE.DELETE) {
+            safeUpdate(() {
+              _markToDeletedIDs.clear();
+              _mode = _MODE.DELETE;
+            });
+          }
+        },
+        onTap: () {
+          // 单击查看详情。
+        },
+      )
     ];
     if (_mode == _MODE.BROWSE) {
       if (children.length > 1) {
@@ -234,43 +262,39 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       }
     } else {
       if (children.length == 1) {
-        children.add(CustomCheckBox(
-          onChanged: (bool isChecked) {
-            if (isChecked) {
-              if (menuItem.id != null) {
-                _markToDeletedIDs.add(menuItem.id!);
-              }
-            } else {
-              _markToDeletedIDs.remove(menuItem.id);
-            }
-          },
-        ));
+        children.add(SizedBox(
+            width: 24,
+            height: 24,
+            child: CheckZone(
+              strokeWidth: 2.0,
+              strokeColor: Resources_color.main_selected_color,
+              fillColor: Colors.white,
+              value: false,
+              radius: 4.0,
+              onChanged: (bool isChecked) {
+                safeUpdate(() {
+                  if (isChecked) {
+                    if (menuItem.id != null) {
+                      _markToDeletedIDs.add(menuItem.id!);
+                    }
+                  } else {
+                    _markToDeletedIDs.remove(menuItem.id);
+                  }
+                });
+              },
+            )));
       }
     }
     return Container(
         margin: isLast
             ? EdgeInsets.only(bottom: Global.screenBottomSafeZoneHeightVP)
             : null,
-        child: InkWell(
-          child: Container(
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(4))),
-              child: Stack(
-                alignment: Alignment.topRight,
-                children: children,
-              )),
-          onLongPress: () {
-            // 长按删除。
-            if (_mode != _MODE.DELETE) {
-              _markToDeletedIDs.clear();
-              safeUpdate(() => _mode = _MODE.DELETE);
-            }
-          },
-          onTap: () {
-            // 单击查看详情。
-          },
+        child: Container(
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(4))),
+          child: Stack(alignment: Alignment.topRight, children: children),
         ));
   }
 

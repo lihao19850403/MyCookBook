@@ -55,7 +55,7 @@ export struct HomeTabMineFavorite {
         return;
       }
       let eventType: CreatedMenuChangeEventType = dataWrap.data[CREATED_MENU_CHANGE_EVENT_TYPE] as CreatedMenuChangeEventType;
-      if (eventType === CreatedMenuChangeEventType.ADD_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_ONE_CREATED_MENU) {
+      if (eventType === CreatedMenuChangeEventType.ADD_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_SOME_CREATED_MENUS) {
         this.createdMenuCount = this.calcCreatedMenuCount();
       }
     });

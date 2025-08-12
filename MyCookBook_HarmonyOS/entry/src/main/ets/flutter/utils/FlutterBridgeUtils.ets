@@ -7,7 +7,7 @@ import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect
 import { HashMap } from '@kit.ArkTS';
 import promptAction from "@ohos.promptAction";
 import { DateUtils, DATE_FORMAT } from "../../utils/common/DateUtils";
-import { openCustomDialog } from "../../utils/common/DialogUtils";
+import { openAlertDialog, openCustomDialog } from "../../utils/common/DialogUtils";
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -31,6 +31,11 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       let data: HashMap<string, string | undefined> | undefined = methodParams as HashMap<string, string | undefined>;
       let addResult: boolean = addOneCreatedMenu(data);
       result.success(addResult);
+      return;
+    }
+    if (methodName === 'removeCreatedMenus') {
+      let markToDeletedIDs: Array<number> | undefined = methodParams as Array<number>;
+      removeCreatedMenus(result, markToDeletedIDs);
       return;
     }
     result.notImplemented();
@@ -155,4 +160,28 @@ function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean 
     message: $r("app.string.created_menu_add_category_success_tip"),
   })
   return true;
+}
+
+/**
+ * 批量删除菜谱。
+ * @param result 运行结果，用于向Flutter页面返回参数。
+ * @param markToDeletedIDs 待删除的菜谱ID列表。
+ */
+function removeCreatedMenus(result: MethodResult, markToDeletedIDs?: Array<number>) {
+  if (markToDeletedIDs === undefined || markToDeletedIDs.length === 0) {
+    promptAction.showToast({
+      message: $r("app.string.created_menu_delete_empty_tip"),
+    })
+    result.success(false);
+    return;
+  }
+  openAlertDialog({
+    title: $r('app.string.tip'),
+    content: `确定要删除所选的${markToDeletedIDs.length}条自创菜谱吗？`,
+    cancelAction: () => result.success(false),
+    confirmAction: () => {
+      CreatedMenuUtils.removeCreatedMenus(markToDeletedIDs);
+      result.success(true)
+    }
+  });
 }

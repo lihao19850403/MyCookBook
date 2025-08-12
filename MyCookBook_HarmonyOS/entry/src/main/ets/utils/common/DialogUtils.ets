@@ -17,9 +17,9 @@ export function openCustomDialog(params: DialogContainerParams) {
 /** 警告对话框参数。 */
 export interface LHAlertDialogParams {
   /** 标题，若不指定标题，则标题区域不会出现在对话框中。 */
-  title?: string,
+  title?: ResourceStr,
   /** 内容，若不指定内容，则内容区域不会出现在对话框中。 */
-  content?: string,
+  content?: ResourceStr,
   /** 取消按钮动作，若不指定取消按钮动作，则取消按钮不会出现在对话框中。 */
   cancelAction?: Callback<void, void>,
   /** 确定按钮动作，若不指定确定按钮动作，则确定按钮不会出现在对话框中。 */

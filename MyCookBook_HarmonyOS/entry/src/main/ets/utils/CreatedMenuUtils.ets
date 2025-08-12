@@ -18,7 +18,9 @@ export const enum CreatedMenuChangeEventType {
   /** 更新一个自创的菜谱。 */
   UPDATE_ONE_CREATED_MENU,
   /** 删除一个创建的菜谱。 */
-  REMOVE_ONE_CREATED_MENU
+  REMOVE_ONE_CREATED_MENU,
+  /** 删除多个创建的菜谱。 */
+  REMOVE_SOME_CREATED_MENUS
 }
 
 /** 配置文件：已创建的菜谱。 */
@@ -185,6 +187,41 @@ export class CreatedMenuUtils {
       let dataWrap: emitter.EventData = {};
       dataWrap.data = {
         CREATED_MENU_CHANGE_EVENT_TYPE: CreatedMenuChangeEventType.REMOVE_ONE_CREATED_MENU
+      };
+      emitter.emit(CREATED_MENU_CHANGE_EVENT, dataWrap);
+    } catch (error) {
+    }
+  }
+
+  /**
+   * 批量删除多个自创菜谱。
+   * @param ids 待删除的菜谱ID列表。
+   */
+  public static removeCreatedMenus(ids: Array<number>) {
+    if (!KVUtils.hasKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER)) {
+      return;
+    }
+    let createdOrder = KVUtils.queryKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER);
+    if (createdOrder === BLANK_OBJECT) {
+      return;
+    }
+    try {
+      let deletedIDs: Array<number> = [];
+      ids.forEach((id: number) => {
+        let index = (createdOrder as Array<number>).indexOf(id);
+        if (index !== -1) {
+          (createdOrder as Array<number>).splice(index, 1);
+          deletedIDs.push(id);
+        }
+      });
+      if (deletedIDs.length == 0) { // 未删除任何菜谱。
+        return;
+      }
+      KVUtils.setKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER, createdOrder);
+      deletedIDs.forEach((id: number): void => KVUtils.removeKV(FILE_NAME_CREATED_MENU, `${id}`));
+      let dataWrap: emitter.EventData = {};
+      dataWrap.data = {
+        CREATED_MENU_CHANGE_EVENT_TYPE: CreatedMenuChangeEventType.REMOVE_SOME_CREATED_MENUS
       };
       emitter.emit(CREATED_MENU_CHANGE_EVENT, dataWrap);
     } catch (error) {
