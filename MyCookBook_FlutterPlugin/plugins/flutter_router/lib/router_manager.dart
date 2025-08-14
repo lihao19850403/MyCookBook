@@ -88,7 +88,9 @@ class RouterManager {
     Map<String, WidgetBuilder> routesMap = {};
     _routerMap.forEach((String path, RouterWidgetBuilder builder) {
       String routePath = path.startsWith('/') ? path : '/$path';
-      routesMap[routePath] = (context, {arguments}) => builder(arguments);
+      routesMap[routePath] = (context, {arguments}) {
+        return builder(arguments);
+      };
     });
     return routesMap;
   }

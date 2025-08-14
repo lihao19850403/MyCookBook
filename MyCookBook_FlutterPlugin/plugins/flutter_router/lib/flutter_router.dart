@@ -41,7 +41,8 @@ class FlutterRouter {
     if (isFlutterPage) {
       _pageNamesStack.add(path);
       String routePath = path.startsWith('/') ? path : '/$path';
-      return Navigator.pushNamed(context, routePath, arguments: params)
+      return Navigator.of(context)
+          .pushNamed(routePath, arguments: params)
           .then((result) => result as T);
     } else {
       return FlutterRouterPlatform.instance

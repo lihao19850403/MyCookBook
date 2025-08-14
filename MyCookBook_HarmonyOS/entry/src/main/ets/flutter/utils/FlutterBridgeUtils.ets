@@ -22,6 +22,12 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       result.success(allCreatedMenus);
       return;
     }
+    if (methodName === 'queryOneCreatedMenu') {
+      let menuID: number = methodParams as ESObject as number;
+      let menu: CreatedMenuItem | undefined = CreatedMenuUtils.queryOneCreatedMenu(menuID);
+      result.success(menu);
+      return;
+    }
     if (methodName === 'selectCategory') {
       let curCategory: string | undefined = methodParams ? (methodParams as ESObject as string) : undefined;
       selectCategory(result, curCategory);

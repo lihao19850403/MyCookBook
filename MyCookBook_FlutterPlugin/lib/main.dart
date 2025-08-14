@@ -42,11 +42,10 @@ class _MyApp extends SafeState<MyApp> {
     _initGlobalParams(widget.pathInfo);
     _initMethodCallHandlerWhenBuild();
     return MaterialApp(
-      title: 'FlutterPlugin',
-      navigatorKey: Global.navigatorkey,
-      home: RouterManager.instance.getRouterWidget(widget.pathInfo),
-      routes: RouterManager.instance.getRoutesMap(),
-    );
+        title: 'FlutterPlugin',
+        navigatorKey: Global.navigatorkey,
+        home: RouterManager.instance.getRouterWidget(widget.pathInfo),
+        routes: RouterManager.instance.getRoutesMap());
   }
 }
 

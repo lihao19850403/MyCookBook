@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
+import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_modify_page.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/common_stateful_page.dart';
 import '../../utils/bridge.dart';
@@ -33,6 +34,12 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   bool _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
       (Global.isSplitScreen && Global.screenUIType == ScreenUIType.FOLD_OPENED);
 
+  /// 本页菜谱信息。
+  CreatedMenuItem? _menuItem;
+
+  /// 是否执行了一次初始化数据动作。
+  bool _initOnce = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,13 +54,20 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_initOnce) {
+      _initMenuInfo(context);
+      _initOnce = true;
+    }
     return Scaffold(
       backgroundColor: Resources_color.main_bg_gray_color,
       appBar: AppBar(
         toolbarHeight: 48,
         centerTitle: true,
-        title: const Text(Resources_string.create_menu_list_page_title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+        title: Text(
+            _menuItem?.cp_name ??
+                Resources_string.create_menu_detail_page_title,
+            style:
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
         leading: Container(
             alignment: Alignment.centerLeft,
             child: InkWell(
@@ -113,5 +127,17 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  /// 初始化本页菜谱信息。
+  Future<void> _initMenuInfo(BuildContext context) async {
+    Object? paramsObj = ModalRoute.of(context)?.settings.arguments;
+    if (paramsObj != null) {
+      Map<String, num> params = paramsObj as Map<String, num>;
+      num menuID = params['menu_id'] as num;
+      CreatedMenuItem? refreshedData = await Bridge.queryOneCreatedMenu(menuID);
+      safeUpdate(() => _menuItem = refreshedData);
+    }
+    return Future.value();
   }
 }

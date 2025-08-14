@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
+import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_detail_page.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
@@ -253,6 +254,11 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
         },
         onTap: () {
           // 单击查看详情。
+          if (menuItem.id != null) {
+            Map<String, num> params = {'menu_id': menuItem.id!};
+            FlutterRouter.go(buildContext, CreateMenuDetailPage.PAGE_NAME,
+                params: params);
+          }
         },
       )
     ];

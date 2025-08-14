@@ -60,6 +60,18 @@ class Bridge {
     return Future.value(data);
   }
 
+  /// 根据菜谱ID[menuID]查询对应菜谱信息。
+  static Future<CreatedMenuItem?> queryOneCreatedMenu(num menuID) async {
+    final Object? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('queryOneCreatedMenu', methodParams: menuID);
+    if (result == null) {
+      return Future.value(null);
+    }
+    Map<Object?, Object?> dataMap = result as Map<Object?, Object?>;
+    CreatedMenuItem data = CreatedMenuItem.fromMap(dataMap);
+    return Future.value(data);
+  }
+
   /// 选择一个分类。
   static Future<String?> selectCategory(String? curCategoryName) async {
     final String? result = await FlutterBridgePlatform.instance
