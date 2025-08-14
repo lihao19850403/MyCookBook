@@ -9,6 +9,9 @@ import '../../utils/common/global.dart';
 import '../../utils/resources.dart';
 import '../../views/common/safe_update.dart';
 
+/// 页面加载模式，有两种：未加载完成、已加载完成。
+enum _MODE { IDLE, LOADED }
+
 class CreateMenuDetailPage extends CommonStatefulPage {
   static const String PAGE_NAME = 'DetailMenu';
 
@@ -37,8 +40,8 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   /// 本页菜谱信息。
   CreatedMenuItem? _menuItem;
 
-  /// 是否执行了一次初始化数据动作。
-  bool _initOnce = false;
+  /// 页面加载状况。
+  _MODE _mode = _MODE.IDLE;
 
   @override
   void initState() {
@@ -54,9 +57,9 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_initOnce) {
-      _initMenuInfo(context);
-      _initOnce = true;
+    if (_mode == _MODE.IDLE) {
+      _initMenuInfo(context).then((_) => _mode = _MODE.LOADED);
+      return Container();
     }
     return Scaffold(
       backgroundColor: Resources_color.main_bg_gray_color,
@@ -110,14 +113,12 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                       Positioned(
                           top: _normalScreenMode ? 0 : null,
                           left: _normalScreenMode ? null : 0,
-                          child: Image(
-                              image:
-                                  AssetImage(Resources_media.ic_edit_green))),
+                          child: _thumbnail(context)),
                       Align(
                         alignment: _normalScreenMode
                             ? Alignment.bottomCenter
                             : Alignment.centerRight,
-                        // child: _content(context), TODO
+                        // child: _content(context),
                       )
                     ],
                   )))),
@@ -128,6 +129,22 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   void dispose() {
     super.dispose();
   }
+
+  /* ---------- 缩略图。 ---------- */
+
+  Widget _thumbnail(BuildContext buildContext) {
+    return InkWell(
+      child: Image(
+          width: _imageFrameWidth,
+          height: _imageFrameHeight,
+          image: const AssetImage(Resources_media
+              .ic_menu_default_bg), // [Flutter TODO] Image Picker.
+          fit: BoxFit.contain),
+      onTap: () {},
+    );
+  }
+
+  /* ---------- 内容区。 ---------- */
 
   /// 初始化本页菜谱信息。
   Future<void> _initMenuInfo(BuildContext context) async {
