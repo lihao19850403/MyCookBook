@@ -44,7 +44,11 @@ class EventBus {
     }
     var iterator = list.iterator;
     while (iterator.moveNext()) {
-      iterator.current(arguments);
+      try {
+        iterator.current(arguments);
+      } catch (error) {
+        print('执行eventBus发送的事件$eventName时出现异常：${error.toString()}。');
+      }
     }
   }
 }

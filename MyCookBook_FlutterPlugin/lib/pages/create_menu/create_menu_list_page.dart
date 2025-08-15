@@ -36,11 +36,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   final RefreshController _refreshController = RefreshController();
 
   /// 瀑布流显示的列数。
-  int _columnCount = Global.screenUIType == ScreenUIType.NORMAL ||
-          (Global.isSplitScreen &&
-              Global.screenUIType == ScreenUIType.FOLD_OPENED)
-      ? 2
-      : 4;
+  int _columnCount = 4;
 
   /// 自创菜谱列表。
   final List<CreatedMenuItem> _createdMenuList = <CreatedMenuItem>[];
@@ -51,9 +47,19 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   /// 待删除菜谱的ID列表。
   final List<num> _markToDeletedIDs = <num>[];
 
+  EventCallback? _onRefreshCreatedMenusListEvent;
+  EventCallback? _onRefreshCreatedMenusItemEvent;
+
+  @override
+  void onScreenUIInfoChanged(ScreenUIType newScreenUIType, bool isSplitScreen) {
+    super.onScreenUIInfoChanged(newScreenUIType, isSplitScreen);
+    safeUpdate(() => _columnCount = normalScreenMode ? 2 : 4);
+  }
+
   @override
   void initState() {
     super.initState();
+    _columnCount = normalScreenMode ? 2 : 4;
     widget.whenBackPressed = () {
       if (_mode == _MODE.BROWSE) {
         return true;
@@ -61,19 +67,14 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       safeUpdate(() => _mode = _MODE.BROWSE);
       return false;
     };
-    eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
-      safeUpdate(() {
-        _columnCount = Global.screenUIType == ScreenUIType.NORMAL ||
-                (Global.isSplitScreen &&
-                    Global.screenUIType == ScreenUIType.FOLD_OPENED)
-            ? 2
-            : 4;
-      });
-    });
-    eventBus.on(REFRESH_CREATED_MENUS_LIST_EVENT,
-        (Object? arguments) => _initCreatedMenusList());
-    eventBus.on(REFRESH_CREATED_MENUS_ITEM_EVENT,
-        (Object? arguments) => _initCreatedMenusList());
+    _onRefreshCreatedMenusListEvent =
+        (Object? arguments) => _initCreatedMenusList();
+    _onRefreshCreatedMenusItemEvent =
+        (Object? arguments) => _initCreatedMenusList();
+    eventBus.on(
+        REFRESH_CREATED_MENUS_LIST_EVENT, _onRefreshCreatedMenusListEvent!);
+    eventBus.on(
+        REFRESH_CREATED_MENUS_ITEM_EVENT, _onRefreshCreatedMenusItemEvent!);
     _initCreatedMenusList();
   }
 
@@ -165,6 +166,10 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   @override
   void dispose() {
     super.dispose();
+    eventBus.off(
+        REFRESH_CREATED_MENUS_LIST_EVENT, _onRefreshCreatedMenusListEvent!);
+    eventBus.off(
+        REFRESH_CREATED_MENUS_ITEM_EVENT, _onRefreshCreatedMenusItemEvent!);
   }
 
   /// 初始化自创菜谱列表。

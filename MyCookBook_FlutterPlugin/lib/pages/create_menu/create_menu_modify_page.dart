@@ -37,10 +37,6 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   /// 内容滚动视图controller。
   final ScrollController _contentScrollController = ScrollController();
 
-  /// 窄屏模式。
-  bool _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
-      (Global.isSplitScreen && Global.screenUIType == ScreenUIType.FOLD_OPENED);
-
   /// 菜谱ID，在更新已有菜谱模式下有效。
   num? _menuID;
 
@@ -80,13 +76,6 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   @override
   void initState() {
     super.initState();
-    eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
-      safeUpdate(() {
-        _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
-            (Global.isSplitScreen &&
-                Global.screenUIType == ScreenUIType.FOLD_OPENED);
-      });
-    });
   }
 
   @override
@@ -219,11 +208,11 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     alignment: Alignment.center,
                     children: <Widget>[
                       Positioned(
-                          top: _normalScreenMode ? 0 : null,
-                          left: _normalScreenMode ? null : 0,
+                          top: normalScreenMode ? 0 : null,
+                          left: normalScreenMode ? null : 0,
                           child: _thumbnail(context)),
                       Align(
-                        alignment: _normalScreenMode
+                        alignment: normalScreenMode
                             ? Alignment.bottomCenter
                             : Alignment.centerRight,
                         child: _content(context),
@@ -257,8 +246,8 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   Widget _content(BuildContext buildContext) {
     return Padding(
         padding: EdgeInsets.only(
-            left: _normalScreenMode ? 0 : 8 + _imageFrameWidth,
-            top: _normalScreenMode ? 8 + _imageFrameHeight : 0),
+            left: normalScreenMode ? 0 : 8 + _imageFrameWidth,
+            top: normalScreenMode ? 8 + _imageFrameHeight : 0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,

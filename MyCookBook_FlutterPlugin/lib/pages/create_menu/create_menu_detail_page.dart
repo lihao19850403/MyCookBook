@@ -35,27 +35,18 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   /// 内容滚动视图controller。
   final ScrollController _contentScrollController = ScrollController();
 
-  /// 窄屏模式。
-  bool _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
-      (Global.isSplitScreen && Global.screenUIType == ScreenUIType.FOLD_OPENED);
-
   /// 本页菜谱信息。
   CreatedMenuItem? _menuItem;
 
   /// 页面加载状况。
   _MODE _mode = _MODE.IDLE;
 
+  EventCallback? _onRefreshCreatedMenusItemEvent;
+
   @override
   void initState() {
     super.initState();
-    eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, (Object? arguments) {
-      safeUpdate(() {
-        _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
-            (Global.isSplitScreen &&
-                Global.screenUIType == ScreenUIType.FOLD_OPENED);
-      });
-    });
-    eventBus.on(REFRESH_CREATED_MENUS_ITEM_EVENT, (Object? arguments) {
+    _onRefreshCreatedMenusItemEvent = (Object? arguments) {
       if (arguments != null) {
         num? menuID = (arguments as Map<String, num?>)['menu_id'];
         if (menuID != null) {
@@ -71,7 +62,9 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
           });
         }
       }
-    });
+    };
+    eventBus.on(
+        REFRESH_CREATED_MENUS_ITEM_EVENT, _onRefreshCreatedMenusItemEvent!);
   }
 
   @override
@@ -140,11 +133,11 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                     alignment: Alignment.center,
                     children: <Widget>[
                       Positioned(
-                          top: _normalScreenMode ? 0 : null,
-                          left: _normalScreenMode ? null : 0,
+                          top: normalScreenMode ? 0 : null,
+                          left: normalScreenMode ? null : 0,
                           child: _thumbnail(context)),
                       Align(
-                        alignment: _normalScreenMode
+                        alignment: normalScreenMode
                             ? Alignment.bottomCenter
                             : Alignment.centerRight,
                         child: _content(context),
@@ -157,6 +150,8 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   @override
   void dispose() {
     super.dispose();
+    eventBus.off(
+        REFRESH_CREATED_MENUS_ITEM_EVENT, _onRefreshCreatedMenusItemEvent!);
   }
 
   /* ---------- 缩略图。 ---------- */
@@ -178,8 +173,8 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
   Widget _content(BuildContext buildContext) {
     return Padding(
         padding: EdgeInsets.only(
-            left: _normalScreenMode ? 0 : 8 + _imageFrameWidth,
-            top: _normalScreenMode ? 8 + _imageFrameHeight : 0),
+            left: normalScreenMode ? 0 : 8 + _imageFrameWidth,
+            top: normalScreenMode ? 8 + _imageFrameHeight : 0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
