@@ -25,6 +25,7 @@ class Resources_string {
   static const String detail_page_tiaoliao = '调料';
   static const String detail_page_zuofa = '做法';
   static const String detail_page_wenxintishi = '温馨提示';
+  static const String detail_page_no_content = '暂无';
   static const String modify_page_title_hint = '请输入菜谱名字';
   static const String modify_page_author_hint = '请输入作者名字';
   static const String modify_page_category_hint = '请选择分类';

@@ -9,6 +9,7 @@ class SelectZone extends StatefulWidget {
       this.titleContent,
       this.tipContent,
       required this.contentText,
+      this.readOnly = false,
       this.clickEvent})
       : super(key: key);
 
@@ -20,6 +21,9 @@ class SelectZone extends StatefulWidget {
 
   /// 初始化文本内容。
   String? contentText;
+
+  /// 是否只读模式？
+  bool readOnly;
 
   /// 单击回调。
   void Function(TextEditingController)? clickEvent;
@@ -55,18 +59,21 @@ class _SelectZone extends SafeState<SelectZone> {
           ]),
           hintText: widget.tipContent,
           hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-          suffixIcon: const Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: Image(
-                        width: 14,
-                        height: 14,
-                        image: AssetImage(Resources_media.ic_right_arrow_green),
-                        fit: BoxFit.contain))
-              ]),
+          suffixIcon: widget.readOnly
+              ? null
+              : const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                      Padding(
+                          padding: EdgeInsets.only(right: 12),
+                          child: Image(
+                              width: 14,
+                              height: 14,
+                              image: AssetImage(
+                                  Resources_media.ic_right_arrow_green),
+                              fit: BoxFit.contain))
+                    ]),
           enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                   color: Resources_color.main_selected_light_color, width: 1)),
@@ -79,7 +86,11 @@ class _SelectZone extends SafeState<SelectZone> {
         keyboardType: TextInputType.none,
         readOnly: true,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-        onTap: () => widget.clickEvent?.call(_controller));
+        onTap: () {
+          if (!widget.readOnly) {
+            widget.clickEvent?.call(_controller);
+          }
+        });
   }
 
   @override

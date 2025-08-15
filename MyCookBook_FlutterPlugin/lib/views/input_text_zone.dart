@@ -10,6 +10,7 @@ class InputTextZone extends StatefulWidget {
       this.tipContent,
       required this.contentText,
       this.isMultiLine = false,
+      this.readOnly = false,
       this.onChangedCallback})
       : super(key: key);
 
@@ -24,6 +25,9 @@ class InputTextZone extends StatefulWidget {
 
   /// 是否多行输入。
   bool isMultiLine;
+
+  /// 是否只读模式？
+  bool readOnly;
 
   /// 文字内容改变回调。
   ValueChanged<String>? onChangedCallback;
@@ -72,6 +76,7 @@ class _InputTextZone extends SafeState<InputTextZone> {
       maxLines: widget.isMultiLine ? null : 1,
       keyboardType: widget.isMultiLine ? TextInputType.multiline : null,
       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+      readOnly: widget.readOnly,
       onChanged: widget.onChangedCallback,
     );
   }
