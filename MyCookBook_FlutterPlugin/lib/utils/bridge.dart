@@ -13,6 +13,9 @@ const String SCREEN_UI_INFO_CHANGED_EVENT = 'screenUIInfoChangedEvent';
 /// 重刷自创菜谱列表事件。
 const String REFRESH_CREATED_MENUS_LIST_EVENT = 'refreshCreatedMenusListEvent';
 
+/// 重刷单个自创菜谱事件。
+const String REFRESH_CREATED_MENUS_ITEM_EVENT = 'refreshCreatedMenusItemEvent';
+
 /// Flutter与原生交互的桥方法集。
 class Bridge {
   /// 初始化Flutter层方法回调监听。
@@ -103,6 +106,32 @@ class Bridge {
     data['tishi'] = wenxintishi;
     final bool? result = await FlutterBridgePlatform.instance
         .callNativeMethod('addOneCreatedMenu', methodParams: data);
+    return Future.value(result);
+  }
+
+  /// 更新一个自创菜谱。
+  static Future<bool?> updateOneCreatedMenu(
+      {num? menuID,
+      String? menuTitle,
+      String? author,
+      String? category,
+      String? texing,
+      String? yuanliao,
+      String? tiaoliao,
+      String? zuofa,
+      String? wenxintishi}) async {
+    Map<String, Object?> data = HashMap();
+    data['cp_id'] = menuID;
+    data['cp_name'] = menuTitle;
+    data['author'] = author;
+    data['type_name'] = category;
+    data['texing'] = texing;
+    data['yuanliao'] = yuanliao;
+    data['tiaoliao'] = tiaoliao;
+    data['zuofa'] = zuofa;
+    data['tishi'] = wenxintishi;
+    final bool? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('updateOneCreatedMenu', methodParams: data);
     return Future.value(result);
   }
 

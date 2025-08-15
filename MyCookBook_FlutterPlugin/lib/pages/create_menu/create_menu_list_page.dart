@@ -72,6 +72,8 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
     });
     eventBus.on(REFRESH_CREATED_MENUS_LIST_EVENT,
         (Object? arguments) => _initCreatedMenusList());
+    eventBus.on(REFRESH_CREATED_MENUS_ITEM_EVENT,
+        (Object? arguments) => _initCreatedMenusList());
     _initCreatedMenusList();
   }
 
@@ -126,7 +128,9 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
                               : Resources_media.ic_right_green))),
                   onTap: () {
                     if (_mode == _MODE.BROWSE) {
-                      FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME);
+                      Map<String, String> params = {'mode': 'create'};
+                      FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME,
+                          params: params);
                     } else {
                       Bridge.removeCreatedMenus(_markToDeletedIDs)
                           .then((bool? result) {

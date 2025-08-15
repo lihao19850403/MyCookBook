@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
+import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
@@ -8,6 +9,12 @@ import 'package:my_cook_book_flutter_plugin/views/common/common_stateful_page.da
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 import 'package:my_cook_book_flutter_plugin/views/input_text_zone.dart';
 import 'package:my_cook_book_flutter_plugin/views/select_zone.dart';
+
+/// 页面加载模式，有两种：未加载完成、已加载完成。
+enum _MODE { IDLE, LOADED }
+
+/// 页面功能，有两种：创建新菜谱、更新已有菜谱。
+enum _FEATURE { CREATE, UPDATE }
 
 class CreateMenuModifyPage extends CommonStatefulPage {
   static const String PAGE_NAME = 'ModifyMenu';
@@ -34,6 +41,12 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   bool _normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
       (Global.isSplitScreen && Global.screenUIType == ScreenUIType.FOLD_OPENED);
 
+  /// 菜谱ID，在更新已有菜谱模式下有效。
+  num? _menuID;
+
+  /// 菜谱标题输入框控制器。
+  final TextEditingController _titleController = TextEditingController();
+
   /// 菜谱标题。
   String? _menuTitle;
 
@@ -58,6 +71,12 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   /// 菜谱温馨提示。
   String? _wenxintishi;
 
+  /// 页面加载状况。
+  _MODE _mode = _MODE.IDLE;
+
+  /// 页面功能。
+  _FEATURE _feature = _FEATURE.CREATE;
+
   @override
   void initState() {
     super.initState();
@@ -72,12 +91,38 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_mode == _MODE.IDLE) {
+      Object? paramsObj = ModalRoute.of(context)?.settings.arguments;
+      if (paramsObj != null) {
+        safeUpdate(() {
+          Map<String, Object?> params = paramsObj as Map<String, Object?>;
+          String mode = params['mode'] as String;
+          _feature = mode == 'create' ? _FEATURE.CREATE : _FEATURE.UPDATE;
+          if (_feature == _FEATURE.UPDATE) {
+            CreatedMenuItem menuItem = params['model'] as CreatedMenuItem;
+            _menuID = menuItem.id;
+            _menuTitle = menuItem.cp_name;
+            _author = menuItem.author;
+            _category = menuItem.type_name;
+            _texing = menuItem.texing;
+            _yuanliao = menuItem.yuanliao;
+            _tiaoliao = menuItem.tiaoliao;
+            _zuofa = menuItem.zuofa;
+            _wenxintishi = menuItem.tishi;
+            _titleController.text = _menuTitle ?? '';
+          }
+          _mode = _MODE.LOADED;
+        });
+      }
+      return Container();
+    }
     return Scaffold(
       backgroundColor: Resources_color.main_bg_gray_color,
       appBar: AppBar(
         toolbarHeight: 48,
         centerTitle: true,
         title: TextField(
+          controller: _titleController,
           decoration: const InputDecoration(
               hintText: Resources_string.modify_page_title_hint,
               hintStyle: TextStyle(
@@ -119,21 +164,43 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                         padding: const EdgeInsets.all(12),
                         child: Image.asset(Resources_media.ic_right_green))),
                 onTap: () {
-                  Bridge.addOneCreatedMenu(
-                          menuTitle: _menuTitle,
-                          author: _author,
-                          category: _category,
-                          texing: _texing,
-                          yuanliao: _yuanliao,
-                          tiaoliao: _tiaoliao,
-                          zuofa: _zuofa,
-                          wenxintishi: _wenxintishi)
-                      .then((bool? result) {
-                    if (result == true) {
-                      eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
-                      FlutterRouter.back(context);
-                    }
-                  });
+                  if (_feature == _FEATURE.CREATE) {
+                    // 创建新菜单。
+                    Bridge.addOneCreatedMenu(
+                            menuTitle: _menuTitle,
+                            author: _author,
+                            category: _category,
+                            texing: _texing,
+                            yuanliao: _yuanliao,
+                            tiaoliao: _tiaoliao,
+                            zuofa: _zuofa,
+                            wenxintishi: _wenxintishi)
+                        .then((bool? result) {
+                      if (result == true) {
+                        eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
+                        FlutterRouter.back(context);
+                      }
+                    });
+                  } else {
+                    // 更新已有菜单。
+                    Bridge.updateOneCreatedMenu(
+                            menuID: _menuID,
+                            menuTitle: _menuTitle,
+                            author: _author,
+                            category: _category,
+                            texing: _texing,
+                            yuanliao: _yuanliao,
+                            tiaoliao: _tiaoliao,
+                            zuofa: _zuofa,
+                            wenxintishi: _wenxintishi)
+                        .then((bool? result) {
+                      if (result == true) {
+                        Map<String, num?> params = {'menu_id': _menuID};
+                        eventBus.emit(REFRESH_CREATED_MENUS_ITEM_EVENT, params);
+                        FlutterRouter.back(context);
+                      }
+                    });
+                  }
                 },
               ))
         ],

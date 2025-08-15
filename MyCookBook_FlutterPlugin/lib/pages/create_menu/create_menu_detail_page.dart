@@ -11,8 +11,8 @@ import '../../utils/common/global.dart';
 import '../../utils/resources.dart';
 import '../../views/common/safe_update.dart';
 
-/// 页面加载模式，有两种：未加载完成、已加载完成。
-enum _MODE { IDLE, LOADED }
+/// 页面加载模式，有两种：未加载完成、正在刷新、已加载完成。
+enum _MODE { IDLE, REFRESHING, LOADED }
 
 class CreateMenuDetailPage extends CommonStatefulPage {
   static const String PAGE_NAME = 'DetailMenu';
@@ -55,12 +55,33 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                 Global.screenUIType == ScreenUIType.FOLD_OPENED);
       });
     });
+    eventBus.on(REFRESH_CREATED_MENUS_ITEM_EVENT, (Object? arguments) {
+      if (arguments != null) {
+        num? menuID = (arguments as Map<String, num?>)['menu_id'];
+        if (menuID != null) {
+          safeUpdate(() {
+            _mode = _MODE.REFRESHING;
+            Bridge.queryOneCreatedMenu(menuID)
+                .then((CreatedMenuItem? refreshedData) {
+              safeUpdate(() {
+                _menuItem = refreshedData;
+                _mode = _MODE.LOADED;
+              });
+            });
+          });
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     if (_mode == _MODE.IDLE) {
-      _initMenuInfo(context).then((_) => _mode = _MODE.LOADED);
+      _initMenuInfo(context)
+          .then((_) => safeUpdate(() => _mode = _MODE.LOADED));
+      return Container();
+    }
+    if (_mode == _MODE.REFRESHING) {
       return Container();
     }
     return Scaffold(
@@ -94,8 +115,14 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                     child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Image.asset(Resources_media.ic_edit_green))),
-                onTap: () =>
-                    FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME),
+                onTap: () {
+                  Map<String, Object?> params = {
+                    'mode': 'update',
+                    'model': _menuItem
+                  };
+                  FlutterRouter.go(context, CreateMenuModifyPage.PAGE_NAME,
+                      params: params);
+                },
               ))
         ],
       ),

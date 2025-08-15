@@ -39,6 +39,12 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       result.success(addResult);
       return;
     }
+    if (methodName == 'updateOneCreatedMenu') {
+      let data: HashMap<string, string | number | undefined> | undefined = methodParams as HashMap<string, string | number | undefined>;
+      let updateResult: boolean = updateOneCreatedMenu(data);
+      result.success(updateResult);
+      return;
+    }
     if (methodName === 'removeCreatedMenus') {
       let markToDeletedIDs: Array<number> | undefined = methodParams as Array<number>;
       removeCreatedMenus(result, markToDeletedIDs);
@@ -121,7 +127,7 @@ function selectCategoryDialogBuilder(params: object, closeCallback: Callback<voi
 function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean {
   if (data === undefined) {
     promptAction.showToast({
-      message: $r("app.string.created_menu_add_category_failure_tip"),
+      message: $r("app.string.created_menu_exception_failure_tip"),
     })
     return false;
   }
@@ -136,14 +142,14 @@ function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean 
   let tishi: string | undefined = data.get('tishi') ?? undefined;
   if (!cp_name && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
     promptAction.showToast({
-      message: $r("app.string.created_menu_add_category_failure_tip"),
+      message: $r("app.string.created_menu_exception_failure_tip"),
     })
     return false;
   }
   let categoryID: number | undefined = type_name === undefined ? undefined : CreatedMenuUtils.queryCategoryIDbyName(type_name);
   if (categoryID === undefined) {
     promptAction.showToast({
-      message: $r("app.string.created_menu_add_category_failure_tip"),
+      message: $r("app.string.created_menu_exception_failure_tip"),
     })
     return false;
   }
@@ -163,7 +169,73 @@ function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean 
   newCreatedMenu.createdTime = DateUtils.formatDate(new Date(), DATE_FORMAT.YYYY_MM_DD);
   CreatedMenuUtils.addOneCreatedMenu(newCreatedMenu);
   promptAction.showToast({
-    message: $r("app.string.created_menu_add_category_success_tip"),
+    message: $r("app.string.created_menu_add_success_tip"),
+  })
+  return true;
+}
+
+/**
+ * 刷新一个自创菜谱。
+ * @param data 原始数据。
+ * @return 刷新结果。
+ */
+function updateOneCreatedMenu(data?: HashMap<string, string | number | undefined>): boolean {
+  if (data === undefined) {
+    promptAction.showToast({
+      message: $r("app.string.created_menu_exception_failure_tip"),
+    })
+    return false;
+  }
+  /* 解析数据。 */
+  let cp_id: number | undefined = data?.get('cp_id') as number ?? undefined;
+  let cp_name: string | undefined = data.get('cp_name') as string ?? undefined;
+  let author: string | undefined = data.get('author') as string ?? undefined;
+  let type_name: string | undefined = data.get('type_name') as string ?? undefined;
+  let texing: string | undefined = data.get('texing') as string ?? undefined;
+  let yuanliao: string | undefined = data.get('yuanliao') as string ?? undefined;
+  let tiaoliao: string | undefined = data.get('tiaoliao') as string ?? undefined;
+  let zuofa: string | undefined = data.get('zuofa') as string ?? undefined;
+  let tishi: string | undefined = data.get('tishi') as string ?? undefined;
+  if (!cp_id && !cp_name && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
+    promptAction.showToast({
+      message: $r("app.string.created_menu_exception_failure_tip"),
+    })
+    return false;
+  }
+  let categoryID: number | undefined = type_name === undefined ? undefined : CreatedMenuUtils.queryCategoryIDbyName(type_name);
+  if (categoryID === undefined) {
+    let allCategories: Record<number, string> = CreatedMenuUtils.queryAllCategories();
+    if (Object.keys(allCategories).length === 0) {
+      promptAction.showToast({
+        message: $r("app.string.created_menu_exception_failure_tip"),
+      })
+      return false;
+    }
+    categoryID = CreatedMenuUtils.queryCategoryIDbyName(type_name);
+    if (categoryID === undefined) {
+      promptAction.showToast({
+        message: $r("app.string.created_menu_exception_failure_tip"),
+      })
+      return false;
+    }
+  }
+  /* 刷新菜谱。 */
+  let updateCreatedMenu: CreatedMenuItem = {};
+  updateCreatedMenu.id = cp_id;
+  updateCreatedMenu.type_id = categoryID;
+  updateCreatedMenu.type_name = type_name;
+  updateCreatedMenu.cp_name = cp_name;
+  updateCreatedMenu.cp_thumbnail = undefined; // TODO：添加菜谱缩略图。
+  updateCreatedMenu.zuofa = zuofa;
+  updateCreatedMenu.texing = texing;
+  updateCreatedMenu.tishi = tishi;
+  updateCreatedMenu.tiaoliao = tiaoliao;
+  updateCreatedMenu.yuanliao = yuanliao;
+  updateCreatedMenu.author = author;
+  updateCreatedMenu.createdTime = DateUtils.formatDate(new Date(), DATE_FORMAT.YYYY_MM_DD);
+  CreatedMenuUtils.updateOneCreateMenu(updateCreatedMenu);
+  promptAction.showToast({
+    message: $r("app.string.created_menu_update_success_tip"),
   })
   return true;
 }

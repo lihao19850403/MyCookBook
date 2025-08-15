@@ -152,6 +152,7 @@ export class CreatedMenuUtils {
       if (!(createdOrder as Array<number>).includes(menu.id)) {
         return;
       }
+      (createdOrder as Array<number>).splice((createdOrder as Array<number>).indexOf(menu.id), 1);
       (createdOrder as Array<number>).unshift(menu.id);
       KVUtils.setKV(FILE_NAME_CREATED_MENU, KEY_CREATED_ORDER, createdOrder);
       KVUtils.setKV(FILE_NAME_CREATED_MENU, `${menu.id}`, JSON.stringify(menu));
