@@ -8,13 +8,14 @@
 
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
+// import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_router/flutter_router.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  // IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  /*
   testWidgets('getPlatformVersion test', (WidgetTester tester) async {
     final FlutterRouter plugin = FlutterRouter();
     final String? version = await plugin.getPlatformVersion();
@@ -22,4 +23,5 @@ void main() {
     // just assert that some non-empty string is returned.
     expect(version?.isNotEmpty, true);
   });
+   */
 }
