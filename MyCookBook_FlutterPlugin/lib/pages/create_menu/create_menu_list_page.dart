@@ -219,7 +219,6 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
   void _onRefresh() async {
     await _initCreatedMenusList();
     _refreshController.refreshCompleted();
-    print('下拉刷新-完成');
   }
 
   /// 上拉加载更多内容。
@@ -227,7 +226,6 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
     /// 动作待定，先延迟1秒。
     await Future.delayed(const Duration(milliseconds: 1000));
     _refreshController.loadComplete();
-    print('上拉加载更多-完成');
   }
 
   /* ---------- 菜谱item内容。 ---------- */
@@ -320,7 +318,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       children.add(Text('${index + 1}. ${menuItem.cp_name}',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)));
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)));
     }
     if (menuItem.type_name != null && menuItem.type_name!.isNotEmpty) {
       children.add(Padding(
@@ -333,7 +331,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
             child: Text('${menuItem.type_name}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.normal,
                     color: Resources_color.menu_type_name_text_color)),
@@ -350,7 +348,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
             child: Text('${menuItem.texing}',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.normal,
                     color: Resources_color.menu_feature_text_color)),
@@ -363,7 +361,7 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       children.add(Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text('${menuItem.author} 创作于 ${menuItem.createdTime}',
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.normal,
                   color: Resources_color.main_unselected_color))));

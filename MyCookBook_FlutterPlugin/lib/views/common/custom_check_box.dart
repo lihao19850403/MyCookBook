@@ -100,12 +100,12 @@ class RenderCustomCheckBox extends RenderBox with RenderObjectAnimationMixin {
           Offset(rect.left + rect.width / 2.5, rect.bottom - rect.height / 4);
       final lastOffset =
           Offset(rect.right - rect.width / 6, rect.top + rect.height / 4);
-      final _lastOffset = Offset.lerp(secondOffset, lastOffset,
+      final lastOffsetResult = Offset.lerp(secondOffset, lastOffset,
           (progress - bgAnimationInterval) / (1 - bgAnimationInterval))!;
       final path = Path()
         ..moveTo(rect.left + rect.width / 7, rect.top + rect.height / 2)
         ..lineTo(secondOffset.dx, secondOffset.dy)
-        ..lineTo(_lastOffset.dx, _lastOffset.dy);
+        ..lineTo(lastOffsetResult.dx, lastOffsetResult.dy);
       final paint = Paint()
         ..isAntiAlias = true
         ..style = PaintingStyle.stroke

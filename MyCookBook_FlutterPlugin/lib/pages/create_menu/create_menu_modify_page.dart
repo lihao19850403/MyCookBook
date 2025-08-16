@@ -167,7 +167,9 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                         .then((bool? result) {
                       if (result == true) {
                         eventBus.emit(REFRESH_CREATED_MENUS_LIST_EVENT);
-                        FlutterRouter.back(context);
+                        if (context.mounted) {
+                          FlutterRouter.back(context);
+                        }
                       }
                     });
                   } else {
@@ -186,7 +188,9 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                       if (result == true) {
                         Map<String, num?> params = {'menu_id': _menuID};
                         eventBus.emit(REFRESH_CREATED_MENUS_ITEM_EVENT, params);
-                        FlutterRouter.back(context);
+                        if (context.mounted) {
+                          FlutterRouter.back(context);
+                        }
                       }
                     });
                   }

@@ -18,6 +18,9 @@ enum ScreenUIType {
 
 /// 全局配置信息。
 class Global {
+  /// 全局调试开关。
+  static bool debug = true;
+
   /// 全局Navigator上下文。
   static GlobalKey<NavigatorState> navigatorkey = GlobalKey();
 

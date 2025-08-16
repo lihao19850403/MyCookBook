@@ -13,7 +13,7 @@ import 'flutter_router_platform_interface.dart';
 
 class FlutterRouter {
   /// 页面栈，存储页面名称。
-  static List<String> _pageNamesStack = [];
+  static final List<String> _pageNamesStack = [];
 
   /// 初始化Flutter层方法回调监听。
   ///

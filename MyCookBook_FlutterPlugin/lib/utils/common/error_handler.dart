@@ -9,8 +9,10 @@ void safeRun<R>(R Function() body) {
   var originalOnError = FlutterError.onError;
   FlutterError.onError = (FlutterErrorDetails details) {
     originalOnError?.call(details);
-    print(
-        'ERROR happened: ${details.exception.toString()}\nStackTrace:\n${details.stack ?? "NONE"}');
+    if (Global.debug) {
+      print(
+          'ERROR happened: ${details.exception.toString()}\nStackTrace:\n${details.stack ?? "NONE"}');
+    }
   };
   runZoned(body,
       zoneSpecification: const ZoneSpecification(

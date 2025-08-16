@@ -1,4 +1,6 @@
-typedef void EventCallback(arguments);
+import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
+
+typedef EventCallback = void Function(dynamic arguments);
 
 /// 自定义简单的事件总线。
 class EventBus {
@@ -47,7 +49,9 @@ class EventBus {
       try {
         iterator.current(arguments);
       } catch (error) {
-        print('执行eventBus发送的事件$eventName时出现异常：${error.toString()}。');
+        if (Global.debug) {
+          print('执行eventBus发送的事件$eventName时出现异常：${error.toString()}。');
+        }
       }
     }
   }
