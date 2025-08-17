@@ -112,24 +112,26 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
         centerTitle: true,
         title: TextField(
           controller: _titleController,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
               hintText: Resources_string.modify_page_title_hint,
               hintStyle: TextStyle(
                   color: Colors.grey,
-                  fontSize: 18,
+                  fontSize: Global.textSizePlan.unifiedTitleCenterTextSize,
                   fontWeight: FontWeight.normal),
-              border: UnderlineInputBorder(
+              border: const UnderlineInputBorder(
                   borderSide: BorderSide(
                       color: Resources_color.main_selected_light_color,
                       width: 1)),
-              focusedBorder: UnderlineInputBorder(
+              focusedBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(
                       color: Resources_color.main_selected_color, width: 1))),
           cursorColor: Resources_color.main_selected_color,
           cursorWidth: 1,
           minLines: 1,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+          style: TextStyle(
+              fontSize: Global.textSizePlan.unifiedTitleCenterTextSize,
+              fontWeight: FontWeight.normal),
           onChanged: (String value) => _menuTitle = value,
         ),
         leading: Container(

@@ -2,6 +2,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 
+import '../../models/text_size_plan_model.dart';
 import '../../utils/bridge.dart';
 import '../../utils/common/event_bus.dart';
 
@@ -15,12 +16,23 @@ class SafeState<T extends StatefulWidget> extends State<T> {
   /// 屏幕状态改变事件。
   EventCallback? _onScreenUIInfoChangedEvent;
 
+  /// 应用字号方案改变事件。
+  EventCallback? _onAppTextSizePlanChangedEvent;
+
   @override
   void initState() {
     super.initState();
     _onScreenUIInfoChangedEvent = (Object? arguments) =>
         onScreenUIInfoChanged(Global.screenUIType, Global.isSplitScreen);
+    _onAppTextSizePlanChangedEvent = (Object? arguments) {
+      if (arguments != null) {
+        int newPlanID = (arguments as Map<String, int>)['plan_id'] as int;
+        onAppTextSizePlanChanged(newPlanID);
+      }
+    };
     eventBus.on(SCREEN_UI_INFO_CHANGED_EVENT, _onScreenUIInfoChangedEvent!);
+    eventBus.on(
+        APP_TEXT_SIZE_PLAN_CHANGED_EVENT, _onAppTextSizePlanChangedEvent!);
   }
 
   @override
@@ -32,6 +44,8 @@ class SafeState<T extends StatefulWidget> extends State<T> {
   void dispose() {
     super.dispose();
     eventBus.off(SCREEN_UI_INFO_CHANGED_EVENT, _onScreenUIInfoChangedEvent!);
+    eventBus.off(
+        APP_TEXT_SIZE_PLAN_CHANGED_EVENT, _onAppTextSizePlanChangedEvent);
   }
 
   /// 安全更新函数。由于在绘制Frame阶段不能再调用setState，因此增加此函数，以便在页面绘制状态安全的情况下更新UI。
@@ -56,6 +70,21 @@ class SafeState<T extends StatefulWidget> extends State<T> {
     safeUpdate(() {
       normalScreenMode = newScreenUIType == ScreenUIType.NORMAL ||
           (isSplitScreen && newScreenUIType == ScreenUIType.FOLD_OPENED);
+    });
+  }
+
+  /// 应用字号方案改变事件。
+  /// 当应用字号方案改变时被触发，传递新的应用字号方案ID[newPlanID]。
+  @protected
+  void onAppTextSizePlanChanged(int newPlanID) {
+    safeUpdate(() {
+      Global.textSizePlan = newPlanID == 1
+          ? AppSettingsTextSizePlanModel.NORMAL
+          : newPlanID == 2
+              ? AppSettingsTextSizePlanModel.BIG
+              : newPlanID == 3
+                  ? AppSettingsTextSizePlanModel.HUGE
+                  : AppSettingsTextSizePlanModel.SMALL;
     });
   }
 }

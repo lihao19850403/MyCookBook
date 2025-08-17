@@ -85,8 +85,9 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
         title: Text(
             _menuItem?.cp_name ??
                 Resources_string.create_menu_detail_page_title,
-            style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.normal)),
+            style: TextStyle(
+                fontSize: Global.textSizePlan.unifiedTitleCenterTextSize,
+                fontWeight: FontWeight.normal)),
         leading: Container(
             alignment: Alignment.centerLeft,
             child: InkWell(

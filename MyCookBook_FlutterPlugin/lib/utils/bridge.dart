@@ -7,6 +7,8 @@ import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 
+import '../models/text_size_plan_model.dart';
+
 /// 屏幕类型、分屏配置项变化事件。
 const String SCREEN_UI_INFO_CHANGED_EVENT = 'screenUIInfoChangedEvent';
 
@@ -15,6 +17,9 @@ const String REFRESH_CREATED_MENUS_LIST_EVENT = 'refreshCreatedMenusListEvent';
 
 /// 重刷单个自创菜谱事件。
 const String REFRESH_CREATED_MENUS_ITEM_EVENT = 'refreshCreatedMenusItemEvent';
+
+/// 应用字号方案改变事件。
+const String APP_TEXT_SIZE_PLAN_CHANGED_EVENT = 'appTextSizePlanChangedEvent';
 
 /// Flutter与原生交互的桥方法集。
 class Bridge {
@@ -39,6 +44,12 @@ class Bridge {
         bool newSplitScreenSetting = call.arguments as bool;
         Global.isSplitScreen = newSplitScreenSetting;
         eventBus.emit(SCREEN_UI_INFO_CHANGED_EVENT);
+        return true;
+      }
+      if (call.method == 'splitScreenSettingChanged') {
+        int curAppTestSizePlanID = call.arguments as int;
+        Map<String, int> params = {'plan_id': curAppTestSizePlanID};
+        eventBus.emit(APP_TEXT_SIZE_PLAN_CHANGED_EVENT, params);
         return true;
       }
       return '${call.method} is not exist.';

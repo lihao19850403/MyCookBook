@@ -86,8 +86,10 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
           toolbarHeight: 48,
           centerTitle: true,
           title: _mode == _MODE.BROWSE
-              ? const Text(Resources_string.create_menu_list_page_title,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal))
+              ? Text(Resources_string.create_menu_list_page_title,
+                  style: TextStyle(
+                      fontSize: Global.textSizePlan.unifiedTitleCenterTextSize,
+                      fontWeight: FontWeight.normal))
               : (_markToDeletedIDs.isNotEmpty
                   ? Text(
                       '${Resources_string.create_menu_list_page_delete_title}(${_markToDeletedIDs.length})',
@@ -318,7 +320,9 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       children.add(Text('${index + 1}. ${menuItem.cp_name}',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)));
+          style: TextStyle(
+              fontSize: Global.textSizePlan.listItemMenuNameTextSize,
+              fontWeight: FontWeight.w500)));
     }
     if (menuItem.type_name != null && menuItem.type_name!.isNotEmpty) {
       children.add(Padding(
@@ -331,8 +335,8 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
             child: Text('${menuItem.type_name}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 12,
+                style: TextStyle(
+                    fontSize: Global.textSizePlan.listItemCategoryNameTextSize,
                     fontWeight: FontWeight.normal,
                     color: Resources_color.menu_type_name_text_color)),
           )));
@@ -348,8 +352,8 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
             child: Text('${menuItem.texing}',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 12,
+                style: TextStyle(
+                    fontSize: Global.textSizePlan.listItemTexingTextSize,
                     fontWeight: FontWeight.normal,
                     color: Resources_color.menu_feature_text_color)),
           )));
@@ -361,8 +365,8 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
       children.add(Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text('${menuItem.author} 创作于 ${menuItem.createdTime}',
-              style: const TextStyle(
-                  fontSize: 12,
+              style: TextStyle(
+                  fontSize: Global.textSizePlan.listItemAuthorInfoTextSize,
                   fontWeight: FontWeight.normal,
                   color: Resources_color.main_unselected_color))));
     }

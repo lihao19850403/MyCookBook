@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:flutter_router/router_manager.dart';
+import 'package:my_cook_book_flutter_plugin/models/text_size_plan_model.dart';
 import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_detail_page.dart';
 import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_modify_page.dart';
 import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_list_page.dart';
@@ -74,6 +75,16 @@ void _initGlobalParams(String pathInfo) {
   }
   if (params.containsKey('splitScreenSetting')) {
     Global.isSplitScreen = params['splitScreenSetting'] as bool;
+  }
+  if (params.containsKey('textSizePlanID')) {
+    int textSizePlanID = params['textSizePlanID'] as int;
+    Global.textSizePlan = textSizePlanID == 1
+        ? AppSettingsTextSizePlanModel.NORMAL
+        : textSizePlanID == 2
+            ? AppSettingsTextSizePlanModel.BIG
+            : textSizePlanID == 3
+                ? AppSettingsTextSizePlanModel.HUGE
+                : AppSettingsTextSizePlanModel.SMALL;
   }
 }
 

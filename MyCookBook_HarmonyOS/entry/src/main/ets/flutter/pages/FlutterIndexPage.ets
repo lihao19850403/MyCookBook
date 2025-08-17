@@ -9,9 +9,11 @@ import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx,
   SCREEN_UI_NEW_TYPE} from '../../utils/common/ScreenUIAdapter';
 import FlutterWrapEntry from '../utils/FlutterWrapEntry';
 import emitter from '@ohos.events.emitter';
-import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+import {
+  GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
-  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN} from '../../utils/common/GlobalAppSettings';
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
+  GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 import { AppSettings } from '../../utils/AppSettings';
 
 /** 跳转Flutter内容页时传递的参数。 */
@@ -40,6 +42,7 @@ export namespace FlutterIndexPage {
     params['screenBottomSafeZoneHeightVP'] = px2vp(getScreenBottomSafeZoneHeightPx());
     params['screenUIType'] = getScreenUIType();
     params['splitScreenSetting'] = AppSettings.isSplitScreen();
+    params['textSizePlanID'] = AppSettings.textSizePlan().id;
     let routerParams: Record<string, Object> = {};
     routerParams[FlutterAbilityLaunchConfigs.EXTRA_INITIAL_ROUTE] = `${path}?${JSON.stringify(params)}`;
     RouterUtils.navPushPath('FlutterIndexPage', routerParams);
@@ -91,6 +94,10 @@ struct FlutterIndexPageComponent {
             case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
               let isSplitScreen: boolean = AppSettings.isSplitScreen();
               this.flutterEntry?.callFlutterBridgeMethod('splitScreenSettingChanged', isSplitScreen);
+            } break;
+            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: {
+              let curAppTestSizePlanID: number = AppSettings.textSizePlan().id;
+              this.flutterEntry?.callFlutterBridgeMethod('appTextSizePlanChanged', curAppTestSizePlanID);
             } break;
             default: break;
           }

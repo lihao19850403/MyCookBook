@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:my_cook_book_flutter_plugin/models/text_size_plan_model.dart';
 
 /// 全局调试标记。
 const String TAG = '[Flutter]';
@@ -38,4 +39,7 @@ class Global {
 
   /// 是否使用分屏设置。
   static bool isSplitScreen = false;
+
+  /// 字号配置方案。
+  static AppSettingsTextSizePlanModel textSizePlan = AppSettingsTextSizePlanModel.SMALL;
 }

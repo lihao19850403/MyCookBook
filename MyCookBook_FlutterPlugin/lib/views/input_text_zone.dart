@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 
@@ -57,9 +58,10 @@ class _InputTextZone extends SafeState<InputTextZone> {
           Padding(
               padding: const EdgeInsets.only(left: 12),
               child: Text('${widget.titleContent}：',
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: Resources_color.main_selected_color,
-                      fontSize: 14)))
+                      fontSize:
+                          Global.textSizePlan.detailModifyContentTextSize)))
         ]),
         hintText: widget.tipContent,
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
@@ -75,7 +77,9 @@ class _InputTextZone extends SafeState<InputTextZone> {
       minLines: 1,
       maxLines: widget.isMultiLine ? null : 1,
       keyboardType: widget.isMultiLine ? TextInputType.multiline : null,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+      style: TextStyle(
+          fontSize: Global.textSizePlan.detailModifyContentTextSize,
+          fontWeight: FontWeight.normal),
       readOnly: widget.readOnly,
       onChanged: widget.onChangedCallback,
     );
