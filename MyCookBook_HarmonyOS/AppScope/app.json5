@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "com.lihao.cookbook",
     "vendor": "lihao",
-    "versionCode": 20241105,
-    "versionName": "1.1.0",
+    "versionCode": 20250817,
+    "versionName": "1.2.0",
     "icon": "$media:app_icon",
     "label": "$string:app_name"
   }
