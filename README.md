@@ -16,7 +16,7 @@
 应用的特点如下：
 
 1.  屏幕适配：应用适配普通直板设备、折叠屏、Pad屏幕。应用在折叠屏上运行时，会对设备展开与合盖状态进行响应，并自动调整页面布局。关于屏幕状态响应的实现方法可查阅[动态监听屏幕尺寸及状态改变](https://developer.huawei.com/consumer/cn/blog/topic/03162326904748004)。 
-2.  分页分屏：应用使用Tab组件进行多标签页展现，支持滑动切换页面或点击标签切换页面；应用使用Navigation实现分屏显示功能，并支持动态切换分屏状态。应用中各页面之间的跳转使用NavPathStack实现。关于分屏展示功能的实现方法可查阅[迁移旧项目至Navigation，使用NavPathStack进行页面跳转，并实现分屏显示](https://developer.huawei.com/consumer/cn/blog/topic/03162334632054323)
+2.  分页分屏：应用使用Tab组件进行多标签页展现，支持滑动切换页面或点击标签切换页面；应用使用Navigation实现分屏显示功能，并支持动态切换分屏状态。应用中各页面之间的跳转使用NavPathStack实现。关于分屏展示功能的实现方法可查阅[迁移旧项目至Navigation，使用NavPathStack进行页面跳转，并实现分屏显示](https://developer.huawei.com/consumer/cn/blog/topic/03162334632054323)。
 3.  列表吸顶：应用对List组件，使用ListItemGroup及sticky来展现小标题吸顶效果。 
 4.  网格拖拽：应用对Grid组件设置了用户可长按元素进行拖拽排序的功能。 
 5.  瀑布流UI：应用在首页新闻页面使用WaterFlow组件展现瀑布流排版效果，并使用LazyForEach实现懒加载。
@@ -109,6 +109,11 @@ ohpm install @ohos/pulltorefresh
 
 1.  免费测试api的使用：应用的头条新闻、今日推荐菜谱、每日养生小秘诀使用了免费测试api，相关配置可查看[entry/src/main/resources/rawfile/keys.json5](./MyCookBook_HarmonyOS/entry/src/main/resources/rawfile/keys.json5)。这些接口对于同一个账户有每日请求次数限制，因此当访问人数较多时将不会返回有效信息。您可以到对应的网页注册账户申请自己的免费key来使用，只需把新的key写到配置文件中的value字段处即可。
 2.  关于模拟数据：为了能够演示应用内容，我准备了一些模拟数据，以便在服务端接口出现异常的时候仍然能展示一些内容。这些模拟数据位于[entry/src/main/resources/rawfile/](./MyCookBook_HarmonyOS/entry/src/main/resources/rawfile)文件夹，您可以根据自己的需求进行修改调试。
+注：测试文件是
+[home_tab_menu_mock.json5](MyCookBook_HarmonyOS/entry/src/main/resources/rawfile/home_tab_menu_mock.json5)、
+[home_tab_mine_create_menu_mock.json5](MyCookBook_HarmonyOS/entry/src/main/resources/rawfile/home_tab_mine_create_menu_mock.json5)、
+[home_tab_mine_tips_mock.json5](MyCookBook_HarmonyOS/entry/src/main/resources/rawfile/home_tab_mine_tips_mock.json5)和
+[home_tab_top_news_mock.json5](MyCookBook_HarmonyOS/entry/src/main/resources/rawfile/home_tab_top_news_mock.json5)。
 
 #### 相关权限
 
