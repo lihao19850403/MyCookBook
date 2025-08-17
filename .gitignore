@@ -6,3 +6,4 @@ local.properties
 oh-package-lock.json5
 pubspec.lock
 my_cook_book_flutter_plugin.iml
+MyCookBook_FlutterPlugin/build/ohos/intermediates
