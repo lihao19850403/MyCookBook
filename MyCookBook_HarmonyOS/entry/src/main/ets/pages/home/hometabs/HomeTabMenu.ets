@@ -75,6 +75,13 @@ export struct HomeTabMenu {
   /** 滚动视图控制器。 */
   private scroller: Scroller = new Scroller();
 
+  private onFavoriteMenuChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    this.initFavoriteMenu();
+    if (dataWrap.data) {
+      this.favoriteMenuChangeEventType = dataWrap.data[FAVORITE_MENU_CHANGE_EVENT_TYPE] as FavoriteMenuChangeEventType;
+    }
+  };
+
   aboutToAppear(): void {
     if (!KVUtils.hasKV(FILE_NAME_RECOMMEND_MENU, this.today)) { // 每日拉取新推荐菜谱。
       this.apiLoadRecommendMenus();
@@ -84,12 +91,11 @@ export struct HomeTabMenu {
       this.isLoadingRecommendMenu = false;
     }
     this.initFavoriteMenu();
-    emitter.on(FAVORITE_MENU_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-      this.initFavoriteMenu();
-      if (dataWrap.data) {
-        this.favoriteMenuChangeEventType = dataWrap.data[FAVORITE_MENU_CHANGE_EVENT_TYPE] as FavoriteMenuChangeEventType;
-      }
-    });
+    emitter.on(FAVORITE_MENU_CHANGE_EVENT, this.onFavoriteMenuChangedEvent);
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(FAVORITE_MENU_CHANGE_EVENT, this.onFavoriteMenuChangedEvent);
   }
 
   build() {

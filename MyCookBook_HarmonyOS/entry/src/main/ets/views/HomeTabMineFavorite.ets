@@ -36,29 +36,38 @@ export struct HomeTabMineFavorite {
   /** 首页标签控制器。 */
   private mainPageTabsController?: TabsController;
 
+  private onFavoriteMenuChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data === undefined) {
+      return;
+    }
+    let eventType: FavoriteMenuChangeEventType = dataWrap.data[FAVORITE_MENU_CHANGE_EVENT_TYPE] as FavoriteMenuChangeEventType;
+    if (eventType === FavoriteMenuChangeEventType.ADD_ONE_FAVORITE_MENU || FavoriteMenuChangeEventType.REMOVE_ONE_FAVORITE_MENU) {
+      this.favoriteMenuCount = this.calcFavoriteMenuCount();
+    }
+  };
+
+  private onCreatedMenuChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data === undefined) {
+      return;
+    }
+    let eventType: CreatedMenuChangeEventType = dataWrap.data[CREATED_MENU_CHANGE_EVENT_TYPE] as CreatedMenuChangeEventType;
+    if (eventType === CreatedMenuChangeEventType.ADD_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_SOME_CREATED_MENUS) {
+      this.createdMenuCount = this.calcCreatedMenuCount();
+    }
+  };
+
   aboutToAppear(): void {
     // 处理已收藏的菜谱数量。
     this.favoriteMenuCount = this.calcFavoriteMenuCount();
-    emitter.on(FAVORITE_MENU_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data === undefined) {
-        return;
-      }
-      let eventType: FavoriteMenuChangeEventType = dataWrap.data[FAVORITE_MENU_CHANGE_EVENT_TYPE] as FavoriteMenuChangeEventType;
-      if (eventType === FavoriteMenuChangeEventType.ADD_ONE_FAVORITE_MENU || FavoriteMenuChangeEventType.REMOVE_ONE_FAVORITE_MENU) {
-        this.favoriteMenuCount = this.calcFavoriteMenuCount();
-      }
-    });
+    emitter.on(FAVORITE_MENU_CHANGE_EVENT, this.onFavoriteMenuChangedEvent);
     // 处理已创建的菜谱数量。
     this.createdMenuCount = this.calcCreatedMenuCount();
-    emitter.on(CREATED_MENU_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data === undefined) {
-        return;
-      }
-      let eventType: CreatedMenuChangeEventType = dataWrap.data[CREATED_MENU_CHANGE_EVENT_TYPE] as CreatedMenuChangeEventType;
-      if (eventType === CreatedMenuChangeEventType.ADD_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_ONE_CREATED_MENU || CreatedMenuChangeEventType.REMOVE_SOME_CREATED_MENUS) {
-        this.createdMenuCount = this.calcCreatedMenuCount();
-      }
-    });
+    emitter.on(CREATED_MENU_CHANGE_EVENT, this.onCreatedMenuChangedEvent);
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(FAVORITE_MENU_CHANGE_EVENT, this.onFavoriteMenuChangedEvent);
+    emitter.off(CREATED_MENU_CHANGE_EVENT, this.onCreatedMenuChangedEvent);
   }
 
   build() {

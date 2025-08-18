@@ -2,7 +2,7 @@ import {
   getScreenBottomSafeZoneHeightPx,
   getScreenTopSafeZoneHeightPx,
   getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
-import { emitter } from '@kit.BasicServicesKit';
+import { Callback, emitter } from '@kit.BasicServicesKit';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../views/common/LHCommonTitleBar';
 import { RecommendMenuItem, RecommendMenuResult } from '../../models/RecommendMenuModel';
 import { RouterUtils } from '../../utils/common/RouterUtils';
@@ -48,6 +48,24 @@ struct RecommendMenuListPageComponent {
 
   /** 今日推荐菜谱数据。 */
   private recommendMenu?: RecommendMenuResult;
+
+  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
+      this.screenUIType = newScreenUIType;
+    }
+  };
+
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
+        default: break;
+      }
+    }
+  };
 
   build() {
     NavDestination() {
@@ -139,25 +157,15 @@ struct RecommendMenuListPageComponent {
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
-      emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
-          this.screenUIType = newScreenUIType;
-        }
-      })
+      emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
       this.recommendMenu = RouterUtils.navGetParams(context) as RecommendMenuResult;
       this.appTextSizePlan = AppSettings.textSizePlan();
       this.isSplitScreen = AppSettings.isSplitScreen();
-      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-          switch (eventType) {
-            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-            case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
-            default: break;
-          }
-        }
-      });
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+    })
+    .onDisAppear(() => {
+      emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+      emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     })
   }
 

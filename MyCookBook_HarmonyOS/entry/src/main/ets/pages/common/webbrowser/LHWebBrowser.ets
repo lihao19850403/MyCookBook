@@ -40,6 +40,16 @@ struct LHWebBrowserComponent {
   /** 浏览器控制器。 */
   private controller?: webview.WebviewController;
 
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
+        default: break;
+      }
+    }
+  };
+
   build() {
     NavDestination() {
       Column() {
@@ -70,15 +80,7 @@ struct LHWebBrowserComponent {
       let urlParams: Record<string, string | undefined> = RouterUtils.navGetParams(context) as Record<string, string | undefined>;
       this.url = urlParams[URL_PARAMS];
       this.appTextSizePlan = GlobalAppSettings.textSizePlan();
-      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-          switch (eventType) {
-            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
-            default: break;
-          }
-        }
-      });
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     })
     .onBackPressed(() => {
       if (this.controller !== undefined && this.controller.accessBackward()) {
@@ -87,6 +89,7 @@ struct LHWebBrowserComponent {
       }
       return false;
     })
+    .onDisAppear(() => emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent))
   }
 
   /**

@@ -80,13 +80,19 @@ export struct LHCommonTitleBar {
   /** 是否需要底部分割线。 */
   private needBottomDivider?: boolean;
 
+  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      this.calcCenterTitleMargin();
+      this.calcUseMarquee();
+    }
+  };
+
   aboutToAppear(): void {
-    emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data) {
-        this.calcCenterTitleMargin();
-        this.calcUseMarquee();
-      }
-    })
+    emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
   }
 
   build() {

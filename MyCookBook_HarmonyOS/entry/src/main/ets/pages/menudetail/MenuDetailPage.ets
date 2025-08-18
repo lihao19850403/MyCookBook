@@ -47,6 +47,24 @@ struct MenuDetailPageComponent {
   /** 菜谱详情。 */
   private menuItem?: RecommendMenuItem;
 
+  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
+      this.screenUIType = newScreenUIType;
+    }
+  };
+
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
+        default: break;
+      }
+    }
+  };
+
   build() {
     NavDestination() {
       Column() {
@@ -85,25 +103,15 @@ struct MenuDetailPageComponent {
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
-      emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
-          this.screenUIType = newScreenUIType;
-        }
-      })
+      emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
       this.menuItem = RouterUtils.navGetParams(context) as RecommendMenuItem;
       this.appTextSizePlan = AppSettings.textSizePlan();
       this.isSplitScreen = AppSettings.isSplitScreen();
-      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-          switch (eventType) {
-            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-            case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
-            default: break;
-          }
-        }
-      });
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+    })
+    .onDisAppear(() => {
+      emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+      emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     })
   }
 

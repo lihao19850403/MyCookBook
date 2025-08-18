@@ -1,19 +1,25 @@
-import { emitter } from '@kit.BasicServicesKit';
+import { Callback, emitter } from '@kit.BasicServicesKit';
 import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
 import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
-import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+import {
+  GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
-  GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
+  GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN
+} from '../../utils/common/GlobalAppSettings';
 import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../../utils/common/GlobalConfig';
 import { RouterUtils, ROUTER_CONFIG_KEY_ROUTER_STACK } from '../../utils/common/RouterUtils';
 import {
   getScreenBottomSafeZoneHeightPx,
   getScreenTopSafeZoneHeightPx,
-  getScreenUIType, getScreenWidthPx,
-  ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
+  getScreenUIType,
+  getScreenWidthPx,
+  ScreenUIType,
+  SCREEN_UI_CHANGE_EVENT,
+  SCREEN_UI_NEW_TYPE
+} from '../../utils/common/ScreenUIAdapter';
 import { HomeTabMenu } from './hometabs/HomeTabMenu';
 import { HomeTabMine } from './hometabs/HomeTabMine';
 import { HomeTabNews } from './hometabs/HomeTabNews';
@@ -56,28 +62,44 @@ struct HomeMain {
   /** 页面栈控制器。 */
   private routerStack: NavPathStack = new NavPathStack();
 
+  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
+      this.screenUIType = newScreenUIType;
+    }
+  };
+
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN:
+          this.appTextSizePlan = AppSettings.textSizePlan();
+          break;
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN:
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          break;
+        case GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX:
+          this.firstPageIndex = AppSettings.firstPageIndex();
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   aboutToAppear(): void {
     GlobalConfig.set(ROUTER_CONFIG_KEY_ROUTER_STACK, this.routerStack);
-    emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data) {
-        let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
-        this.screenUIType = newScreenUIType;
-      }
-    })
+    emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
     this.appTextSizePlan = AppSettings.textSizePlan();
     this.isSplitScreen = AppSettings.isSplitScreen();
-    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-      if (dataWrap.data) {
-        let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-        switch (eventType) {
-          case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-          case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
-          case GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX: this.firstPageIndex = AppSettings.firstPageIndex(); break;
-          default: break;
-        }
-      }
-    });
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
   }
 
   onBackPress(): boolean | void {

@@ -35,6 +35,16 @@ struct NewsDetailPageComponent {
   /** 新闻详情。 */
   private newsItem?: TodayNewsItem;
 
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
+        default: break;
+      }
+    }
+  };
+
   build() {
     NavDestination() {
       Column() {
@@ -71,15 +81,8 @@ struct NewsDetailPageComponent {
     .onReady((context: NavDestinationContext) => {
       this.newsItem = RouterUtils.navGetParams(context) as TodayNewsItem;
       this.appTextSizePlan = AppSettings.textSizePlan();
-      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-          switch (eventType) {
-            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-            default: break;
-          }
-        }
-      });
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     })
+    .onDisAppear(() => emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent))
   }
 }

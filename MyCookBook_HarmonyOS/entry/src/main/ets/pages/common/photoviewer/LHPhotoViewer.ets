@@ -58,6 +58,16 @@ struct LHPhotoViewerComponent {
   /** 应用文字字号方案。 */
   @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
 
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
+        default: break;
+      }
+    }
+  };
+
   build() {
     NavDestination() {
       Column() {
@@ -98,15 +108,8 @@ struct LHPhotoViewerComponent {
         this.data.setMaximumScale(3.0);
       }
       this.appTextSizePlan = GlobalAppSettings.textSizePlan();
-      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-          switch (eventType) {
-            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = GlobalAppSettings.textSizePlan(); break;
-            default: break;
-          }
-        }
-      });
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     })
+    .onDisAppear(() => emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent))
   }
 }

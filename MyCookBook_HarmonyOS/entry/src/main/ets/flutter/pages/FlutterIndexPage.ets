@@ -64,6 +64,30 @@ struct FlutterIndexPageComponent {
   private flutterEntry?: FlutterWrapEntry;
   private flutterView?: FlutterView;
 
+  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
+      this.flutterEntry?.callFlutterBridgeMethod('screenUITypeChanged', newScreenUIType);
+    }
+  };
+
+  private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          let isSplitScreen: boolean = AppSettings.isSplitScreen();
+          this.flutterEntry?.callFlutterBridgeMethod('splitScreenSettingChanged', isSplitScreen);
+        } break;
+        case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: {
+          let curAppTestSizePlanID: number = AppSettings.textSizePlan().id;
+          this.flutterEntry?.callFlutterBridgeMethod('appTextSizePlanChanged', curAppTestSizePlanID);
+        } break;
+        default: break;
+      }
+    }
+  };
+
   build() {
     NavDestination() {
       Stack() {
@@ -81,32 +105,16 @@ struct FlutterIndexPageComponent {
       this.flutterEntry = new FlutterWrapEntry(this.context, params);
       this.flutterEntry.aboutToAppear();
       this.flutterView = this.flutterEntry.getFlutterView();
-      emitter.on(SCREEN_UI_CHANGE_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
-          this.flutterEntry?.callFlutterBridgeMethod('screenUITypeChanged', newScreenUIType);
-        }
-      });
-      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, (dataWrap: emitter.EventData) => {
-        if (dataWrap.data) {
-          let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
-          switch (eventType) {
-            case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
-              let isSplitScreen: boolean = AppSettings.isSplitScreen();
-              this.flutterEntry?.callFlutterBridgeMethod('splitScreenSettingChanged', isSplitScreen);
-            } break;
-            case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: {
-              let curAppTestSizePlanID: number = AppSettings.textSizePlan().id;
-              this.flutterEntry?.callFlutterBridgeMethod('appTextSizePlanChanged', curAppTestSizePlanID);
-            } break;
-            default: break;
-          }
-        }
-      });
+      emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+      emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     })
     .onShown(() => this.flutterEntry?.onPageShow())
     .onHidden(() => this.flutterEntry?.onPageHide())
-    .onDisAppear(() => this.flutterEntry?.aboutToDisappear())
+    .onDisAppear(() => {
+      emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+      emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      this.flutterEntry?.aboutToDisappear();
+    })
     .onBackPressed(() => {
       this.flutterEntry?.callFlutterBack();
       return true;
