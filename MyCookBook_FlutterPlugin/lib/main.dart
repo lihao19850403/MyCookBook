@@ -39,9 +39,14 @@ class MyApp extends StatefulWidget {
 
 class _MyApp extends SafeState<MyApp> {
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _initGlobalParams(widget.pathInfo);
     _initMethodCallHandlerWhenBuild();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
         title: 'FlutterPlugin',
         navigatorKey: Global.navigatorkey,
@@ -88,7 +93,7 @@ void _initGlobalParams(String pathInfo) {
   }
 }
 
-/// 在build方法中初始化Flutter方法回到监听。
+/// 初始化Flutter方法回到监听。
 void _initMethodCallHandlerWhenBuild() {
   FlutterRouter.initOnMethodCallWhenBuild(Global.navigatorkey);
   Bridge.initOnMethodCallWhenBuild(Global.navigatorkey);
