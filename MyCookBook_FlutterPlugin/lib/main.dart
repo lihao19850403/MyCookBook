@@ -63,15 +63,16 @@ void _initGlobalParams(String pathInfo) {
     return;
   }
   if (params.containsKey('screenTopSafeZoneHeightVP')) {
-    Global.screenTopSafeZoneHeightVP =
-        params['screenTopSafeZoneHeightVP'] as double;
+    num data = params['screenTopSafeZoneHeightVP'] as num;
+    Global.screenTopSafeZoneHeightVP = data.toDouble();
   }
   if (params.containsKey('screenBottomSafeZoneHeightVP')) {
-    Global.screenBottomSafeZoneHeightVP =
-        params['screenBottomSafeZoneHeightVP'] as double;
+    num data = params['screenBottomSafeZoneHeightVP'] as num;
+    Global.screenBottomSafeZoneHeightVP = data.toDouble();
   }
   if (params.containsKey('screenUIType')) {
-    int screenUIType = params['screenUIType'] as int;
+    num data = params['screenUIType'] as num;
+    int screenUIType = data.toInt();
     Global.screenUIType = screenUIType == 1
         ? ScreenUIType.FOLD_OPENED
         : screenUIType == 2
@@ -82,7 +83,8 @@ void _initGlobalParams(String pathInfo) {
     Global.isSplitScreen = params['splitScreenSetting'] as bool;
   }
   if (params.containsKey('textSizePlanID')) {
-    int textSizePlanID = params['textSizePlanID'] as int;
+    num data = params['textSizePlanID'] as num;
+    int textSizePlanID = data.toInt();
     Global.textSizePlan = textSizePlanID == 1
         ? AppSettingsTextSizePlanModel.NORMAL
         : textSizePlanID == 2

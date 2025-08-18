@@ -31,7 +31,8 @@ class Bridge {
         .getChannel()
         .setMethodCallHandler((MethodCall call) async {
       if (call.method == 'screenUITypeChanged') {
-        int newScreenUIType = call.arguments as int;
+        num data = call.arguments as num;
+        int newScreenUIType = data.toInt();
         Global.screenUIType = newScreenUIType == 1
             ? ScreenUIType.FOLD_OPENED
             : newScreenUIType == 2
@@ -46,8 +47,9 @@ class Bridge {
         eventBus.emit(SCREEN_UI_INFO_CHANGED_EVENT);
         return true;
       }
-      if (call.method == 'splitScreenSettingChanged') {
-        int curAppTestSizePlanID = call.arguments as int;
+      if (call.method == 'appTextSizePlanChanged') {
+        num data = call.arguments as num;
+        int curAppTestSizePlanID = data.toInt();
         Map<String, int> params = {'plan_id': curAppTestSizePlanID};
         eventBus.emit(APP_TEXT_SIZE_PLAN_CHANGED_EVENT, params);
         return true;
