@@ -50,6 +50,14 @@ class _InputTextZone extends SafeState<InputTextZone> {
   }
 
   @override
+  void didUpdateWidget(covariant InputTextZone oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_controller.text != widget.contentText) {
+      safeUpdate(() => _controller.text = (widget.contentText ?? ''));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,

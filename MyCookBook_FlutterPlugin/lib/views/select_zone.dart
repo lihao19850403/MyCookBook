@@ -46,6 +46,14 @@ class _SelectZone extends SafeState<SelectZone> {
   }
 
   @override
+  void didUpdateWidget(covariant SelectZone oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_controller.text != widget.contentText) {
+      safeUpdate(() => _controller.text = (widget.contentText ?? ''));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextField(
         controller: _controller,
