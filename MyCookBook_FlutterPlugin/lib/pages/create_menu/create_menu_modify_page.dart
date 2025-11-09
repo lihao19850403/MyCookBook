@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
+import 'package:my_cook_book_flutter_plugin/models/pick_photo_result.dart';
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
@@ -241,9 +242,17 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
           width: _imageFrameWidth,
           height: _imageFrameHeight,
           image: const AssetImage(Resources_media
-              .ic_menu_default_bg), // [Flutter TODO] Image Picker.
+              .ic_menu_default_bg),
           fit: BoxFit.contain),
-      onTap: () {},
+      onTap: () {
+        Bridge.pickPhoto(1).then((PickPhotoResult? pickResult) {
+          if (pickResult != null) {
+
+          } else {
+
+          }
+        });
+      },
     );
   }
 

@@ -8,6 +8,9 @@ import { HashMap } from '@kit.ArkTS';
 import promptAction from "@ohos.promptAction";
 import { DateUtils, DATE_FORMAT } from "../../utils/common/DateUtils";
 import { openAlertDialog, openCustomDialog } from "../../utils/common/DialogUtils";
+import { pickPhoto } from "../../utils/common/mediapicker/PhotoPickerUtils";
+import photoAccessHelper from "@ohos.file.photoAccessHelper";
+import { BusinessError } from '@kit.BasicServicesKit';
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -48,6 +51,16 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
     if (methodName === 'removeCreatedMenus') {
       let markToDeletedIDs: Array<number> | undefined = methodParams as Array<number>;
       removeCreatedMenus(result, markToDeletedIDs);
+      return;
+    }
+    if (methodName === 'pickPhoto') {
+      let maxSelectNumber: number = methodParams as ESObject as number;
+      pickPhoto({
+        maxSelectNumber: maxSelectNumber,
+        callback: (pickResult?: photoAccessHelper.PhotoSelectResult, error?: BusinessError) => {
+          result.success(pickResult);
+        }
+      });
       return;
     }
     result.notImplemented();

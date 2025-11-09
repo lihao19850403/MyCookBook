@@ -4,10 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bridge/flutter_bridge_platform_interface.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
+import 'package:my_cook_book_flutter_plugin/models/pick_photo_result.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
-
-import '../models/text_size_plan_model.dart';
 
 /// 屏幕类型、分屏配置项变化事件。
 const String SCREEN_UI_INFO_CHANGED_EVENT = 'screenUIInfoChangedEvent';
@@ -153,5 +152,17 @@ class Bridge {
     final bool? result = await FlutterBridgePlatform.instance
         .callNativeMethod('removeCreatedMenus', methodParams: ids);
     return Future.value(result);
+  }
+
+  /// 选取[maxSelectNumber]张图片。
+  static Future<PickPhotoResult?> pickPhoto(num maxSelectNumber) async {
+    final Object? result = await FlutterBridgePlatform.instance
+        .callNativeMethod('pickPhoto', methodParams: maxSelectNumber);
+    if (result == null) {
+      return Future.value(null);
+    }
+    Map<Object?, Object?> dataMap = result as Map<Object?, Object?>;
+    PickPhotoResult data = PickPhotoResult.fromMap(dataMap);
+    return Future.value(data);
   }
 }
