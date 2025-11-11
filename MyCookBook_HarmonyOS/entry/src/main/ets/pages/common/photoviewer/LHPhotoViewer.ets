@@ -9,6 +9,7 @@ import { firstNotVoid } from '../../../utils/common/Utils';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../../views/common/LHCommonTitleBar';
 import { emitter } from '@kit.BasicServicesKit';
 import { getScreenTopSafeZoneHeightPx } from '../../../utils/common/ScreenUIAdapter';
+import { fileUri } from '@kit.CoreFileKit';
 
 export namespace LHPhotoViewer {
   export function go(params: PhotoViewerParams) {
@@ -94,8 +95,10 @@ struct LHPhotoViewerComponent {
     .onReady((context: NavDestinationContext) => {
       let params: PhotoViewerParams = RouterUtils.navGetParams(context) as PhotoViewerParams;
       this.title = params.title;
-      if (params.uri instanceof String) {
-        this.data.setImageURI(params.uri as string);
+      if (typeof params.uri === 'string') {
+        let uriStr: string = params.uri as string;
+        let realUri: string = fileUri.getUriFromPath(uriStr);
+        this.data.setImageURI(realUri);
       } else {
         this.data.setImageResource(params.uri as Resource);
       }
