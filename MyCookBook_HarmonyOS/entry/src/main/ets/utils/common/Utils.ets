@@ -1,6 +1,7 @@
 import { GlobalContext } from './GlobalContext';
 import { bundleManager } from '@kit.AbilityKit';
 import { util } from '@kit.ArkTS';
+import fs from '@ohos.file.fs';
 
 /**
  * 通用工具类。
@@ -92,3 +93,18 @@ export function readRawFileSync<T>(fileName: string): T {
   return BLANK_OBJECT as T;
 }
 
+/**
+ * 判断文件是否存在。
+ * @param fileUri 文件路径信息。
+ * @returns 判断结果。
+ */
+export function isFileExist(fileUri?: string): boolean {
+  if (fileUri === undefined) {
+    return false;
+  }
+  try {
+    return fs.accessSync(fileUri);
+  } catch (error) {
+    return false;
+  }
+}

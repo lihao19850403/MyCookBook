@@ -1,8 +1,10 @@
 import { FlutterEngine, FlutterEntry, Log, MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import FlutterRouterPlugin from "flutter_router";
+import PathProviderPlugin from "path_provider_ohos";
 import { getFlutterBridgePlugin } from "./FlutterBridgeUtils";
 import { getFlutterRouterPlugin } from "./FlutterRouterUtils";
+import { getPathProviderPlugin } from "./PathProviderUtils";
 
 const TAG = "FlutterWrapEntry";
 
@@ -13,6 +15,7 @@ const TAG = "FlutterWrapEntry";
 export default class FlutterWrapEntry extends FlutterEntry {
   private flutterRouterPlugin: FlutterRouterPlugin = getFlutterRouterPlugin();
   private flutterBridgePlugin: FlutterBridgePlugin = getFlutterBridgePlugin();
+  private pathProviderPlugin: PathProviderPlugin = getPathProviderPlugin();
 
   configureFlutterEngine(flutterEngine: FlutterEngine): void {
     super.configureFlutterEngine(flutterEngine);
@@ -21,6 +24,7 @@ export default class FlutterWrapEntry extends FlutterEntry {
       flutterEngine.getPlugins()?.add(this.flutterRouterPlugin);
       /* 注册其他插件。 */
       this.delegate?.addPlugin(this.flutterBridgePlugin);
+      this.delegate?.addPlugin(this.pathProviderPlugin);
     } catch (error) {
       Log.e(
         TAG,
