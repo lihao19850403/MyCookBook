@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
@@ -159,13 +161,24 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
 
   Widget _thumbnail(BuildContext buildContext) {
     return InkWell(
-      child: Image(
-          width: _imageFrameWidth,
-          height: _imageFrameHeight,
-          image: const AssetImage(Resources_media
-              .ic_menu_default_bg), // [Flutter TODO] Image Picker.
-          fit: BoxFit.contain),
-      onTap: () {},
+      child: _menuItem == null || _menuItem?.cp_thumbnail == null
+          ? Image(
+              width: _imageFrameWidth,
+              height: _imageFrameHeight,
+              image: const AssetImage(Resources_media.ic_menu_default_bg),
+              fit: BoxFit.contain)
+          : Image.file(File(_menuItem!.cp_thumbnail!),
+              width: _imageFrameWidth,
+              height: _imageFrameHeight,
+              fit: BoxFit.contain, errorBuilder: (BuildContext errorContext,
+                  Object error, StackTrace? stackTrace) {
+              return Image(
+                  width: _imageFrameWidth,
+                  height: _imageFrameHeight,
+                  image: const AssetImage(Resources_media.ic_menu_default_bg),
+                  fit: BoxFit.contain);
+            }),
+      onTap: () => Bridge.browseThumbnail(_menuItem?.cp_thumbnail),
     );
   }
 

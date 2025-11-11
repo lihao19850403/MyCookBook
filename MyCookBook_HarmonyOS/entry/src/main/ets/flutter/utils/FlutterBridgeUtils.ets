@@ -1,16 +1,18 @@
 import { MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import { CreatedMenuItem } from "../../models/CreatedMenuItem";
-import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
+import { BLANK_OBJECT, isFileExist, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
 import { HashMap } from '@kit.ArkTS';
 import promptAction from "@ohos.promptAction";
 import { DateUtils, DATE_FORMAT } from "../../utils/common/DateUtils";
 import { openAlertDialog, openCustomDialog } from "../../utils/common/DialogUtils";
-import { pickPhoto } from "../../utils/common/mediapicker/PhotoPickerUtils";
+import { PhotoPickerUtils } from "../../utils/common/mediapicker/PhotoPickerUtils";
 import photoAccessHelper from "@ohos.file.photoAccessHelper";
-import { BusinessError } from '@kit.BasicServicesKit';
+import { getPathProviderPlugin } from "./PathProviderUtils";
+import { CopyPhotoResult } from "../../utils/common/mediapicker/models/PhotoPickerModels";
+import { LHPhotoViewer, PhotoViewerParams } from "../../pages/common/photoviewer/LHPhotoViewer";
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -55,12 +57,22 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
     }
     if (methodName === 'pickPhoto') {
       let maxSelectNumber: number = methodParams as ESObject as number;
-      pickPhoto({
-        maxSelectNumber: maxSelectNumber,
-        callback: (pickResult?: photoAccessHelper.PhotoSelectResult, error?: BusinessError) => {
-          result.success(pickResult);
-        }
-      });
+      pickPhoto(result, maxSelectNumber);
+      return;
+    }
+    if (methodName === 'browseThumbnail') {
+      let thumbnailUri: string | undefined = methodParams as ESObject as string;
+      if (isFileExist(thumbnailUri)) {
+        let params: PhotoViewerParams = {
+          title: $r('app.string.photo_viewer'),
+          uri: thumbnailUri
+        };
+        LHPhotoViewer.go(params);
+      } else {
+        promptAction.showToast({
+          message: $r("app.string.fail_to_load_menu_thumbnail"),
+        })
+      }
       return;
     }
     result.notImplemented();
@@ -146,6 +158,7 @@ function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean 
   }
   /* 解析数据。 */
   let cp_name: string | undefined = data.get('cp_name') ?? undefined;
+  let cp_thumbnail: string | undefined = data.get('cp_thumbnail') ?? undefined;
   let author: string | undefined = data.get('author') ?? undefined;
   let type_name: string | undefined = data.get('type_name') ?? undefined;
   let texing: string | undefined = data.get('texing') ?? undefined;
@@ -153,7 +166,7 @@ function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean 
   let tiaoliao: string | undefined = data.get('tiaoliao') ?? undefined;
   let zuofa: string | undefined = data.get('zuofa') ?? undefined;
   let tishi: string | undefined = data.get('tishi') ?? undefined;
-  if (!cp_name && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
+  if (!cp_name && !cp_thumbnail && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
     promptAction.showToast({
       message: $r("app.string.created_menu_exception_failure_tip"),
     })
@@ -172,7 +185,7 @@ function addOneCreatedMenu(data?: HashMap<string, string | undefined>): boolean 
   newCreatedMenu.type_id = categoryID;
   newCreatedMenu.type_name = type_name;
   newCreatedMenu.cp_name = cp_name;
-  newCreatedMenu.cp_thumbnail = undefined; // TODO：添加菜谱缩略图。
+  newCreatedMenu.cp_thumbnail = cp_thumbnail;
   newCreatedMenu.zuofa = zuofa;
   newCreatedMenu.texing = texing;
   newCreatedMenu.tishi = tishi;
@@ -202,6 +215,7 @@ function updateOneCreatedMenu(data?: HashMap<string, string | number | undefined
   /* 解析数据。 */
   let cp_id: number | undefined = data?.get('cp_id') as number ?? undefined;
   let cp_name: string | undefined = data.get('cp_name') as string ?? undefined;
+  let cp_thumbnail: string | undefined = data.get('cp_thumbnail') as string ?? undefined;
   let author: string | undefined = data.get('author') as string ?? undefined;
   let type_name: string | undefined = data.get('type_name') as string ?? undefined;
   let texing: string | undefined = data.get('texing') as string ?? undefined;
@@ -209,7 +223,7 @@ function updateOneCreatedMenu(data?: HashMap<string, string | number | undefined
   let tiaoliao: string | undefined = data.get('tiaoliao') as string ?? undefined;
   let zuofa: string | undefined = data.get('zuofa') as string ?? undefined;
   let tishi: string | undefined = data.get('tishi') as string ?? undefined;
-  if (!cp_id && !cp_name && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
+  if (!cp_id && !cp_name && !cp_thumbnail && !author && !type_name && !texing && !yuanliao && !tiaoliao && !zuofa && !tishi) {
     promptAction.showToast({
       message: $r("app.string.created_menu_exception_failure_tip"),
     })
@@ -238,7 +252,7 @@ function updateOneCreatedMenu(data?: HashMap<string, string | number | undefined
   updateCreatedMenu.type_id = categoryID;
   updateCreatedMenu.type_name = type_name;
   updateCreatedMenu.cp_name = cp_name;
-  updateCreatedMenu.cp_thumbnail = undefined; // TODO：添加菜谱缩略图。
+  updateCreatedMenu.cp_thumbnail = cp_thumbnail;
   updateCreatedMenu.zuofa = zuofa;
   updateCreatedMenu.texing = texing;
   updateCreatedMenu.tishi = tishi;
@@ -275,4 +289,42 @@ function removeCreatedMenus(result: MethodResult, markToDeletedIDs?: Array<numbe
       result.success(true)
     }
   });
+}
+
+/**
+ * 选取图片。
+ * @param result 运行结果，用于向Flutter页面返回参数。
+ * @param maxSelectNumber 最多选取图片张数，默认选取一张。
+ */
+function pickPhoto(result: MethodResult, maxSelectNumber: number) {
+  PhotoPickerUtils.pickPhoto({
+    maxSelectNumber: maxSelectNumber
+  })
+    .then((pickResult?: photoAccessHelper.PhotoSelectResult) => {
+      if (pickResult === undefined) {
+        result.success(undefined);
+        return;
+      }
+      // 将图片移动至应用内部路径中，再返回内部路径。
+      Promise.allSettled(pickResult.photoUris.map((sourceUri: string) => {
+        return PhotoPickerUtils.copyPhoto({
+          sourceUri: sourceUri,
+          targetPath: getPathProviderPlugin().getApplicationDocumentsPath()
+        });
+      }))
+        .then((copyResults: PromiseSettledResult<CopyPhotoResult | undefined>[]) => {
+          let resultUris: string[] = [];
+          copyResults.forEach((resultItem: PromiseSettledResult<CopyPhotoResult | undefined>) => {
+            if (resultItem.status === "fulfilled" && resultItem.value !== undefined) {
+              resultUris.push(resultItem.value.resultUri);
+            }
+          });
+          let finalResult: Record<string, Array<string>> = {
+            "photoUris": resultUris
+          };
+          result.success(finalResult);
+        })
+        .catch(() => result.success(undefined))
+    })
+    .catch(() => result.success(undefined))
 }

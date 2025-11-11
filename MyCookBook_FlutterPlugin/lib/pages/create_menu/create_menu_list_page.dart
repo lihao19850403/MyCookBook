@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
@@ -242,9 +244,18 @@ class _CreateMenuListPage extends SafeState<CreateMenuListPage> {
             padding: const EdgeInsets.all(4),
             alignment: Alignment.topCenter,
             child: Column(children: <Widget>[
-              const Image(
-                  image: AssetImage(Resources_media.ic_menu_default_bg),
-                  fit: BoxFit.contain), // [Flutter TODO] Image Picker.
+              menuItem.cp_thumbnail == null
+                  ? const Image(
+                      image: AssetImage(Resources_media.ic_menu_default_bg),
+                      fit: BoxFit.contain)
+                  : Image.file(File(menuItem.cp_thumbnail!),
+                      fit: BoxFit.contain, errorBuilder:
+                          (BuildContext errorContext, Object error,
+                              StackTrace? stackTrace) {
+                      return const Image(
+                          image: AssetImage(Resources_media.ic_menu_default_bg),
+                          fit: BoxFit.contain);
+                    }),
               Container(
                   alignment: Alignment.topLeft,
                   child: Column(

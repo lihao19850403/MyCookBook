@@ -219,6 +219,10 @@
     {
       "name": "tip",
       "value": "提示"
+    },
+    {
+      "name": "fail_to_load_menu_thumbnail",
+      "value": "菜谱图片加载失败"
     }
   ]
 }

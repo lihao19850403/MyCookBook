@@ -100,6 +100,7 @@ class Bridge {
   /// 添加一个自创菜谱。
   static Future<bool?> addOneCreatedMenu(
       {String? menuTitle,
+      String? thumbnail,
       String? author,
       String? category,
       String? texing,
@@ -109,6 +110,7 @@ class Bridge {
       String? wenxintishi}) async {
     Map<String, String?> data = HashMap();
     data['cp_name'] = menuTitle;
+    data['cp_thumbnail'] = thumbnail;
     data['author'] = author;
     data['type_name'] = category;
     data['texing'] = texing;
@@ -125,6 +127,7 @@ class Bridge {
   static Future<bool?> updateOneCreatedMenu(
       {num? menuID,
       String? menuTitle,
+      String? thumbnail,
       String? author,
       String? category,
       String? texing,
@@ -135,6 +138,7 @@ class Bridge {
     Map<String, Object?> data = HashMap();
     data['cp_id'] = menuID;
     data['cp_name'] = menuTitle;
+    data['cp_thumbnail'] = thumbnail;
     data['author'] = author;
     data['type_name'] = category;
     data['texing'] = texing;
@@ -164,5 +168,11 @@ class Bridge {
     Map<Object?, Object?> dataMap = result as Map<Object?, Object?>;
     PickPhotoResult data = PickPhotoResult.fromMap(dataMap);
     return Future.value(data);
+  }
+
+  /// 浏览图片，图片Uri是[thumbnailUri]。
+  static Future<void> browseThumbnail(String? thumbnailUri) async {
+    FlutterBridgePlatform.instance
+        .callNativeMethod('browseThumbnail', methodParams: thumbnailUri);
   }
 }

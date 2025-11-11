@@ -3,9 +3,6 @@ class PickPhotoResult {
   /// 图片uri列表。
   List<String>? photoUris;
 
-  /// 是否原图。
-  bool? isOriginalPhoto;
-
   @override
   String toString() {
     List<String> infoStrs = <String>[];
@@ -13,15 +10,13 @@ class PickPhotoResult {
       String photoUriStr = '"${photoUris!.join('","')}"';
       infoStrs.add('"photoUris": [$photoUriStr]');
     }
-    if (isOriginalPhoto != null) infoStrs.add('"isOriginalPhoto": $isOriginalPhoto');
     String infoStr = infoStrs.join(',');
     return '{$infoStr}';
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'photoUris': photoUris,
-      'isOriginalPhoto': isOriginalPhoto,
+      'photoUris': photoUris
     };
   }
 
@@ -38,9 +33,6 @@ class PickPhotoResult {
           }
         }
       }
-    }
-    if (dataMap.containsKey('isOriginalPhoto')) {
-      pickPhotoResult.isOriginalPhoto = dataMap['isOriginalPhoto'] as bool;
     }
     return pickPhotoResult;
   }

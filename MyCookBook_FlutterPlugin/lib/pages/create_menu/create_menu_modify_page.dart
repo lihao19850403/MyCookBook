@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_router/flutter_router.dart';
 import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
@@ -47,6 +49,9 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
   /// 菜谱标题。
   String? _menuTitle;
 
+  /// 菜谱缩略图。
+  String? _thumbnail;
+
   /// 作者名字。
   String? _author;
 
@@ -92,6 +97,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
             CreatedMenuItem menuItem = params['model'] as CreatedMenuItem;
             _menuID = menuItem.id;
             _menuTitle = menuItem.cp_name;
+            _thumbnail = menuItem.cp_thumbnail;
             _author = menuItem.author;
             _category = menuItem.type_name;
             _texing = menuItem.texing;
@@ -160,6 +166,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     // 创建新菜单。
                     Bridge.addOneCreatedMenu(
                             menuTitle: _menuTitle,
+                            thumbnail: _thumbnail,
                             author: _author,
                             category: _category,
                             texing: _texing,
@@ -180,6 +187,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                     Bridge.updateOneCreatedMenu(
                             menuID: _menuID,
                             menuTitle: _menuTitle,
+                            thumbnail: _thumbnail,
                             author: _author,
                             category: _category,
                             texing: _texing,
@@ -217,7 +225,7 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
                       Positioned(
                           top: normalScreenMode ? 0 : null,
                           left: normalScreenMode ? null : 0,
-                          child: _thumbnail(context)),
+                          child: _thumbnailView(context)),
                       Align(
                         alignment: normalScreenMode
                             ? Alignment.bottomCenter
@@ -236,20 +244,33 @@ class _CreateMenuModifyPage extends SafeState<CreateMenuModifyPage> {
 
   /* ---------- 缩略图。 ---------- */
 
-  Widget _thumbnail(BuildContext buildContext) {
+  Widget _thumbnailView(BuildContext buildContext) {
     return InkWell(
-      child: Image(
-          width: _imageFrameWidth,
-          height: _imageFrameHeight,
-          image: const AssetImage(Resources_media
-              .ic_menu_default_bg),
-          fit: BoxFit.contain),
+      child: _thumbnail == null
+          ? Image(
+              width: _imageFrameWidth,
+              height: _imageFrameHeight,
+              image: const AssetImage(Resources_media.ic_menu_default_bg),
+              fit: BoxFit.contain)
+          : Image.file(File(_thumbnail!),
+              width: _imageFrameWidth,
+              height: _imageFrameHeight,
+              fit: BoxFit.contain, errorBuilder: (BuildContext errorContext,
+                  Object error, StackTrace? stackTrace) {
+              return Image(
+                  width: _imageFrameWidth,
+                  height: _imageFrameHeight,
+                  image: const AssetImage(Resources_media.ic_menu_default_bg),
+                  fit: BoxFit.contain);
+            }),
       onTap: () {
         Bridge.pickPhoto(1).then((PickPhotoResult? pickResult) {
-          if (pickResult != null) {
-
-          } else {
-
+          if (pickResult != null &&
+              pickResult.photoUris != null &&
+              pickResult.photoUris!.isNotEmpty) {
+            safeUpdate(() {
+              _thumbnail = pickResult.photoUris![0];
+            });
           }
         });
       },
