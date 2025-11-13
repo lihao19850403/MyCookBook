@@ -9,6 +9,7 @@ import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_list_p
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/error_handler.dart';
+import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 
 void main() {
@@ -48,7 +49,7 @@ class _MyApp extends SafeState<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'FlutterPlugin',
+        title: Resources_string.app_name,
         navigatorKey: Global.navigatorkey,
         home: RouterManager.instance.getRouterWidget(widget.pathInfo),
         routes: RouterManager.instance.getRoutesMap());

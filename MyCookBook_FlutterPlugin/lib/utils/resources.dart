@@ -14,6 +14,7 @@ class Resources_color {
 
 /// 全局文字资源。
 class Resources_string {
+  static const String app_name = '香辣菜谱';
   static const String create_menu_list_page_title = '自创菜谱';
   static const String create_menu_list_page_delete_title = '批量删除';
   static const String create_menu_add_page_title = '新建菜谱';

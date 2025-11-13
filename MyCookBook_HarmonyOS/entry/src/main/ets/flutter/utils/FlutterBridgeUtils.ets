@@ -1,7 +1,7 @@
 import { MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import { CreatedMenuItem } from "../../models/CreatedMenuItem";
-import { BLANK_OBJECT, isFileExist, readRawFileSync } from "../../utils/common/Utils";
+import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
 import { HashMap } from '@kit.ArkTS';
@@ -11,8 +11,9 @@ import { openAlertDialog, openCustomDialog } from "../../utils/common/DialogUtil
 import { PhotoPickerUtils } from "../../utils/common/mediapicker/PhotoPickerUtils";
 import photoAccessHelper from "@ohos.file.photoAccessHelper";
 import { getPathProviderPlugin } from "./PathProviderUtils";
-import { CopyPhotoResult } from "../../utils/common/mediapicker/models/PhotoPickerModels";
 import { LHPhotoViewer, PhotoViewerParams } from "../../pages/common/photoviewer/LHPhotoViewer";
+import { isFileExist } from "../../utils/common/filecenter/FileUtils";
+import { CopyFileResult } from "../../utils/common/filecenter/models/FileCopyModel";
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。
@@ -61,10 +62,12 @@ const flutterBridgeCallHandler: (methodName: string, methodParams: object | unde
       return;
     }
     if (methodName === 'browseThumbnail') {
-      let thumbnailUri: string | undefined = methodParams as ESObject as string;
+      let data: HashMap<string, string | undefined> | undefined = methodParams as HashMap<string, string | undefined>;
+      let menuName: ResourceStr = data.get('cp_name') as string ?? $r('app.string.photo_viewer');
+      let thumbnailUri: string | undefined = data.get('cp_thumbnail') as string ?? undefined
       if (isFileExist(thumbnailUri)) {
         let params: PhotoViewerParams = {
-          title: $r('app.string.photo_viewer'),
+          title: menuName,
           uri: thumbnailUri
         };
         LHPhotoViewer.go(params);
@@ -307,14 +310,14 @@ function pickPhoto(result: MethodResult, maxSelectNumber: number) {
       }
       // 将图片移动至应用内部路径中，再返回内部路径。
       Promise.allSettled(pickResult.photoUris.map((sourceUri: string) => {
-        return PhotoPickerUtils.copyPhoto({
+        return PhotoPickerUtils.saveOnePhoto({
           sourceUri: sourceUri,
           targetPath: getPathProviderPlugin().getApplicationDocumentsPath()
         });
       }))
-        .then((copyResults: PromiseSettledResult<CopyPhotoResult | undefined>[]) => {
+        .then((copyResults: PromiseSettledResult<CopyFileResult | undefined>[]) => {
           let resultUris: string[] = [];
-          copyResults.forEach((resultItem: PromiseSettledResult<CopyPhotoResult | undefined>) => {
+          copyResults.forEach((resultItem: PromiseSettledResult<CopyFileResult | undefined>) => {
             if (resultItem.status === "fulfilled" && resultItem.value !== undefined) {
               resultUris.push(resultItem.value.resultUri);
             }

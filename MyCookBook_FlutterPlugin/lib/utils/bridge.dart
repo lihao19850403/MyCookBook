@@ -170,9 +170,13 @@ class Bridge {
     return Future.value(data);
   }
 
-  /// 浏览图片，图片Uri是[thumbnailUri]。
-  static Future<void> browseThumbnail(String? thumbnailUri) async {
+  /// 浏览图片，菜谱名称是[menuName]，图片Uri是[thumbnailUri]。
+  static Future<void> browseThumbnail(
+      {String? menuName, String? thumbnailUri}) async {
+    Map<String, Object?> data = HashMap();
+    data['cp_name'] = menuName;
+    data['cp_thumbnail'] = thumbnailUri;
     FlutterBridgePlatform.instance
-        .callNativeMethod('browseThumbnail', methodParams: thumbnailUri);
+        .callNativeMethod('browseThumbnail', methodParams: data);
   }
 }

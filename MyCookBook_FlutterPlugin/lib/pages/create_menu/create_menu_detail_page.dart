@@ -178,7 +178,8 @@ class _CreateMenuDetailPage extends SafeState<CreateMenuDetailPage> {
                   image: const AssetImage(Resources_media.ic_menu_default_bg),
                   fit: BoxFit.contain);
             }),
-      onTap: () => Bridge.browseThumbnail(_menuItem?.cp_thumbnail),
+      onTap: () => Bridge.browseThumbnail(
+          menuName: _menuItem?.cp_name, thumbnailUri: _menuItem?.cp_thumbnail),
     );
   }
 
