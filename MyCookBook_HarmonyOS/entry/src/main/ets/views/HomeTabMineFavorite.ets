@@ -100,6 +100,7 @@ export struct HomeTabMineFavorite {
       .fontSize(this.appTextSizePlan.homeTabMineSubTitleTextSize)
       .textAlign(TextAlign.Start)
       .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+      .backgroundColor(Color.White)
   }
 
   @Builder
@@ -173,6 +174,10 @@ export struct HomeTabMineFavorite {
         Image($r('app.media.ic_create_menu'))
           .width(34)
           .height(34)
+        Image($r('app.media.ic_flutter_logo'))
+          .width(18)
+          .height(18)
+          .margin({ left: 18, bottom: 18 })
       }
       .width(36)
       .height(36)

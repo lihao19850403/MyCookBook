@@ -67,6 +67,7 @@ export struct HomeTabMineSettings {
       .fontSize(this.appTextSizePlan.homeTabMineSubTitleTextSize)
       .textAlign(TextAlign.Start)
       .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+      .backgroundColor(Color.White)
   }
 
   @Builder
