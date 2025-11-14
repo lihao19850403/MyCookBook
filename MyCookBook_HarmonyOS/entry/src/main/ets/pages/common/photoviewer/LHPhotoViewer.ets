@@ -10,6 +10,7 @@ import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../../views/co
 import { emitter } from '@kit.BasicServicesKit';
 import { getScreenTopSafeZoneHeightPx } from '../../../utils/common/ScreenUIAdapter';
 import { fileUri } from '@kit.CoreFileKit';
+import url from '@ohos.url';
 
 export namespace LHPhotoViewer {
   export function go(params: PhotoViewerParams) {
@@ -97,8 +98,17 @@ struct LHPhotoViewerComponent {
       this.title = params.title;
       if (typeof params.uri === 'string') {
         let uriStr: string = params.uri as string;
-        let realUri: string = fileUri.getUriFromPath(uriStr);
-        this.data.setImageURI(realUri);
+        let isNetUri: boolean = false;
+        try {
+          url.URL.parseURL(uriStr)
+          isNetUri = true;
+        } catch (error) {}
+        if (isNetUri) {
+          this.data.setImageURI(uriStr);
+        } else {
+          let realUri: string = fileUri.getUriFromPath(uriStr);
+          this.data.setImageURI(realUri);
+        }
       } else {
         this.data.setImageResource(params.uri as Resource);
       }
