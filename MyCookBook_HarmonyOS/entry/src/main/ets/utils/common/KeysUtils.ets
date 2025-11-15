@@ -1,4 +1,4 @@
-import { readRawFileSync } from './Utils';
+import { readRawFileSync } from './filecenter/FileUtils';
 
 /** 密钥信息。 */
 export interface KeyInfo {

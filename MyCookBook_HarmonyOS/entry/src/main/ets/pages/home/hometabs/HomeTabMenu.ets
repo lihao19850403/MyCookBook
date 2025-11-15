@@ -14,7 +14,7 @@ import {
 import { GlobalConfig } from '../../../utils/common/GlobalConfig';
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
 import { HomeMainTabBarBuilder } from '../../../views/HomeMainTabBarBuilder';
-import { readRawFileSync } from '../../../utils/common/Utils';
+import { readRawFileSync } from '../../../utils/common//filecenter/FileUtils';
 
 /**
  * 事件：锚定至“我的收藏”。

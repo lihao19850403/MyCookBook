@@ -1,4 +1,4 @@
-import { readRawFileSync } from '../../utils/common/Utils';
+import { readRawFileSync } from '../../utils/common//filecenter/FileUtils';
 import { LHAppSettingsTextSizePlanModel } from './LHAppSettingsTextSizePlanModel';
 
 /**

@@ -1,5 +1,9 @@
 import PathProviderPlugin from 'path_provider_ohos';
 
+/**
+ * 鸿蒙平台下的PathProvider插件实例。
+ * @author li.hao85
+ */
 class PathProviderUtils {
 
   private static instance: PathProviderUtils;

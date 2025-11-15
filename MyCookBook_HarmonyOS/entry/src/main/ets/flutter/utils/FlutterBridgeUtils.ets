@@ -1,7 +1,7 @@
 import { MethodResult } from "@ohos/flutter_ohos";
 import FlutterBridgePlugin from "flutter_bridge";
 import { CreatedMenuItem } from "../../models/CreatedMenuItem";
-import { BLANK_OBJECT, readRawFileSync } from "../../utils/common/Utils";
+import { readRawFileSync } from "../../utils/common//filecenter/FileUtils";
 import { CreatedMenuUtils } from "../../utils/CreatedMenuUtils";
 import { CreatedMenuCategorySelect } from "../../views/CreatedMenuCategorySelect";
 import { HashMap } from '@kit.ArkTS';
@@ -14,6 +14,12 @@ import { getPathProviderPlugin } from "./PathProviderUtils";
 import { LHPhotoViewer, PhotoViewerParams } from "../../pages/common/photoviewer/LHPhotoViewer";
 import { isFileExist } from "../../utils/common/filecenter/FileUtils";
 import { CopyFileResult } from "../../utils/common/filecenter/models/FileCopyModel";
+import { BLANK_OBJECT } from "../../utils/common/Utils";
+
+/**
+ * 鸿蒙平台下的Flutter桥方法处理器。
+ * @author li.hao85
+ */
 
 /**
  * 鸿蒙平台下的Flutter桥方法处理器。

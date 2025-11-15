@@ -4,6 +4,11 @@ import { LHWebBrowser, URL_PARAMS } from '../../pages/common/webbrowser/LHWebBro
 import { RouterUtils } from '../../utils/common/RouterUtils';
 
 /**
+ * 鸿蒙平台下的Flutter页面跳转处理器。
+ * @author li.hao85
+ */
+
+/**
  * 鸿蒙平台下的Flutter页面跳转handler。
  * @param path 路由路径。
  * @param params 路由参数。

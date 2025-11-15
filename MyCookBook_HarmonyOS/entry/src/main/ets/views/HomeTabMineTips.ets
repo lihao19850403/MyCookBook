@@ -5,7 +5,7 @@ import { TodayTipsModel, TodayTipsResult } from '../models/TodayTipsModel';
 import { KVUtils } from '../utils/common/KVUtils';
 import { LengthMetrics } from '@ohos.arkui.node';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
-import { readRawFileSync } from '../utils/common/Utils';
+import { readRawFileSync } from '../utils/common//filecenter/FileUtils';
 
 /** 每日养生请求key。 */
 const KEY_HOME_TAB_MINE_TIPS_REQUEST: string = 'home_tab_mine_tips_request';

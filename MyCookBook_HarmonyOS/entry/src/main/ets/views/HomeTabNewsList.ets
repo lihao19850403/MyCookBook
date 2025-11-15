@@ -8,7 +8,7 @@ import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { NewsTipsCard } from './NewsTipsCard';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { NewsDetailPage } from '../pages/newsdetail/NewsDetailPage';
-import { readRawFileSync } from '../utils/common/Utils';
+import { readRawFileSync } from '../utils/common//filecenter/FileUtils';
 
 /** 今日新闻请求key。 */
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';

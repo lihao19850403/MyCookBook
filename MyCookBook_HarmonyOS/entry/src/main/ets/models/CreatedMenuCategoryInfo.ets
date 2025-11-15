@@ -1,4 +1,7 @@
-/** 菜谱分类信息。 */
+/**
+ * 菜谱分类信息。
+ * @author li.hao85
+ */
 export interface CreatedMenuCategoryInfo {
 
   /** 分类ID。 */
