@@ -11,6 +11,13 @@ import deviceInfo from '@ohos.deviceInfo';
 export const SCREEN_UI_CHANGE_EVENT: string = 'SCREEN_UI_CHANGE_EVENT';
 export const SCREEN_UI_NEW_TYPE: string = 'SCREEN_UI_NEW_TYPE';
 
+export const AVOID_AREA_CHANGE_EVENT: string = 'AVOID_AREA_CHANGE_EVENT';
+export const AVOID_AREA_TYPE: string = 'AVOID_AREA_TYPE';
+export const AVOID_AREA_INFO: string = 'AVOID_AREA_INFO';
+
+export const WINDOW_STATUS_TYPE_CHANGE_EVENT: string = 'WINDOW_STATUS_TYPE_CHANGE_EVENT';
+export const WINDOW_STATUS_TYPE: string = 'WINDOW_STATUS_TYPE';
+
 /** 屏幕类型。 */
 export const enum ScreenUIType {
   /** 直板单屏、折叠屏设备已合上、默认状态。 */ NORMAL = 0,
@@ -27,12 +34,29 @@ export function observeScreenUIChange() {
 }
 
 /**
+ * 监听屏幕安全区的改变。
+ */
+export function observeAvoidAreaChange() {
+  let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+  mainWindow.on("avoidAreaChange", (options: window.AvoidAreaOptions) => avoidAreaChangeAdapter(options));
+}
+
+/**
+ * 监听屏幕状态类型的改变。
+ * 此处屏幕状态类型指的是“全屏”、“分屏”、“自由多窗/悬浮窗”这几种类型。
+ */
+export function observeWindowStatusTypeChange() {
+  let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+  mainWindow.on("windowStatusChange", (type: window.WindowStatusType) => windowStatusTypeChangeAdapter(type));
+}
+
+/**
  * 获取当前屏幕类型。
  * @returns 当前屏幕类型。
  */
 export function getScreenUIType(): ScreenUIType {
   let deviceType = deviceInfo.deviceType;
-  if (deviceType === 'tablet' || deviceType === 'tv' || deviceType === 'car' || deviceType === 'smartVision') {
+  if (deviceType === 'tablet' || deviceType === 'tv' || deviceType === 'car' || deviceType === 'smartVision' || deviceType === '2in1') {
     return ScreenUIType.PAD;
   }
   let screenWidthPx = getScreenWidthPx();
@@ -106,4 +130,28 @@ function screenUIChangeAdapter() {
     SCREEN_UI_NEW_TYPE: newScreenUIType
   };
   emitter.emit(SCREEN_UI_CHANGE_EVENT, dataWrap);
+}
+
+/**
+ * 响应安全区的变化。
+ * @param options 新的安全区信息。
+ */
+function avoidAreaChangeAdapter(options: window.AvoidAreaOptions) {
+  let dataWrap: emitter.EventData = {};
+  dataWrap.data = {
+    AVOID_AREA_TYPE: options.type,
+    AVOID_AREA_INFO: options.area
+  }
+  emitter.emit(AVOID_AREA_CHANGE_EVENT, dataWrap);
+}
+/**
+ * 响应屏幕状态类型的改变。
+ * @param type 新的屏幕状态类型。
+ */
+function windowStatusTypeChangeAdapter(type: window.WindowStatusType) {
+  let dataWrap: emitter.EventData = {};
+  dataWrap.data = {
+    WINDOW_STATUS_TYPE: type
+  };
+  emitter.emit(WINDOW_STATUS_TYPE_CHANGE_EVENT, dataWrap);
 }
