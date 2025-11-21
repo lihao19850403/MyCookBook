@@ -1,5 +1,6 @@
 import { GlobalContext } from './GlobalContext';
 import { bundleManager } from '@kit.AbilityKit';
+import window from '@ohos.window';
 
 /**
  * 通用工具类。
@@ -69,4 +70,17 @@ export function getAppInfo(): bundleManager.BundleInfo {
   const bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION;
   const bundleInfo: bundleManager.BundleInfo = bundleManager.getBundleInfoForSelfSync(bundleFlags);
   return bundleInfo;
+}
+
+/**
+ * 比较两个矩形是否不同。
+ * @param rectA 矩形A。
+ * @param rectB 矩形B。
+ * @returns 比较结果，true表示二者不同。
+ */
+export function diffRect(rectA?: window.Rect, rectB?: window.Rect): boolean {
+  return rectA?.left !== rectB?.left ||
+    rectA?.top !== rectB?.top ||
+    rectA?.width !== rectB?.width ||
+    rectA?.height !== rectB?.height;
 }
