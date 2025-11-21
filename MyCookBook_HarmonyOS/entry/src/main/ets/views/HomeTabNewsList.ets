@@ -4,11 +4,18 @@ import { TodayNewsItem, TodayNewsModel } from '../models/TodayNewsModel';
 import { CallResult, HttpUtils } from '../utils/common/HttpUtils';
 import { KeysUtils } from '../utils/common/KeysUtils';
 import { KVUtils } from '../utils/common/KVUtils';
-import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { NewsTipsCard } from './NewsTipsCard';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { NewsDetailPage } from '../pages/newsdetail/NewsDetailPage';
 import { readRawFileSync } from '../utils/common//filecenter/FileUtils';
+import window from '@ohos.window';
+import { ScreenObserver, ScreenStatusInfo } from '../utils/common/uiobserver/ScreenObserver';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
+import emitter from '@ohos.events.emitter';
+import { GLOBAL_APP_SETTINGS_CHANGED_EVENT, GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN } from '../utils/common/GlobalAppSettings';
+import { AppSettings } from '../utils/AppSettings';
 
 /** 今日新闻请求key。 */
 const KEY_HOME_TAB_TODAY_NEWS_REQUEST: string = 'home_tab_top_news_request';
@@ -40,14 +47,17 @@ const enum LOAD_MORE_STATUS {
 @Component
 export struct HomeTabNewsList {
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 当前屏幕状态信息。 */
+  private screenStatus: ScreenStatusInfo | undefined = undefined;
+
+  /** 列数规定。 */
+  @State columnsTemplate: string = ''
 
   /** 正在加载今日新闻。 */
   @State isLoadingTodayNews: boolean = true;
@@ -70,6 +80,21 @@ export struct HomeTabNewsList {
   /** 拖动拉取组件配置工具。 */
   private refreshConfigurator: PullToRefreshConfigurator = new PullToRefreshConfigurator();
 
+  private onSplitScreenChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          this.calcColumnTemplate();
+        }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   aboutToAppear(): void {
     this.refreshConfigurator.setHasRefresh(false);
     if (!KVUtils.hasKV(FILE_NAME_TODAY_NEWS, this.today)) { // 每日新闻。
@@ -81,6 +106,17 @@ export struct HomeTabNewsList {
       this.todayNewsDataSource.appendNewsArray(todayNewsArray);
       this.isLoadingTodayNews = false;
     }
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      this.screenStatus = screenStatus;
+      this.calcColumnTemplate();
+    });
+    this.calcColumnTemplate();
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
   }
 
   build() {
@@ -139,10 +175,7 @@ export struct HomeTabNewsList {
         }
       }, (news: TodayNewsItem, index: number) => `${news.id}${index}`)
     }
-    .columnsTemplate(this.isSplitScreen ? '1fr' :
-      this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr' :
-      this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr' :
-      '1fr')
+    .columnsTemplate(this.columnsTemplate)
     .columnsGap(4)
     .rowsGap(4)
     .padding({ left: 8, right: 8, top: 4, bottom: 4 })
@@ -196,6 +229,29 @@ export struct HomeTabNewsList {
       .alignItems(VerticalAlign.Center)
       .layoutWeight(1)
     }
+  }
+
+  /**
+   * 计算列数。
+   */
+  private calcColumnTemplate() {
+    let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatus?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatus?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    // 计算列数。
+    this.columnsTemplate =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen ? '1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? '1fr 1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? '1fr 1fr 1fr' :
+        '1fr'
+      ) :
+      (
+        this.isSplitScreen ? '1fr' :
+        screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr' :
+        screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr' :
+        '1fr'
+      );
   }
 
   /**

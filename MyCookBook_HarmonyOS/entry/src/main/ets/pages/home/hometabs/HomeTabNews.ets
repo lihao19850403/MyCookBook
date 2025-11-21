@@ -1,5 +1,4 @@
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
-import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { HomeTabNewsList } from '../../../views/HomeTabNewsList';
 import { HomeMainTabBarBuilder } from '../../../views/HomeMainTabBarBuilder';
@@ -14,17 +13,11 @@ export struct HomeTabNews {
   /** 当前选中的Tab序号。 */
   @Prop selectedIndex: number;
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用启动后显示的第一个Tab的序号。 */
   @Prop firstPageIndex?: number;
 
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
-
-  /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
 
   /** 此Tab序号。 */
   private thisIndex: number = 0;
@@ -51,9 +44,7 @@ export struct HomeTabNews {
         centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize
       })
       HomeTabNewsList({
-        screenUIType: this.screenUIType,
-        appTextSizePlan: this.appTextSizePlan,
-        isSplitScreen: this.isSplitScreen
+        appTextSizePlan: this.appTextSizePlan
       })
         .width('100%')
         .layoutWeight(1)

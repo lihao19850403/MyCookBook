@@ -18,6 +18,9 @@ export const AVOID_AREA_INFO: string = 'AVOID_AREA_INFO';
 export const WINDOW_STATUS_TYPE_CHANGE_EVENT: string = 'WINDOW_STATUS_TYPE_CHANGE_EVENT';
 export const WINDOW_STATUS_TYPE: string = 'WINDOW_STATUS_TYPE';
 
+export const WINDOW_SIZE_CHANGE_EVENT: string = 'WINDOW_SIZE_CHANGE_EVENT';
+export const WINDOW_SIZE_INFO: string = 'WINDOW_SIZE_INFO';
+
 /** 屏幕类型。 */
 export const enum ScreenUIType {
   /** 直板单屏、折叠屏设备已合上、默认状态。 */ NORMAL = 0,
@@ -48,6 +51,14 @@ export function observeAvoidAreaChange() {
 export function observeWindowStatusTypeChange() {
   let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
   mainWindow.on("windowStatusChange", (type: window.WindowStatusType) => windowStatusTypeChangeAdapter(type));
+}
+
+/**
+ * 监听屏幕尺寸的改变。
+ */
+export function observeWindowSizeChange() {
+  let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
+  mainWindow.on("windowRectChange", (options: window.RectChangeOptions) => windowSizeChangeAdapter(options));
 }
 
 /**
@@ -154,4 +165,16 @@ function windowStatusTypeChangeAdapter(type: window.WindowStatusType) {
     WINDOW_STATUS_TYPE: type
   };
   emitter.emit(WINDOW_STATUS_TYPE_CHANGE_EVENT, dataWrap);
+}
+
+/**
+ * 响应屏幕尺寸的改变。
+ * @param options 新的屏幕尺寸信息。
+ */
+function windowSizeChangeAdapter(options: window.RectChangeOptions) {
+  let dataWrap: emitter.EventData = {};
+  dataWrap.data = {
+    WINDOW_SIZE_INFO: options
+  };
+  emitter.emit(WINDOW_SIZE_CHANGE_EVENT, dataWrap);
 }
