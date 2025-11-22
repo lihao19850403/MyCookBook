@@ -11,6 +11,8 @@ import { emitter } from '@kit.BasicServicesKit';
 import { getScreenTopSafeZoneHeightPx } from '../../../utils/common/ScreenUIAdapter';
 import { fileUri } from '@kit.CoreFileKit';
 import url from '@ohos.url';
+import { ScreenObserver, ScreenStatusInfo } from '../../../utils/common/uiobserver/ScreenObserver';
+import window from '@ohos.window';
 
 export namespace LHPhotoViewer {
   export function go(params: PhotoViewerParams) {
@@ -60,6 +62,9 @@ struct LHPhotoViewerComponent {
   /** 应用文字字号方案。 */
   @State appTextSizePlan: LHAppSettingsTextSizePlanModel = LHAppSettingsTextSizePlans.SMALL;
 
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
       let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
@@ -87,9 +92,7 @@ struct LHPhotoViewerComponent {
       .height('100%')
       .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
-      .margin({
-        top: px2vp(getScreenTopSafeZoneHeightPx())
-      })
+      .margin({ top: this.topSafeZoneHeightVp })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)
@@ -122,7 +125,17 @@ struct LHPhotoViewerComponent {
       }
       this.appTextSizePlan = GlobalAppSettings.textSizePlan();
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+        if (screenStatus.avoidArea !== undefined) {
+          if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+            this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
+          }
+        }
+      });
     })
-    .onDisAppear(() => emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent))
+    .onDisAppear(() => {
+      emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.unsubscribe(this.getUIContext());
+    })
   }
 }

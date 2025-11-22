@@ -1,14 +1,13 @@
 import {
   getScreenBottomSafeZoneHeightPx,
-  getScreenTopSafeZoneHeightPx,
-  getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
+  getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import { Callback, emitter } from '@kit.BasicServicesKit';
 import { LHCommonTitleBar, LHCommonTitleBarLeftNavBack } from '../../views/common/LHCommonTitleBar';
 import { RecommendMenuItem, RecommendMenuResult } from '../../models/RecommendMenuModel';
 import { RouterUtils } from '../../utils/common/RouterUtils';
 import { MenuDetailCard, MenuDetailCardStyle } from '../../views/MenuDetailCard';
 import { res2string } from '../../utils/common/Utils';
-import { LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics, window } from '@kit.ArkUI';
 import { LHMarkedStar } from '../../views/common/LHMarkedStar';
 import { FavoriteMenuUtils } from '../../utils/FavoriteMenuUtils';
 import { AppSettingsTextSizePlanModel } from '../../models/AppSettingsTextSizeModel';
@@ -16,8 +15,8 @@ import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
-  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/ScreenObserver';
 
 export namespace RecommendMenuListPage {
   export function go(params: RecommendMenuResult) {
@@ -37,31 +36,23 @@ export function RecommendMenuListPageBuilder() {
 @Component
 struct RecommendMenuListPageComponent {
 
-  /** 屏幕状态。 */
-  @State screenUIType: ScreenUIType = getScreenUIType();
-
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
-
-  /** 是否使用分屏显示。 */
-  @State isSplitScreen: boolean = false;
 
   /** 今日推荐菜谱数据。 */
   private recommendMenu?: RecommendMenuResult;
 
-  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
-    if (dataWrap.data) {
-      let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
-      this.screenUIType = newScreenUIType;
-    }
-  };
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
+  /** 底部安全区高度。 */
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
 
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
       let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
       switch (eventType) {
         case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
         default: break;
       }
     }
@@ -85,9 +76,7 @@ struct RecommendMenuListPageComponent {
                   alignContent: Alignment.Top
                 }) {
                   MenuDetailCard({
-                    screenUIType: this.screenUIType,
                     appTextSizePlan: this.appTextSizePlan,
-                    isSplitScreen: this.isSplitScreen,
                     menuInfo: menuItem,
                     style: MenuDetailCardStyle.SQUARE_BANNER
                   })
@@ -124,7 +113,7 @@ struct RecommendMenuListPageComponent {
             ListItem() {
               Text($r('app.string.reach_the_bottom'))
                 .width('100%')
-                .height(`${px2vp(getScreenBottomSafeZoneHeightPx()) + 100}`)
+                .height(this.bottomSafeZoneHeightVp + 100)
                 .textAlign(TextAlign.Center)
                 .fontSize(this.appTextSizePlan.homeTabMenuGrayTextSize)
                 .fontColor($r('app.color.main_unselected_color'))
@@ -132,11 +121,10 @@ struct RecommendMenuListPageComponent {
             }
           }
           .width('100%')
-          .height('100%')
-          .layoutWeight(1)
           .edgeEffect(EdgeEffect.None)
           .sticky(StickyStyle.Header)
           .scrollBar(BarState.Off)
+          .flexShrink(1)
         } else {
           Text($r('app.string.no_recommend_menu_available'))
             .width('100%')
@@ -150,22 +138,27 @@ struct RecommendMenuListPageComponent {
       .height('100%')
       .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
-      .margin({
-        top: px2vp(getScreenTopSafeZoneHeightPx())
-      })
+      .margin({ top: this.topSafeZoneHeightVp })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
-      emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
       this.recommendMenu = RouterUtils.navGetParams(context) as RecommendMenuResult;
       this.appTextSizePlan = AppSettings.textSizePlan();
-      this.isSplitScreen = AppSettings.isSplitScreen();
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+        if (screenStatus.avoidArea !== undefined) {
+          if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+            this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
+          } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+            this.bottomSafeZoneHeightVp = px2vp(screenStatus.avoidArea.bottomRect.height);
+          }
+        }
+      });
     })
     .onDisAppear(() => {
-      emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
       emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.unsubscribe(this.getUIContext());
     })
   }
 

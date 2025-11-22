@@ -1,9 +1,16 @@
 import { RecommendMenuItem } from '../models/RecommendMenuModel';
-import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { firstNotVoid } from '../utils/common/Utils';
 import { LengthMetrics } from '@ohos.arkui.node';
 import { LHPhotoViewer, PhotoViewerParams } from '../pages/common/photoviewer/LHPhotoViewer';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
+import { AppSettings } from '../utils/AppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../utils/common/uiobserver/ScreenObserver';
+import emitter from '@ohos.events.emitter';
+import {
+  GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN } from '../utils/common/GlobalAppSettings';
 
 /** 菜谱详情样式。 */
 export enum MenuDetailCardStyle {
@@ -34,17 +41,20 @@ const DEFAULT_ATTRIBUTES: DefaultAttributes = {
 @Component
 export struct MenuDetailCard {
 
-  /** 图片加载失败。 */
-  @State imageErrorHappened: boolean = false;
-
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 当前屏幕状态信息。 */
+  private screenStatus: ScreenStatusInfo | undefined = undefined;
+
+  /** 是否纵向排列视图。 */
+  @State isVertical: boolean = true;
+
+  /** 图片加载失败。 */
+  @State imageErrorHappened: boolean = false;
 
   /** 菜谱信息。 */
   private menuInfo?: RecommendMenuItem;
@@ -58,9 +68,38 @@ export struct MenuDetailCard {
   /** 随机菜谱图片。 */
   private tempPic: ResourceStr = this.randomMenuPic();
 
+  private onSplitScreenChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          this.calcVerticalMode();
+        }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  aboutToAppear(): void {
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      this.screenStatus = screenStatus;
+      this.calcVerticalMode();
+    });
+    this.calcVerticalMode();
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
+  }
+
   build() {
     if (this.menuInfo !== undefined && this.menuInfo.cp_name !== undefined && this.menuInfo.cp_name !== '') {
-      if (this.screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && this.screenUIType === ScreenUIType.FOLD_OPENED)) {
+      if (this.isVertical) {
         Column() {
           this.Image(firstNotVoid(this.menuInfo.cp_thumbnail, this.tempPic)!)
           this.Detail(this.menuInfo.cp_name)
@@ -109,8 +148,7 @@ export struct MenuDetailCard {
           .width('100%')
           .fontSize(this.appTextSizePlan.menuDetailCardNameTextSize)
           .fontWeight(FontWeight.Medium)
-          .textAlign((this.screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && this.screenUIType === ScreenUIType.FOLD_OPENED)) ?
-            TextAlign.Center : TextAlign.Start)
+          .textAlign(this.isVertical ? TextAlign.Center : TextAlign.Start)
       }
       if (this.menuInfo!.type_name !== undefined && this.menuInfo!.type_name !== '') {
         Text(this.menuInfo!.type_name)
@@ -208,8 +246,7 @@ export struct MenuDetailCard {
     .flexShrink(1)
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Start)
-    .margin((this.screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && this.screenUIType === ScreenUIType.FOLD_OPENED)) ?
-      { top: 8 } : { left: 8 })
+    .margin(this.isVertical ? { top: 8 } : { left: 8 })
   }
 
   /**
@@ -219,5 +256,14 @@ export struct MenuDetailCard {
   private randomMenuPic(): ResourceStr {
     let index: number = Math.floor(Math.random() * 10) % 3;
     return $r(`app.media.pic_random_menu_${index}`);
+  }
+
+  /**
+   * 计算视图是否纵向排列。
+   */
+  private calcVerticalMode() {
+    let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    // 计算视图是否纵向排列。
+    this.isVertical = screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && screenUIType === ScreenUIType.FOLD_OPENED)
   }
 }

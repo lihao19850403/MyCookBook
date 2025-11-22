@@ -10,6 +10,8 @@ import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/ScreenObserver';
+import window from '@ohos.window';
 
 export namespace NewsDetailPage {
   export function go(params: TodayNewsItem) {
@@ -34,6 +36,12 @@ struct NewsDetailPageComponent {
 
   /** 新闻详情。 */
   private newsItem?: TodayNewsItem;
+
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
+  /** 底部安全区高度。 */
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
 
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
@@ -62,19 +70,18 @@ struct NewsDetailPageComponent {
             })
             Blank()
               .width('100%')
-              .height(`${px2vp(getScreenTopSafeZoneHeightPx()) + px2vp(getScreenBottomSafeZoneHeightPx())}`)
+              .height(this.bottomSafeZoneHeightVp)
           }
         }
         .width('100%')
         .scrollBar(BarState.Off)
+        .flexShrink(1)
       }
       .width('100%')
       .height('100%')
       .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
-      .margin({
-        top: px2vp(getScreenTopSafeZoneHeightPx())
-      })
+      .margin({ top: this.topSafeZoneHeightVp })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)
@@ -82,7 +89,19 @@ struct NewsDetailPageComponent {
       this.newsItem = RouterUtils.navGetParams(context) as TodayNewsItem;
       this.appTextSizePlan = AppSettings.textSizePlan();
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+        if (screenStatus.avoidArea !== undefined) {
+          if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+            this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
+          } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+            this.bottomSafeZoneHeightVp = px2vp(screenStatus.avoidArea.bottomRect.height);
+          }
+        }
+      });
     })
-    .onDisAppear(() => emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent))
+    .onDisAppear(() => {
+      emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.unsubscribe(this.getUIContext());
+    })
   }
 }

@@ -1,7 +1,6 @@
 import {
   getScreenBottomSafeZoneHeightPx,
-  getScreenTopSafeZoneHeightPx,
-  getScreenUIType, ScreenUIType, SCREEN_UI_CHANGE_EVENT, SCREEN_UI_NEW_TYPE } from '../../utils/common/ScreenUIAdapter';
+  getScreenTopSafeZoneHeightPx } from '../../utils/common/ScreenUIAdapter';
 import { emitter } from '@kit.BasicServicesKit';
 import { RecommendMenuItem } from '../../models/RecommendMenuModel';
 import { RouterUtils } from '../../utils/common/RouterUtils';
@@ -14,8 +13,9 @@ import { AppSettingsTextSizePlans } from '../../models/AppSettingsTextSizePlan';
 import { AppSettings } from '../../utils/AppSettings';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
-  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/ScreenObserver';
+import window from '@ohos.window';
 
 export namespace MenuDetailPage {
   export function go(params: RecommendMenuItem) {
@@ -35,31 +35,23 @@ export function MenuDetailPageBuilder() {
 @Component
 struct MenuDetailPageComponent {
 
-  /** 屏幕状态。 */
-  @State screenUIType: ScreenUIType = getScreenUIType();
-
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettingsTextSizePlans.SMALL;
-
-  /** 是否使用分屏显示。 */
-  @State isSplitScreen: boolean = false;
 
   /** 菜谱详情。 */
   private menuItem?: RecommendMenuItem;
 
-  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
-    if (dataWrap.data) {
-      let newScreenUIType: ScreenUIType = dataWrap.data[SCREEN_UI_NEW_TYPE] as ScreenUIType;
-      this.screenUIType = newScreenUIType;
-    }
-  };
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
+  /** 底部安全区高度。 */
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
 
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
       let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
       switch (eventType) {
         case GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN: this.appTextSizePlan = AppSettings.textSizePlan(); break;
-        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: this.isSplitScreen = AppSettings.isSplitScreen(); break;
         default: break;
       }
     }
@@ -77,41 +69,45 @@ struct MenuDetailPageComponent {
         Scroll() {
           Column() {
             MenuDetailCard({
-              screenUIType: this.screenUIType,
               appTextSizePlan: this.appTextSizePlan,
-              isSplitScreen: this.isSplitScreen,
               menuInfo: this.menuItem,
               style: MenuDetailCardStyle.SQUARE_BANNER,
               noTitleMode: true
             })
             Blank()
               .width('100%')
-              .height(`${px2vp(getScreenTopSafeZoneHeightPx()) + px2vp(getScreenBottomSafeZoneHeightPx())}`)
+              .height(this.bottomSafeZoneHeightVp)
           }
         }
         .width('100%')
         .scrollBar(BarState.Off)
+        .flexShrink(1)
       }
       .width('100%')
       .height('100%')
       .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
-      .margin({
-        top: px2vp(getScreenTopSafeZoneHeightPx())
-      })
+      .margin({ top: this.topSafeZoneHeightVp })
     }
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
-      emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
       this.menuItem = RouterUtils.navGetParams(context) as RecommendMenuItem;
       this.appTextSizePlan = AppSettings.textSizePlan();
-      this.isSplitScreen = AppSettings.isSplitScreen();
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+        if (screenStatus.avoidArea !== undefined) {
+          if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+            this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
+          } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+            this.bottomSafeZoneHeightVp = px2vp(screenStatus.avoidArea.bottomRect.height);
+          }
+        }
+      });
     })
     .onDisAppear(() => {
-      emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
       emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.unsubscribe(this.getUIContext());
     })
   }
 

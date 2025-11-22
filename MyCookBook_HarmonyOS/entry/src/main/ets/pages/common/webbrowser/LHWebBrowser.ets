@@ -9,6 +9,8 @@ import { GlobalAppSettings, GLOBAL_APP_SETTINGS_EVENT_TYPE,
 import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT } from '../../../utils/common/GlobalAppSettings';
 import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from '../../../utils/common/ScreenUIAdapter';
+import { ScreenObserver, ScreenStatusInfo } from '../../../utils/common/uiobserver/ScreenObserver';
+import window from '@ohos.window';
 
 export namespace LHWebBrowser {
   export function go(params: Record<string, string | undefined>) {
@@ -40,6 +42,12 @@ struct LHWebBrowserComponent {
   /** 浏览器控制器。 */
   private controller?: webview.WebviewController;
 
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
+  /** 底部安全区高度。 */
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
+
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
       let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
@@ -70,8 +78,8 @@ struct LHWebBrowserComponent {
       .layoutWeight(1)
       .backgroundColor($r('app.color.main_bg_gray_color'))
       .margin({
-        top: px2vp(getScreenTopSafeZoneHeightPx()),
-        bottom: px2vp(getScreenBottomSafeZoneHeightPx())
+        top: this.topSafeZoneHeightVp,
+        bottom: this.bottomSafeZoneHeightVp
       })
     }
     .hideTitleBar(true)
@@ -81,6 +89,15 @@ struct LHWebBrowserComponent {
       this.url = urlParams[URL_PARAMS];
       this.appTextSizePlan = GlobalAppSettings.textSizePlan();
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+        if (screenStatus.avoidArea !== undefined) {
+          if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+            this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
+          } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+            this.bottomSafeZoneHeightVp = px2vp(screenStatus.avoidArea.bottomRect.height);
+          }
+        }
+      });
     })
     .onBackPressed(() => {
       if (this.controller !== undefined && this.controller.accessBackward()) {
@@ -89,7 +106,10 @@ struct LHWebBrowserComponent {
       }
       return false;
     })
-    .onDisAppear(() => emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent))
+    .onDisAppear(() => {
+      emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
+      ScreenObserver.unsubscribe(this.getUIContext());
+    })
   }
 
   /**
