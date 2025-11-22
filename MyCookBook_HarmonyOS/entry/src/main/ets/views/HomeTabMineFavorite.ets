@@ -1,15 +1,22 @@
-import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { emitter } from '@kit.BasicServicesKit';
 import {
   FavoriteMenuChangeEventType,
   FavoriteMenuUtils,
   FAVORITE_MENU_CHANGE_EVENT, FAVORITE_MENU_CHANGE_EVENT_TYPE } from '../utils/FavoriteMenuUtils';
-import { GlobalConfig } from '../utils/common/GlobalConfig';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
 import { GLOBAL_CONFIG_FOCUS_ON_FAVORITE_EVENT } from '../pages/home/hometabs/HomeTabMenu';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { CreatedMenuChangeEventType, CreatedMenuUtils, CREATED_MENU_CHANGE_EVENT,
   CREATED_MENU_CHANGE_EVENT_TYPE } from '../utils/CreatedMenuUtils';
 import { FlutterIndexPage } from '../flutter/pages/FlutterIndexPage';
+import { AppSettings } from '../utils/AppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../utils/common/uiobserver/ScreenObserver';
+import {
+  GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN } from '../utils/common/GlobalAppSettings';
+import window from '@ohos.window';
 
 /**
  * 首页 - 我的 - 我的收藏。
@@ -18,14 +25,17 @@ import { FlutterIndexPage } from '../flutter/pages/FlutterIndexPage';
 @Component
 export struct HomeTabMineFavorite {
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 当前屏幕状态信息。 */
+  private screenStatus: ScreenStatusInfo | undefined = undefined;
+
+  /** 列数规定。 */
+  @State columnsTemplate: string = '';
 
   /** 已收藏的菜谱数量。 */
   @State favoriteMenuCount: number = 0;
@@ -56,6 +66,21 @@ export struct HomeTabMineFavorite {
     }
   };
 
+  private onSplitScreenChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          this.calcColumnTemplate();
+        }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   aboutToAppear(): void {
     // 处理已收藏的菜谱数量。
     this.favoriteMenuCount = this.calcFavoriteMenuCount();
@@ -63,11 +88,20 @@ export struct HomeTabMineFavorite {
     // 处理已创建的菜谱数量。
     this.createdMenuCount = this.calcCreatedMenuCount();
     emitter.on(CREATED_MENU_CHANGE_EVENT, this.onCreatedMenuChangedEvent);
+
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      this.screenStatus = screenStatus;
+      this.calcColumnTemplate();
+    });
+    this.calcColumnTemplate();
   }
 
   aboutToDisappear(): void {
     emitter.off(FAVORITE_MENU_CHANGE_EVENT, this.onFavoriteMenuChangedEvent);
     emitter.off(CREATED_MENU_CHANGE_EVENT, this.onCreatedMenuChangedEvent);
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
   }
 
   build() {
@@ -79,10 +113,7 @@ export struct HomeTabMineFavorite {
           GridItem() { this.FavoriteMenu() }.height(84)
           GridItem() { this.CreateMenu() }.height(84)
         }
-        .columnsTemplate(this.isSplitScreen ? '1fr 1fr 1fr' :
-          this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr' :
-          this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
-          '1fr 1fr 1fr')
+        .columnsTemplate(this.columnsTemplate)
         .columnsGap(4)
         .rowsGap(4)
         .padding({ left: 8, right: 8, top: 4, bottom: 4 })
@@ -233,5 +264,28 @@ export struct HomeTabMineFavorite {
   private calcCreatedMenuCount(): number {
     let order: Array<number> | undefined = CreatedMenuUtils.queryCreatedOrder();
     return order === undefined ? 0 : order.length;
+  }
+
+  /**
+   * 计算列数。
+   */
+  private calcColumnTemplate() {
+    let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatus?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatus?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    // 计算列数。
+    this.columnsTemplate =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen ? '1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? '1fr 1fr 1fr 1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
+        '1fr 1fr 1fr'
+      ) :
+      (
+        this.isSplitScreen ? '1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
+        '1fr 1fr 1fr'
+      );
   }
 }

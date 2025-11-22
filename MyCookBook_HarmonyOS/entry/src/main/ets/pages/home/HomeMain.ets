@@ -38,7 +38,7 @@ export const GLOBAL_CONFIG_BACK_KEY_EVENT: string = 'GlobalConfigBackKeyEvent';
 struct HomeMain {
 
   /** 屏幕状态。 */
-  @State screenUIType: ScreenUIType = getScreenUIType();
+  @State screenUIType: ScreenUIType = getScreenUIType(); // TODO
 
   /** 应用启动后显示的第一个Tab页，当在设置页进行更改后会被赋值，触发Pop提示。 */
   @State firstPageIndex?: number = undefined;
@@ -62,16 +62,16 @@ struct HomeMain {
   @State navEmptyViewPosition: Position = {};
 
   /** 顶部安全区高度。 */
-  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx()); // TODO
 
   /** 底部安全区高度。 */
-  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx()); // TODO
 
   /** 屏幕状态类型。 */
-  @State windowStatusType: window.WindowStatusType = (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+  @State windowStatusType: window.WindowStatusType = (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus(); // TODO
 
   /** 屏幕宽度断点类型。 */
-  @State windowWidthBreakpoint: WidthBreakpoint = this.getUIContext().getWindowWidthBreakpoint();
+  @State windowWidthBreakpoint: WidthBreakpoint = this.getUIContext().getWindowWidthBreakpoint(); // TODO
 
   /** 应用的Navigation框架宽度，单位是px。 */
   private navWidthPx: number | undefined = undefined;
@@ -161,22 +161,16 @@ struct HomeMain {
         HomeTabMenu({
           selectedIndex: this.curSelectedTabIndex,
           firstPageIndex: this.firstPageIndex,
-          screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan,
-          isSplitScreen: this.isSplitScreen
+          appTextSizePlan: this.appTextSizePlan
         })
         HomeTabSocialize({
           selectedIndex: this.curSelectedTabIndex,
           firstPageIndex: this.firstPageIndex,
-          screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan,
-          isSplitScreen: this.isSplitScreen
+          appTextSizePlan: this.appTextSizePlan
         })
         HomeTabMine({
           selectedIndex: this.curSelectedTabIndex,
-          screenUIType: this.screenUIType,
           appTextSizePlan: this.appTextSizePlan,
-          isSplitScreen: this.isSplitScreen,
           mainPageTabsController: this.tabsController
         })
       }

@@ -1,11 +1,19 @@
 import { RecommendMenuItem } from '../models/RecommendMenuModel';
-import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { FavoriteMenuChangeEventType, FavoriteMenuUtils } from '../utils/FavoriteMenuUtils';
 import { LHMarkedStar } from './common/LHMarkedStar';
 import { MenuTipsCard } from './MenuTipsCard';
-import { componentUtils } from '@kit.ArkUI';
+import { componentUtils, window } from '@kit.ArkUI';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { MenuDetailPage } from '../pages/menudetail/MenuDetailPage';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
+import { AppSettings } from '../utils/AppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../utils/common/uiobserver/ScreenObserver';
+import emitter from '@ohos.events.emitter';
+import {
+  GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN } from '../utils/common/GlobalAppSettings';
 
 /**
  * 首页 - 菜谱 - 我的收藏。
@@ -14,14 +22,17 @@ import { MenuDetailPage } from '../pages/menudetail/MenuDetailPage';
 @Component
 export struct HomeTabMenuFavorite {
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop @Watch('onAppTextSizePlanChanged') appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 当前屏幕状态信息。 */
+  private screenStatus: ScreenStatusInfo | undefined = undefined;
+
+  /** 列数规定。 */
+  @State columnsTemplate: string = '';
 
   /** 已收藏的菜谱。 */
   @Prop favoriteMenu: RecommendMenuItem[] | undefined;
@@ -31,6 +42,35 @@ export struct HomeTabMenuFavorite {
 
   /** 每个小卡片的高。 */
   @State cardHeight: number = -1;
+
+  private onSplitScreenChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          this.calcColumnTemplate();
+        }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  aboutToAppear(): void {
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      this.screenStatus = screenStatus;
+      this.calcColumnTemplate();
+    });
+    this.calcColumnTemplate();
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
+  }
 
   build() {
     ListItemGroup({
@@ -54,10 +94,7 @@ export struct HomeTabMenuFavorite {
               }
             })
           }
-          .columnsTemplate(this.isSplitScreen ? '1fr' :
-            this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr' :
-            this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr' :
-            '1fr')
+          .columnsTemplate(this.columnsTemplate)
           .columnsGap(4)
           .rowsGap(4)
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
@@ -162,5 +199,28 @@ export struct HomeTabMenuFavorite {
   /** 当字号设置方案变化时，设置cardHeight为-1，重新计算卡片的高度。 */
   onAppTextSizePlanChanged() {
     this.cardHeight = -1;
+  }
+
+  /**
+   * 计算列数。
+   */
+  private calcColumnTemplate() {
+    let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatus?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatus?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    // 计算列数。
+    this.columnsTemplate =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen ? '1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? '1fr 1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? '1fr 1fr 1fr' :
+        '1fr'
+      ) :
+      (
+        this.isSplitScreen ? '1fr' :
+        screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr' :
+        screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr' :
+        '1fr'
+      );
   }
 }

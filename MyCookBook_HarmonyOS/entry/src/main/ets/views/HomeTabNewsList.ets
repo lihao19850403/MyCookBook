@@ -57,7 +57,7 @@ export struct HomeTabNewsList {
   private screenStatus: ScreenStatusInfo | undefined = undefined;
 
   /** 列数规定。 */
-  @State columnsTemplate: string = ''
+  @State columnsTemplate: string = '';
 
   /** 正在加载今日新闻。 */
   @State isLoadingTodayNews: boolean = true;

@@ -1,5 +1,4 @@
 import { AppSettingsTextSizePlanModel } from '../../../models/AppSettingsTextSizeModel';
-import { ScreenUIType } from '../../../utils/common/ScreenUIAdapter';
 import { LHCommonTitleBar } from '../../../views/common/LHCommonTitleBar';
 import { LHDivider } from '../../../views/common/LHDivider';
 import { HomeTabMineFavorite } from '../../../views/HomeTabMineFavorite';
@@ -17,14 +16,8 @@ export struct HomeTabMine {
   /** 当前选中的Tab序号。 */
   @Prop selectedIndex: number;
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
-
-  /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
 
   /** 此Tab序号。 */
   private thisIndex: number = 3;
@@ -55,19 +48,13 @@ export struct HomeTabMine {
         space: 24
       }) {
         HomeTabMineTips({
-          screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan,
-          isSplitScreen: this.isSplitScreen
+          appTextSizePlan: this.appTextSizePlan
         })
         HomeTabMineSettings({
-          screenUIType: this.screenUIType,
-          appTextSizePlan: this.appTextSizePlan,
-          isSplitScreen: this.isSplitScreen
+          appTextSizePlan: this.appTextSizePlan
         })
         HomeTabMineFavorite({
-          screenUIType: this.screenUIType,
           appTextSizePlan: this.appTextSizePlan,
-          isSplitScreen: this.isSplitScreen,
           mainPageTabsController: this.mainPageTabsController
         })
       }

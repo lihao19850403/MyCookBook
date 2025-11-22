@@ -1,12 +1,16 @@
-import { ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { AppSettings } from '../utils/AppSettings';
 import { AppSettingsTextSizePlans } from '../models/AppSettingsTextSizePlan';
 import { emitter } from '@kit.BasicServicesKit';
 import { GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN,
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN } from '../utils/common/GlobalAppSettings';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
+import { ScreenObserver, ScreenStatusInfo } from '../utils/common/uiobserver/ScreenObserver';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
+import window from '@ohos.window';
 
 /**
  * 首页 - 我的 - 应用设置。
@@ -15,14 +19,20 @@ import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel
 @Component
 export struct HomeTabMineSettings {
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 当前屏幕状态信息。 */
+  private screenStatus: ScreenStatusInfo | undefined = undefined;
+
+  /** 列数规定。 */
+  @State columnsTemplate: string = '';
+
+  /** 分屏模式图标。 */
+  @State splitIcon: Resource = $r('app.media.ic_screen_ui_type_normal');
 
   /** 首页序号。 */
   @State firstPageIndex: number = 0;
@@ -30,10 +40,36 @@ export struct HomeTabMineSettings {
   /** 应用字号方案ID。 */
   @State textSizePlanID: number = AppSettingsTextSizePlans.SMALL.id;
 
+  private onSplitScreenChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          this.calcColumnTemplateAndIcon();
+        }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   aboutToAppear(): void {
     this.firstPageIndex = AppSettings.firstPageIndex();
     this.textSizePlanID = AppSettings.textSizePlan().id;
     this.isSplitScreen = AppSettings.isSplitScreen();
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      this.screenStatus = screenStatus;
+      this.calcColumnTemplateAndIcon();
+    });
+    this.calcColumnTemplateAndIcon();
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
   }
 
   build() {
@@ -46,10 +82,7 @@ export struct HomeTabMineSettings {
           GridItem() { this.TextSize() }.height(84)
           GridItem() { this.SplitScreen() }.height(84)
         }
-        .columnsTemplate(this.isSplitScreen ? '1fr 1fr 1fr' :
-          this.screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr' :
-          this.screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
-          '1fr 1fr 1fr')
+        .columnsTemplate(this.columnsTemplate)
         .columnsGap(4)
         .rowsGap(4)
         .padding({ left: 8, right: 8, top: 4, bottom: 4 })
@@ -214,9 +247,7 @@ export struct HomeTabMineSettings {
       Stack({
         alignContent: Alignment.Center
       }) {
-        Image(this.isSplitScreen ?
-          (this.screenUIType === ScreenUIType.PAD ? $r('app.media.ic_screen_ui_type_pad') : $r('app.media.ic_screen_ui_type_fold_opened')) :
-          $r('app.media.ic_screen_ui_type_normal'))
+        Image(this.splitIcon)
           .width(34)
           .height(34)
       }
@@ -265,5 +296,33 @@ export struct HomeTabMineSettings {
       };
       emitter.emit(GLOBAL_APP_SETTINGS_CHANGED_EVENT, dataWrap);
     })
+  }
+
+  /**
+   * 计算列数和分屏图标。
+   */
+  private calcColumnTemplateAndIcon() {
+    let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatus?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatus?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    // 计算列数。
+    this.columnsTemplate =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen ? '1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? '1fr 1fr 1fr 1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
+        '1fr 1fr 1fr'
+      ) :
+      (
+        this.isSplitScreen ? '1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.FOLD_OPENED ? '1fr 1fr 1fr 1fr 1fr 1fr' :
+        screenUIType === ScreenUIType.PAD ? '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr' :
+        '1fr 1fr 1fr'
+      );
+    // 计算分屏图标。
+    this.splitIcon =
+      this.isSplitScreen ?
+      (screenUIType === ScreenUIType.PAD ? $r('app.media.ic_screen_ui_type_pad') : $r('app.media.ic_screen_ui_type_fold_opened')) :
+      $r('app.media.ic_screen_ui_type_normal')
   }
 }

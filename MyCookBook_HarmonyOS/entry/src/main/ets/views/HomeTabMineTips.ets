@@ -1,11 +1,20 @@
 import { CallResult, HttpUtils } from '../utils/common/HttpUtils';
 import { KeysUtils } from '../utils/common/KeysUtils';
-import { getScreenWidthPx, ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, getScreenWidthPx, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { TodayTipsModel, TodayTipsResult } from '../models/TodayTipsModel';
 import { KVUtils } from '../utils/common/KVUtils';
 import { LengthMetrics } from '@ohos.arkui.node';
 import { AppSettingsTextSizePlanModel } from '../models/AppSettingsTextSizeModel';
 import { readRawFileSync } from '../utils/common//filecenter/FileUtils';
+import { AppSettings } from '../utils/AppSettings';
+import { ScreenObserver, ScreenStatusInfo } from '../utils/common/uiobserver/ScreenObserver';
+import emitter from '@ohos.events.emitter';
+import {
+  GLOBAL_APP_SETTINGS_CHANGED_EVENT,
+  GLOBAL_APP_SETTINGS_EVENT_TYPE,
+  GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN } from '../utils/common/GlobalAppSettings';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
+import window from '@ohos.window';
 
 /** 每日养生请求key。 */
 const KEY_HOME_TAB_MINE_TIPS_REQUEST: string = 'home_tab_mine_tips_request';
@@ -23,14 +32,17 @@ const FILE_NAME_MOCK_DATA: string = 'home_tab_mine_tips_mock.json5';
 @Component
 export struct HomeTabMineTips {
 
-  /** 屏幕状态。 */
-  @Prop screenUIType: ScreenUIType;
-
   /** 应用文字字号方案。 */
   @Prop appTextSizePlan: AppSettingsTextSizePlanModel;
 
   /** 是否使用分屏显示。 */
-  @Prop isSplitScreen: boolean;
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 当前屏幕状态信息。 */
+  private screenStatus: ScreenStatusInfo | undefined = undefined;
+
+  /** 内容宽度。 */
+  @State contentWidth: string | number | undefined = undefined;
 
   /** 是否正在加载每日养生。 */
   @State isLoadingTips: boolean = true;
@@ -41,6 +53,21 @@ export struct HomeTabMineTips {
   /** 今日日期(作为key)。 */
   private today: string = new Date().toLocaleDateString();
 
+  private onSplitScreenChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
+    if (dataWrap.data) {
+      let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
+      switch (eventType) {
+        case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
+          this.isSplitScreen = AppSettings.isSplitScreen();
+          this.calcContentWidth();
+        }
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   aboutToAppear(): void {
     if (!KVUtils.hasKV(FILE_NAME_MINE_TIPS, this.today)) { // 每日养生提示。
       this.apiLoadTodayTips();
@@ -50,6 +77,17 @@ export struct HomeTabMineTips {
       this.todayTips = todayTipsObject.content;
       this.isLoadingTips = false;
     }
+    emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      this.screenStatus = screenStatus;
+      this.calcContentWidth();
+    });
+    this.calcContentWidth();
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onSplitScreenChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
   }
 
   build() {
@@ -61,10 +99,7 @@ export struct HomeTabMineTips {
           alignContent: Alignment.Center
         }) {
           Text(this.todayTips)
-            .width(this.isSplitScreen ? '95%' :
-              this.screenUIType === ScreenUIType.FOLD_OPENED ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
-              this.screenUIType === ScreenUIType.PAD ? px2vp(getScreenWidthPx()) / 3 * 0.95 :
-              '95%')
+            .width(this.contentWidth)
             .constraintSize({
               minHeight: 100
             })
@@ -133,5 +168,28 @@ export struct HomeTabMineTips {
     let todayTipsObjectArray: TodayTipsResult[] = readRawFileSync<TodayTipsResult[]>(FILE_NAME_MOCK_DATA);
     let index: number = Math.floor(Math.random() * todayTipsObjectArray.length);
     this.todayTips = todayTipsObjectArray[index].content;
+  }
+
+  /**
+   * 计算内容宽度。
+   */
+  private calcContentWidth() {
+    let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatus?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatus?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    // 计算内容宽度。
+    this.contentWidth =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen ? '95%' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? px2vp(getScreenWidthPx()) / 3 * 0.95 :
+        '95%'
+      ) :
+      (
+        this.isSplitScreen ? '95%' :
+        screenUIType === ScreenUIType.FOLD_OPENED ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
+        screenUIType === ScreenUIType.PAD ? px2vp(getScreenWidthPx()) / 3 * 0.95 :
+        '95%'
+      );
   }
 }
