@@ -2,9 +2,8 @@ import { LHAppSettingsTextSizePlans } from '../../models/common/LHAppSettingsTex
 import { RouterUtils } from '../../utils/common/RouterUtils';
 import { firstNotVoid, res2string } from '../../utils/common/Utils';
 import { LHDivider } from './LHDivider';
-import emitter from '@ohos.events.emitter';
-import { SCREEN_UI_CHANGE_EVENT } from '../../utils/common/ScreenUIAdapter';
 import MeasureText from '@ohos.measure';
+import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/ScreenObserver';
 
 /** 默认属性。 */
 interface DefaultAttributes {
@@ -80,19 +79,15 @@ export struct LHCommonTitleBar {
   /** 是否需要底部分割线。 */
   private needBottomDivider?: boolean;
 
-  private onScreenUIChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
-    if (dataWrap.data) {
+  aboutToAppear(): void {
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
       this.calcCenterTitleMargin();
       this.calcUseMarquee();
-    }
-  };
-
-  aboutToAppear(): void {
-    emitter.on(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+    });
   }
 
   aboutToDisappear(): void {
-    emitter.off(SCREEN_UI_CHANGE_EVENT, this.onScreenUIChangedEvent);
+    ScreenObserver.unsubscribe(this.getUIContext());
   }
 
   build() {

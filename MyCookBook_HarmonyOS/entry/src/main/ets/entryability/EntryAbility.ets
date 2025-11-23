@@ -2,9 +2,6 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { GlobalContext } from '../utils/common/GlobalContext';
-import { observeAvoidAreaChange, observeScreenUIChange,
-  observeWindowSizeChange,
-  observeWindowStatusTypeChange } from '../utils/common/ScreenUIAdapter';
 import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
 import { UncaughtExceptionsHandler } from '../utils/common/errorhandler/UncaughtExceptionsHandler';
 import { ExclusiveAppComponent, FlutterManager } from '@ohos/flutter_ohos';
@@ -47,14 +44,6 @@ export default class EntryAbility extends UIAbility implements ExclusiveAppCompo
       GlobalConfig.set(GLOBAL_CONFIG_KEY_WINDOW, mainWindow);
       // 初始化屏幕状态监控。
       ScreenObserver.init();
-      // 监控屏幕状态变化。
-      observeScreenUIChange();
-      // 监听屏幕安全区的改变。
-      observeAvoidAreaChange();
-      // 监听屏幕状态类型的改变。
-      observeWindowStatusTypeChange();
-      // 监听屏幕尺寸的改变。
-      observeWindowSizeChange();
     });
 
     // 在Flutter模块中进行登记。

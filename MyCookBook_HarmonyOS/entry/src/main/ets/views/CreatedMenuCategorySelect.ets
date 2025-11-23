@@ -4,6 +4,9 @@ import { CreatedMenuCategoryInfo } from "../models/CreatedMenuCategoryInfo";
 import { AppSettings } from "../utils/AppSettings";
 import { CreatedMenuUtils } from "../utils/CreatedMenuUtils";
 import promptAction from "@ohos.promptAction";
+import { getScreenBottomSafeZoneHeightPx, getScreenTopSafeZoneHeightPx } from "../utils/common/ScreenUIAdapter";
+import { ScreenObserver, ScreenStatusInfo } from "../utils/common/uiobserver/ScreenObserver";
+import window from "@ohos.window";
 
 /**
  * 为自创菜谱设置分类。
@@ -26,6 +29,18 @@ export struct CreatedMenuCategorySelect {
   /** 添加新分类输入框控制器。 */
   private addNewCategoryController: TextInputController = new TextInputController();
 
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
+  /** 底部安全区高度。 */
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
+
+  /** 标题栏高度。 */
+  private titleBarHeightVp: number = 0;
+
+  /** 滚动区最大高度。 */
+  @State contentMaxHeight: string | undefined = undefined;
+
   aboutToAppear(): void {
     this.initAllCategories();
     if (this.currentSelectedCategoryName != undefined && this.currentSelectedCategoryName.length > 0) {
@@ -40,6 +55,21 @@ export struct CreatedMenuCategorySelect {
         this.categoriesListScroller.scrollToIndex(index, false, ScrollAlign.CENTER);
       }, 0);
     }
+
+    ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
+      if (screenStatus.avoidArea !== undefined) {
+        if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+          this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
+        } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+          this.bottomSafeZoneHeightVp = px2vp(screenStatus.avoidArea.bottomRect.height);
+        }
+      }
+      this.contentMaxHeight = `calc(100% - ${this.titleBarHeightVp}vp)`;
+    });
+  }
+
+  aboutToDisappear(): void {
+    ScreenObserver.unsubscribe(this.getUIContext());
   }
 
   build() {
@@ -50,6 +80,10 @@ export struct CreatedMenuCategorySelect {
         .fontSize(this.appTextSizePlan.createdMenuSelectCategoryTitle)
         .textAlign(TextAlign.Center)
         .padding(12)
+        .onAreaChange((_, newArea: Area) => {
+          this.titleBarHeightVp = Math.max(0, Math.ceil(newArea.height as number));
+          this.contentMaxHeight = `calc(100% - ${this.titleBarHeightVp}vp)`;
+        })
       // 内容。
       List({ scroller: this.categoriesListScroller }) {
         ForEach(this.categories, (item: CreatedMenuCategoryInfo) => {
@@ -62,48 +96,54 @@ export struct CreatedMenuCategorySelect {
           this.AddNewItem()
         }
         .padding({ left: 12, right: 12 })
+        // 按钮区。
+        ListItem() {
+          Row({ space: 12 }) {
+            Button($r('app.string.cancel'), {
+              type: ButtonType.Normal
+            })
+              .layoutWeight(1)
+              .fontSize(this.appTextSizePlan.createdMenuSelectCategoryButton)
+              .fontColor($r('app.color.main_unselected_color'))
+              .backgroundColor(Color.Transparent)
+              .onClick((event: ClickEvent) => {
+                this.result?.success(undefined);
+                this.closeCallback?.();
+              })
+            Button($r('app.string.confirm'), {
+              type: ButtonType.Normal
+            })
+              .layoutWeight(1)
+              .fontSize(this.appTextSizePlan.createdMenuSelectCategoryButton)
+              .fontColor($r('app.color.main_selected_color'))
+              .backgroundColor(Color.Transparent)
+              .onClick((event: ClickEvent) => {
+                this.result?.success(this.currentSelectedCategoryName);
+                this.closeCallback?.();
+              })
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+          .alignItems(VerticalAlign.Center)
+          .padding(12)
+        }
       }
       .width('100%')
       .layoutWeight(1)
       .edgeEffect(EdgeEffect.None)
       .scrollBar(BarState.Off)
-
-      // 按钮区。
-      Row({ space: 12 }) {
-        Button($r('app.string.cancel'), {
-          type: ButtonType.Normal
-        })
-          .layoutWeight(1)
-          .fontSize(this.appTextSizePlan.createdMenuSelectCategoryButton)
-          .fontColor($r('app.color.main_unselected_color'))
-          .backgroundColor(Color.Transparent)
-          .onClick((event: ClickEvent) => {
-            this.result?.success(undefined);
-            this.closeCallback?.();
-          })
-        Button($r('app.string.confirm'), {
-          type: ButtonType.Normal
-        })
-          .layoutWeight(1)
-          .fontSize(this.appTextSizePlan.createdMenuSelectCategoryButton)
-          .fontColor($r('app.color.main_selected_color'))
-          .backgroundColor(Color.Transparent)
-          .onClick((event: ClickEvent) => {
-            this.result?.success(this.currentSelectedCategoryName);
-            this.closeCallback?.();
-          })
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.Center)
-      .alignItems(VerticalAlign.Center)
-      .padding(12)
+      .constraintSize({ maxHeight: this.contentMaxHeight })
     }
     .width(320)
-    .constraintSize({ minHeight: 320, maxHeight: 480 })
+    .constraintSize({ maxHeight: 480 })
     .justifyContent(FlexAlign.Start)
     .alignItems(HorizontalAlign.Center)
     .backgroundColor(Color.White)
     .border({ radius: 12 })
+    .margin({
+      top: this.topSafeZoneHeightVp,
+      bottom: this.bottomSafeZoneHeightVp
+    })
   }
 
   @Builder

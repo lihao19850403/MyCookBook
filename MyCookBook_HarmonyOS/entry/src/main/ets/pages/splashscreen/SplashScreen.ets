@@ -1,7 +1,7 @@
 import router from '@ohos.router';
 import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../../utils/common/GlobalConfig';
 import window from '@ohos.window';
-import { getScreenHeightPx } from '../../utils/common/ScreenUIAdapter';
+import { getScreenBottomSafeZoneHeightPx, getScreenHeightPx } from '../../utils/common/ScreenUIAdapter';
 import { getAppInfo, res2string } from '../../utils/common/Utils';
 
 /**
@@ -17,37 +17,37 @@ struct SplashScreen {
   }
 
   build() {
-    RelativeContainer() {
+    Column() {
+      Blank()
+        .width('100%')
+        .constraintSize({
+          minHeight: px2vp(getScreenBottomSafeZoneHeightPx())
+        })
+        .flexGrow(1)
       Image($r('app.media.app_icon_start'))
         .width('512px')
         .height('512px')
         .objectFit(ImageFit.Contain)
-        .alignRules({
-          center: {
-            anchor: '__container__',
-            align: VerticalAlign.Center
-          },
-          middle: {
-            anchor: '__container__',
-            align: HorizontalAlign.Center
-          }
+      Blank()
+        .width('100%')
+        .constraintSize({
+          maxHeight: (px2vp(getScreenHeightPx()) / 2) - px2vp(256) - px2vp(getScreenBottomSafeZoneHeightPx()) - 100
         })
+        .flexShrink(1)
       Text(`${res2string($r('app.string.app_name'))}\nV${getAppInfo().versionName}`)
-        .margin({ bottom: px2vp(getScreenHeightPx()) * 0.2 })
         .textAlign(TextAlign.Center)
-        .alignRules({
-          center: {
-            anchor: '__container__',
-            align: VerticalAlign.Bottom
-          },
-          middle: {
-            anchor: '__container__',
-            align: HorizontalAlign.Center
-          }
+      Blank()
+        .width('100%')
+        .constraintSize({
+          minHeight: px2vp(getScreenBottomSafeZoneHeightPx()),
+          maxHeight: px2vp(getScreenBottomSafeZoneHeightPx()) + 100
         })
+        .flexShrink(1)
     }
     .width('100%')
     .height('100%')
+    .justifyContent(FlexAlign.End)
+    .alignItems(HorizontalAlign.Center)
     .layoutWeight(1)
     .backgroundColor($r('app.color.start_window_background'))
     .onAppear(() => {
