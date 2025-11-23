@@ -29,6 +29,13 @@ import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/
  */
 export const GLOBAL_CONFIG_BACK_KEY_EVENT: string = 'GlobalConfigBackKeyEvent';
 
+/** 底部导航区宽度类型。 */
+enum NAV_BAR_WIDTH_TYPE {
+  /** 小，占35%宽。 */ SMALL,
+  /** 中，占50%宽。 */MIDDLE,
+  /** 大，占100%宽。 */ FULL
+}
+
 /**
  * 首页。
  * @author li.hao85
@@ -37,17 +44,11 @@ export const GLOBAL_CONFIG_BACK_KEY_EVENT: string = 'GlobalConfigBackKeyEvent';
 @Component
 struct HomeMain {
 
-  /** 屏幕状态。 */
-  @State screenUIType: ScreenUIType = getScreenUIType(); // TODO
-
   /** 应用启动后显示的第一个Tab页，当在设置页进行更改后会被赋值，触发Pop提示。 */
   @State firstPageIndex?: number = undefined;
 
   /** 应用文字字号方案。 */
   @State appTextSizePlan: AppSettingsTextSizePlanModel = AppSettings.textSizePlan();
-
-  /** 是否使用分屏显示。 */
-  @State isSplitScreen: boolean = AppSettings.isSplitScreen();
 
   /** 当前选中的标签序号。 */
   @State curSelectedTabIndex: number = 0;
@@ -58,26 +59,32 @@ struct HomeMain {
   /** 页面栈控制器。 */
   private routerStack: NavPathStack = new NavPathStack();
 
-  /** 空白视图图标位置。 */
-  @State navEmptyViewPosition: Position = {};
-
-  /** 顶部安全区高度。 */
-  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx()); // TODO
-
-  /** 底部安全区高度。 */
-  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx()); // TODO
-
-  /** 屏幕状态类型。 */
-  @State windowStatusType: window.WindowStatusType = (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus(); // TODO
-
-  /** 屏幕宽度断点类型。 */
-  @State windowWidthBreakpoint: WidthBreakpoint = this.getUIContext().getWindowWidthBreakpoint(); // TODO
-
   /** 应用的Navigation框架宽度，单位是px。 */
   private navWidthPx: number | undefined = undefined;
 
   /** 应用的Navigation框架高度，单位是px。 */
   private navHeightPx: number | undefined = undefined;
+
+  /** 是否使用分屏显示。 */
+  private isSplitScreen: boolean = AppSettings.isSplitScreen();
+
+  /** 屏幕状态信息。 */
+  private screenStatusInfo: ScreenStatusInfo | undefined = undefined;
+
+  /** 顶部安全区高度。 */
+  @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
+
+  /** 底部安全区高度。 */
+  @State bottomSafeZoneHeightVp: number = px2vp(getScreenBottomSafeZoneHeightPx());
+
+  /** tabs标签栏纵向排列模式。 */
+  @State tabsVerticalMode: boolean = false;
+
+  /** 底部导航栏宽度类型。 */
+  @State navBarWidthType: NAV_BAR_WIDTH_TYPE = NAV_BAR_WIDTH_TYPE.FULL;
+
+  /** 页面叠加模式。 */
+  @State navMode: NavigationMode = NavigationMode.Stack;
 
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
@@ -88,7 +95,7 @@ struct HomeMain {
           break;
         case GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN: {
           this.isSplitScreen = AppSettings.isSplitScreen();
-          this.adjustNavEmptyViewPosition();
+          this.calcScreenParams();
         }
           break;
         case GLOBAL_APP_SETTINGS_KEY_FIRST_PAGE_INDEX:
@@ -104,18 +111,10 @@ struct HomeMain {
     GlobalConfig.set(ROUTER_CONFIG_KEY_ROUTER_STACK, this.routerStack);
     emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
     ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
-      this.screenUIType = screenStatus.screenUIType ?? getScreenUIType();
-      this.windowStatusType = screenStatus.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
-      this.windowWidthBreakpoint = screenStatus.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
-      if (screenStatus.avoidArea !== undefined) {
-        if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
-          this.topSafeZoneHeightVp = px2vp(screenStatus.avoidArea.topRect.height);
-        } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-          this.bottomSafeZoneHeightVp = px2vp(screenStatus.avoidArea.bottomRect.height);
-        }
-      }
-
+      this.screenStatusInfo = screenStatus;
+      this.calcScreenParams();
     });
+    this.calcScreenParams();
     setTimeout(() => this.curSelectedTabIndex = AppSettings.firstPageIndex(), 0);
   }
 
@@ -144,12 +143,7 @@ struct HomeMain {
   build() {
     Navigation(this.routerStack) {
       Tabs({
-        barPosition: this.screenUIType === ScreenUIType.PAD ? (
-          this.windowStatusType !== window.WindowStatusType.FLOATING && this.windowStatusType !== window.WindowStatusType.SPLIT_SCREEN ? BarPosition.Start :
-          this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? BarPosition.Start :
-          BarPosition.End
-        ) :
-        BarPosition.End,
+        barPosition: this.tabsVerticalMode ? BarPosition.Start : BarPosition.End,
         index: this.curSelectedTabIndex,
         controller: this.tabsController
       }) {
@@ -179,23 +173,9 @@ struct HomeMain {
         top: this.topSafeZoneHeightVp,
         bottom: this.bottomSafeZoneHeightVp
       })
-      .vertical(
-        this.screenUIType === ScreenUIType.PAD ? (
-          this.windowStatusType !== window.WindowStatusType.FLOATING && this.windowStatusType !== window.WindowStatusType.SPLIT_SCREEN ? true :
-          this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? true :
-          false
-        ) :
-        false
-      )
+      .vertical(this.tabsVerticalMode)
       .edgeEffect(EdgeEffect.None)
-      .scrollable(!(
-        this.screenUIType === ScreenUIType.PAD ? (
-          this.windowStatusType !== window.WindowStatusType.FLOATING && this.windowStatusType !== window.WindowStatusType.SPLIT_SCREEN ? true :
-          this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? true :
-          false
-        ) :
-        false
-      ))
+      .scrollable(!this.tabsVerticalMode)
       .onChange((newIndex: number) => this.curSelectedTabIndex = newIndex)
       .onTabBarClick((newIndex: number) => this.tabsController.changeIndex(newIndex))
     }
@@ -205,38 +185,20 @@ struct HomeMain {
     .hideToolBar(true)
     .hideBackButton(true)
     .backgroundColor(Color.White)
-    .backgroundImage(
-      this.windowStatusType === window.WindowStatusType.FLOATING || this.windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
-        this.isSplitScreen && this.screenUIType === ScreenUIType.PAD && this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_MD ? $r('app.media.app_icon_foreground_gray') :
-        undefined
-      ) :
-      (
-        this.screenUIType === ScreenUIType.NORMAL ? undefined :
-        this.isSplitScreen ? $r('app.media.app_icon_foreground_gray') : undefined
-      ))
+    .backgroundImage(this.navMode === NavigationMode.Split ? $r('app.media.app_icon_foreground_gray') : undefined)
     .backgroundImageSize({ width: '512px', height: '512px' })
-    .backgroundImagePosition(this.navEmptyViewPosition)
+    .backgroundImagePosition(
+      this.navWidthPx === undefined || this.navHeightPx === undefined ? undefined :
+      this.navBarWidthType === NAV_BAR_WIDTH_TYPE.SMALL ? { x: `${this.navWidthPx - (((this.navWidthPx * 0.65) - 512) / 2) - 512}px`, y: `${(this.navHeightPx - 512) / 2}px` } :
+      this.navBarWidthType === NAV_BAR_WIDTH_TYPE.MIDDLE ? { x: `${this.navWidthPx - (((this.navWidthPx * 0.5) - 512) / 2) - 512}px`, y: `${(this.navHeightPx - 512) / 2}px` } :
+      undefined
+    )
     .navBarWidth(
-      this.windowStatusType === window.WindowStatusType.FLOATING || this.windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
-        this.isSplitScreen && this.screenUIType === ScreenUIType.PAD && this.windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? '50%' :
-        this.isSplitScreen && this.screenUIType === ScreenUIType.PAD && this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? '35%' :
-        '100%'
-      ) :
-      (
-        !this.isSplitScreen ? '100%' :
-        this.screenUIType === ScreenUIType.PAD ? '35%' :
-        this.screenUIType === ScreenUIType.FOLD_OPENED ? '50%' :
-        '100%'
-      ))
-    .mode(
-      this.windowStatusType === window.WindowStatusType.FLOATING || this.windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
-        this.isSplitScreen && this.screenUIType === ScreenUIType.PAD && this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_MD ? NavigationMode.Split :
-        NavigationMode.Stack
-      ) :
-      (
-        this.screenUIType === ScreenUIType.NORMAL ? NavigationMode.Stack :
-        this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack
-      ))
+      this.navBarWidthType === NAV_BAR_WIDTH_TYPE.SMALL ? '35%' :
+      this.navBarWidthType === NAV_BAR_WIDTH_TYPE.MIDDLE ? '50%' :
+      '100%'
+    )
+    .mode(this.navMode)
     .onAppear(() => {
       let mainWindow: window.Window = GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window;
       mainWindow.setWindowLayoutFullScreen(true);
@@ -248,36 +210,74 @@ struct HomeMain {
     .onAreaChange((_, newArea: Area) => {
       this.navWidthPx = vp2px(newArea.width as number);
       this.navHeightPx = vp2px(newArea.height as number);
-      this.adjustNavEmptyViewPosition();
+      this.calcNavBarWidthType();
     })
   }
 
-  /**
-   * 调整空白视图图标的位置。
-   */
-  private adjustNavEmptyViewPosition() {
-    if (this.navWidthPx === undefined || this.navHeightPx === undefined) {
-      return;
-    }
-    let x: string | undefined = undefined;
-    if (this.windowStatusType === window.WindowStatusType.FLOATING || this.windowStatusType === window.WindowStatusType.SPLIT_SCREEN) {
-      if (this.isSplitScreen && this.screenUIType === ScreenUIType.PAD) {
-        if (this.windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD) {
-          x = `${this.navWidthPx - (((this.navWidthPx * 0.5) - 512) / 2) - 512}px`
-        } else if (this.windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG) {
-          x = `${this.navWidthPx - (((this.navWidthPx * 0.65) - 512) / 2) - 512}px`
-        }
-      }
-    } else {
-      if (this.isSplitScreen) {
-        if (this.screenUIType === ScreenUIType.FOLD_OPENED) {
-          x = `${this.navWidthPx - (((this.navWidthPx * 0.5) - 512) / 2) - 512}px`
-        } else if (this.screenUIType === ScreenUIType.PAD) {
-          x = `${this.navWidthPx - (((this.navWidthPx * 0.65) - 512) / 2) - 512}px`
-        }
+  /** 计算屏幕状态参数。 */
+  private calcScreenParams() {
+    // 计算安全区尺寸。
+    if (this.screenStatusInfo?.avoidArea !== undefined) {
+      if (this.screenStatusInfo.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+        this.topSafeZoneHeightVp = px2vp(this.screenStatusInfo.avoidArea.topRect.height);
+      } else if (this.screenStatusInfo.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+        this.bottomSafeZoneHeightVp = px2vp(this.screenStatusInfo.avoidArea.bottomRect.height);
       }
     }
-    let y: string = `${(this.navHeightPx - 512) / 2}px`;
-    this.navEmptyViewPosition = { x : x, y: y };
+    // 计算tabs标签栏纵向排列模式。
+    this.calcTabsVerticalMode();
+    // 计算底部导航栏宽度。
+    this.calcNavBarWidthType();
+    // 计算页面叠加模式。
+    this.calcNavMode();
+  }
+
+  /** 计算tabs标签栏纵向排列模式。 */
+  private calcTabsVerticalMode() {
+    let screenUIType = this.screenStatusInfo?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatusInfo?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatusInfo?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    this.tabsVerticalMode =
+      screenUIType === ScreenUIType.PAD ? (
+        windowStatusType !== window.WindowStatusType.FLOATING && windowStatusType !== window.WindowStatusType.SPLIT_SCREEN ? true :
+        windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? true :
+        false
+      ) :
+      false;
+  }
+
+  /** 计算底部导航栏宽度类型。 */
+  private calcNavBarWidthType() {
+    let screenUIType = this.screenStatusInfo?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatusInfo?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatusInfo?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    this.navBarWidthType =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen && screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? NAV_BAR_WIDTH_TYPE.MIDDLE :
+        this.isSplitScreen && screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? NAV_BAR_WIDTH_TYPE.SMALL :
+        NAV_BAR_WIDTH_TYPE.FULL
+      ) :
+      (
+        !this.isSplitScreen ? NAV_BAR_WIDTH_TYPE.FULL :
+        screenUIType === ScreenUIType.PAD ? NAV_BAR_WIDTH_TYPE.SMALL :
+        screenUIType === ScreenUIType.FOLD_OPENED ? NAV_BAR_WIDTH_TYPE.MIDDLE :
+        NAV_BAR_WIDTH_TYPE.FULL
+      );
+  }
+
+  /** 计算页面叠加模式。 */
+  private calcNavMode() {
+    let screenUIType = this.screenStatusInfo?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatusInfo?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatusInfo?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
+    this.navMode =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
+        this.isSplitScreen && screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_MD ? NavigationMode.Split :
+        NavigationMode.Stack
+      ) :
+      (
+        screenUIType === ScreenUIType.NORMAL ? NavigationMode.Stack :
+        this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack
+      );
   }
 }
