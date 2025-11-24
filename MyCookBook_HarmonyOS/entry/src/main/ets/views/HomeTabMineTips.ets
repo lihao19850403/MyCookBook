@@ -1,6 +1,6 @@
 import { CallResult, HttpUtils } from '../utils/common/HttpUtils';
 import { KeysUtils } from '../utils/common/KeysUtils';
-import { getScreenUIType, getScreenWidthPx, ScreenUIType } from '../utils/common/ScreenUIAdapter';
+import { getScreenUIType, ScreenUIType } from '../utils/common/ScreenUIAdapter';
 import { TodayTipsModel, TodayTipsResult } from '../models/TodayTipsModel';
 import { KVUtils } from '../utils/common/KVUtils';
 import { LengthMetrics } from '@ohos.arkui.node';
@@ -181,14 +181,14 @@ export struct HomeTabMineTips {
     this.contentWidth =
       windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (
         this.isSplitScreen ? '95%' :
-        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
-        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? px2vp(getScreenWidthPx()) / 3 * 0.95 :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint === WidthBreakpoint.WIDTH_MD ? '47.5%' :
+        screenUIType === ScreenUIType.PAD && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG ? '31.67%' :
         '95%'
       ) :
       (
         this.isSplitScreen ? '95%' :
-        screenUIType === ScreenUIType.FOLD_OPENED ? px2vp(getScreenWidthPx()) / 2 * 0.95 :
-        screenUIType === ScreenUIType.PAD ? px2vp(getScreenWidthPx()) / 3 * 0.95 :
+        screenUIType === ScreenUIType.FOLD_OPENED ? '47.5%' :
+        screenUIType === ScreenUIType.PAD ? '31.67%' :
         '95%'
       );
   }
