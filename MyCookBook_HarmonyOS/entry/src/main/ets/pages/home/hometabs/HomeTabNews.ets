@@ -27,6 +27,7 @@ export struct HomeTabNews {
       this.Content()
     }
     .tabBar(HomeMainTabBarBuilder({
+      uiContext: this.getUIContext(),
       icon: this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_top_news_selected') : $r('app.media.ic_home_tab_top_news_unselected'),
       text: $r('app.string.home_tab_top_news'),
       textFontSize: this.appTextSizePlan.unifiedTabBarTextSize,

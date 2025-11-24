@@ -47,6 +47,7 @@ export struct HomeTabSocialize {
       this.Content()
     }
     .tabBar(HomeMainTabBarBuilder({
+      uiContext: this.getUIContext(),
       icon: this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_socialize_selected') : $r('app.media.ic_home_tab_socialize_unselected'),
       text: $r('app.string.home_tab_socialize'),
       textFontSize: this.appTextSizePlan.unifiedTabBarTextSize,

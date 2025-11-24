@@ -1,6 +1,8 @@
 import { AppSettings } from "../utils/AppSettings"
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from "../utils/common/GlobalConfig"
 import { getScreenUIType, ScreenUIType } from "../utils/common/ScreenUIAdapter"
 import { res2string } from "../utils/common/Utils"
+import window from "@ohos.window"
 
 /**
  * 首页 - 底部Tab构造器。
@@ -9,6 +11,7 @@ import { res2string } from "../utils/common/Utils"
 
 /** 首页 - 底部Tab信息。 */
 export interface HomeMainTabBarInfo {
+  uiContext: UIContext,
   icon: ResourceStr,
   text: ResourceStr,
   textFontSize: ResourceColor,
@@ -36,7 +39,13 @@ export function HomeMainTabBarBuilder(info: HomeMainTabBarInfo) {
     messageOptions: {
       font: { size: AppSettings.textSizePlan().homeTabMinePopupTipsTextSize }
     },
-    placement: getScreenUIType() === ScreenUIType.PAD ? Placement.Right : undefined,
+    placement: getScreenUIType() === ScreenUIType.PAD ? (
+        (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus() !== window.WindowStatusType.FLOATING &&
+        (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus() !== window.WindowStatusType.SPLIT_SCREEN ? Placement.Right :
+        info.uiContext.getWindowWidthBreakpoint() >= WidthBreakpoint.WIDTH_LG ? Placement.Right :
+        undefined
+      ) :
+      undefined,
     backgroundBlurStyle: BlurStyle.NONE,
     mask: { color: '#33000000' },
     popupColor: Color.White,

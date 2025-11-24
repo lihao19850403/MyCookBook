@@ -30,6 +30,7 @@ export struct HomeTabMine {
       this.Content()
     }
     .tabBar(HomeMainTabBarBuilder({
+      uiContext: this.getUIContext(),
       icon: this.selectedIndex === this.thisIndex ? $r('app.media.ic_home_tab_mine_selected') : $r('app.media.ic_home_tab_mine_unselected'),
       text: $r('app.string.home_tab_mine'),
       textFontSize: this.appTextSizePlan.unifiedTabBarTextSize,
