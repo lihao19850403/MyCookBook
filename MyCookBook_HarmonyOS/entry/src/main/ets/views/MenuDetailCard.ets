@@ -11,6 +11,8 @@ import {
   GLOBAL_APP_SETTINGS_CHANGED_EVENT,
   GLOBAL_APP_SETTINGS_EVENT_TYPE,
   GLOBAL_APP_SETTINGS_KEY_SPLIT_SCREEN } from '../utils/common/GlobalAppSettings';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../utils/common/GlobalConfig';
+import window from '@ohos.window';
 
 /** 菜谱详情样式。 */
 export enum MenuDetailCardStyle {
@@ -263,7 +265,17 @@ export struct MenuDetailCard {
    */
   private calcVerticalMode() {
     let screenUIType = this.screenStatus?.screenUIType ?? getScreenUIType();
+    let windowStatusType = this.screenStatus?.windowStatusType ?? (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
+    let windowWidthBreakpoint = this.screenStatus?.windowWidthBreakpoint ?? this.getUIContext().getWindowWidthBreakpoint();
     // 计算视图是否纵向排列。
-    this.isVertical = screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && screenUIType === ScreenUIType.FOLD_OPENED)
+    this.isVertical =
+      windowStatusType === window.WindowStatusType.FLOATING || windowStatusType === window.WindowStatusType.SPLIT_SCREEN ? (!(
+        screenUIType === ScreenUIType.PAD &&
+        ((!this.isSplitScreen && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_MD) ||
+        (this.isSplitScreen && windowWidthBreakpoint >= WidthBreakpoint.WIDTH_LG))
+      )) :
+      (
+        screenUIType === ScreenUIType.NORMAL || (this.isSplitScreen && screenUIType === ScreenUIType.FOLD_OPENED)
+      );
   }
 }
