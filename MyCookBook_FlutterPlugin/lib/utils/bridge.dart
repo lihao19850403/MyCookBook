@@ -53,6 +53,21 @@ class Bridge {
         eventBus.emit(APP_TEXT_SIZE_PLAN_CHANGED_EVENT, params);
         return true;
       }
+      if (call.method == 'avoidAreaChanged') {
+        Map<Object?, Object?>? newAvoidAreaData = call.arguments as Map?;
+        if (newAvoidAreaData != null && newAvoidAreaData.isNotEmpty) {
+          if (newAvoidAreaData.containsKey('screenTopSafeZoneHeightVP')) {
+            num screenTopSafeZoneHeightVP = newAvoidAreaData['screenTopSafeZoneHeightVP'] as num;
+            Global.screenTopSafeZoneHeightVP = screenTopSafeZoneHeightVP.toDouble();
+          }
+          if (newAvoidAreaData.containsKey('screenBottomSafeZoneHeightVP')) {
+            num screenBottomSafeZoneHeightVP = newAvoidAreaData['screenBottomSafeZoneHeightVP'] as num;
+            Global.screenBottomSafeZoneHeightVP = screenBottomSafeZoneHeightVP.toDouble();
+          }
+          /* 安全区距离改变会自动触发页面的刷新。 */
+        }
+        return true;
+      }
       return '${call.method} is not exist.';
     });
   }

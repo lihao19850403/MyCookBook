@@ -32,7 +32,10 @@ class Global {
           .top;
 
   /// 屏幕底部安全区距离。
-  static double screenBottomSafeZoneHeightVP = 0;
+  static double screenBottomSafeZoneHeightVP =
+      MediaQueryData.fromView(PlatformDispatcher.instance.views.last)
+          .padding
+          .bottom;
 
   /// 屏幕类型。
   static ScreenUIType screenUIType = ScreenUIType.NORMAL;

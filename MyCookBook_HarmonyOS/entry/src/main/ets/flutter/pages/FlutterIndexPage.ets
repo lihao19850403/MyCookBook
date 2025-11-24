@@ -13,6 +13,7 @@ import {
   GLOBAL_APP_SETTINGS_KEY_TEXT_SIZE_PLAN} from '../../utils/common/GlobalAppSettings';
 import { AppSettings } from '../../utils/AppSettings';
 import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/ScreenObserver';
+import window from '@ohos.window';
 
 /** 跳转Flutter内容页时传递的参数。 */
 export interface FlutterPathInfo {
@@ -99,6 +100,15 @@ struct FlutterIndexPageComponent {
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
       ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
         this.flutterEntry?.callFlutterBridgeMethod('screenUITypeChanged', screenStatus.screenUIType);
+        if (screenStatus.avoidArea !== undefined) {
+          let newAvoidAreaData: Record<string, Object> = {};
+          if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_SYSTEM) {
+            newAvoidAreaData['screenTopSafeZoneHeightVP'] = px2vp(screenStatus.avoidArea.topRect.height);
+          } else if (screenStatus.avoidAreaType === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+            newAvoidAreaData['screenBottomSafeZoneHeightVP'] = px2vp(screenStatus.avoidArea.bottomRect.height);
+          }
+          this.flutterEntry?.callFlutterBridgeMethod('avoidAreaChanged', newAvoidAreaData);
+        }
       });
     })
     .onShown(() => this.flutterEntry?.onPageShow())
