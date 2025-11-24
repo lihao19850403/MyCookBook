@@ -7,6 +7,7 @@ import 'package:my_cook_book_flutter_plugin/models/created_menu_item.dart';
 import 'package:my_cook_book_flutter_plugin/models/pick_photo_result.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/event_bus.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/screen_status_info.dart';
 
 /// 屏幕类型、分屏配置项变化事件。
 const String SCREEN_UI_INFO_CHANGED_EVENT = 'screenUIInfoChangedEvent';
@@ -57,14 +58,26 @@ class Bridge {
         Map<Object?, Object?>? newAvoidAreaData = call.arguments as Map?;
         if (newAvoidAreaData != null && newAvoidAreaData.isNotEmpty) {
           if (newAvoidAreaData.containsKey('screenTopSafeZoneHeightVP')) {
-            num screenTopSafeZoneHeightVP = newAvoidAreaData['screenTopSafeZoneHeightVP'] as num;
-            Global.screenTopSafeZoneHeightVP = screenTopSafeZoneHeightVP.toDouble();
+            num screenTopSafeZoneHeightVP =
+                newAvoidAreaData['screenTopSafeZoneHeightVP'] as num;
+            Global.screenTopSafeZoneHeightVP =
+                screenTopSafeZoneHeightVP.toDouble();
           }
           if (newAvoidAreaData.containsKey('screenBottomSafeZoneHeightVP')) {
-            num screenBottomSafeZoneHeightVP = newAvoidAreaData['screenBottomSafeZoneHeightVP'] as num;
-            Global.screenBottomSafeZoneHeightVP = screenBottomSafeZoneHeightVP.toDouble();
+            num screenBottomSafeZoneHeightVP =
+                newAvoidAreaData['screenBottomSafeZoneHeightVP'] as num;
+            Global.screenBottomSafeZoneHeightVP =
+                screenBottomSafeZoneHeightVP.toDouble();
           }
           /* 安全区距离改变会自动触发页面的刷新。 */
+        }
+        return true;
+      }
+      if (call.method == 'screenStatusInfoChanged') {
+        Map<Object?, Object?>? newScreenStatusInfoData = call.arguments as Map?;
+        if (newScreenStatusInfoData != null && newScreenStatusInfoData.isNotEmpty) {
+          Global.screenStatusInfo = ScreenStatusInfo.fromMap(newScreenStatusInfoData);
+          eventBus.emit(SCREEN_UI_INFO_CHANGED_EVENT);
         }
         return true;
       }

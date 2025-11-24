@@ -1,6 +1,7 @@
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/screen_status_info.dart';
 
 import '../../models/text_size_plan_model.dart';
 import '../../utils/bridge.dart';
@@ -10,8 +11,7 @@ import '../../utils/common/event_bus.dart';
 class SafeState<T extends StatefulWidget> extends State<T> {
   /// 窄屏模式。
   @protected
-  bool normalScreenMode = Global.screenUIType == ScreenUIType.NORMAL ||
-      (Global.isSplitScreen && Global.screenUIType == ScreenUIType.FOLD_OPENED);
+  bool normalScreenMode = _calcIfNormalScreenMode(Global.screenUIType, Global.isSplitScreen);
 
   /// 屏幕状态改变事件。
   EventCallback? _onScreenUIInfoChangedEvent;
@@ -68,8 +68,7 @@ class SafeState<T extends StatefulWidget> extends State<T> {
   @protected
   void onScreenUIInfoChanged(ScreenUIType newScreenUIType, bool isSplitScreen) {
     safeUpdate(() {
-      normalScreenMode = newScreenUIType == ScreenUIType.NORMAL ||
-          (isSplitScreen && newScreenUIType == ScreenUIType.FOLD_OPENED);
+      normalScreenMode = _calcIfNormalScreenMode(newScreenUIType, isSplitScreen);
     });
   }
 
@@ -86,5 +85,18 @@ class SafeState<T extends StatefulWidget> extends State<T> {
                   ? AppSettingsTextSizePlanModel.HUGE
                   : AppSettingsTextSizePlanModel.SMALL;
     });
+  }
+
+  /// 计算是否窄屏模式。
+  static bool _calcIfNormalScreenMode(ScreenUIType newScreenUIType, bool isSplitScreen) {
+    num windowWidthBreakpointIndex = Global.screenStatusInfo?.windowWidthBreakpoint?.index ?? 0;
+    bool normalScreenMode =
+      Global.screenStatusInfo?.windowStatusType == WindowStatusType.FLOATING || Global.screenStatusInfo?.windowStatusType == WindowStatusType.SPLIT_SCREEN ? (!(
+        newScreenUIType == ScreenUIType.PAD &&
+        ((!isSplitScreen && windowWidthBreakpointIndex >= WidthBreakpoint.WIDTH_MD.index) ||
+        (isSplitScreen && windowWidthBreakpointIndex >= WidthBreakpoint.WIDTH_LG.index))
+      )) :
+      (newScreenUIType == ScreenUIType.NORMAL || (isSplitScreen && newScreenUIType == ScreenUIType.FOLD_OPENED));
+    return normalScreenMode;
   }
 }

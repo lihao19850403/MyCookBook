@@ -14,6 +14,7 @@ import {
 import { AppSettings } from '../../utils/AppSettings';
 import { ScreenObserver, ScreenStatusInfo } from '../../utils/common/uiobserver/ScreenObserver';
 import window from '@ohos.window';
+import { GlobalConfig, GLOBAL_CONFIG_KEY_WINDOW } from '../../utils/common/GlobalConfig';
 
 /** 跳转Flutter内容页时传递的参数。 */
 export interface FlutterPathInfo {
@@ -26,7 +27,6 @@ export interface FlutterPathInfo {
 export namespace FlutterIndexPage {
   export function go(pathInfo: FlutterPathInfo) {
     // 解析页面跳转参数。
-    let path: string = pathInfo.path;
     let params: Record<string, Object> = {};
     if (pathInfo.params !== undefined) {
       Object.keys(pathInfo.params).forEach((key: string) => {
@@ -36,15 +36,15 @@ export namespace FlutterIndexPage {
         }
       })
     }
-    // 增加全局设置参数。
+    // 增加全局参数。
+    params['path'] = pathInfo.path;
     params['screenTopSafeZoneHeightVP'] = px2vp(getScreenTopSafeZoneHeightPx());
     params['screenBottomSafeZoneHeightVP'] = px2vp(getScreenBottomSafeZoneHeightPx());
     params['screenUIType'] = getScreenUIType();
     params['splitScreenSetting'] = AppSettings.isSplitScreen();
+    params['windowStatusType'] = (GlobalConfig.get(GLOBAL_CONFIG_KEY_WINDOW) as window.Window).getWindowStatus();
     params['textSizePlanID'] = AppSettings.textSizePlan().id;
-    let routerParams: Record<string, Object> = {};
-    routerParams[FlutterAbilityLaunchConfigs.EXTRA_INITIAL_ROUTE] = `${path}?${JSON.stringify(params)}`;
-    RouterUtils.navPushPath('FlutterIndexPage', routerParams);
+    RouterUtils.navPushPath('FlutterIndexPage', params);
   }
 }
 
@@ -93,10 +93,17 @@ struct FlutterIndexPageComponent {
     .hideTitleBar(true)
     .backButtonIcon(undefined)
     .onReady((context: NavDestinationContext) => {
+      /* 启动Flutter页面。 */
       let params: Record<string, Object> = RouterUtils.navGetParams(context) as Record<string, Object>;
-      this.flutterEntry = new FlutterWrapEntry(this.context, params);
+      // 追加屏幕断点参数。
+      params['windowWidthBreakpoint'] = this.getUIContext().getWindowWidthBreakpoint();
+      params['windowHeightBreakpoint'] = this.getUIContext().getWindowHeightBreakpoint();
+      let routerParams: Record<string, Object> = {};
+      routerParams[FlutterAbilityLaunchConfigs.EXTRA_INITIAL_ROUTE] = `${params["path"]}?${JSON.stringify(params)}`;
+      this.flutterEntry = new FlutterWrapEntry(this.context, routerParams);
       this.flutterEntry.aboutToAppear();
       this.flutterView = this.flutterEntry.getFlutterView();
+      /* 启动监听。 */
       emitter.on(GLOBAL_APP_SETTINGS_CHANGED_EVENT, this.onGlobalAppSettingsChangedEvent);
       ScreenObserver.subscribe(this.getUIContext(), (screenStatus: ScreenStatusInfo) => {
         this.flutterEntry?.callFlutterBridgeMethod('screenUITypeChanged', screenStatus.screenUIType);
@@ -108,6 +115,14 @@ struct FlutterIndexPageComponent {
             newAvoidAreaData['screenBottomSafeZoneHeightVP'] = px2vp(screenStatus.avoidArea.bottomRect.height);
           }
           this.flutterEntry?.callFlutterBridgeMethod('avoidAreaChanged', newAvoidAreaData);
+        }
+        if (screenStatus.windowStatusType !== undefined || screenStatus.windowWidthBreakpoint !== undefined || screenStatus.windowHeightBreakpoint !== undefined) {
+          let newScreenStatusInfo: Record<string, Object | undefined> = {
+            'windowStatusType': screenStatus.windowStatusType,
+            'windowWidthBreakpoint': screenStatus.windowWidthBreakpoint,
+            'windowHeightBreakpoint': screenStatus.windowHeightBreakpoint
+          };
+          this.flutterEntry?.callFlutterBridgeMethod('screenStatusInfoChanged', newScreenStatusInfo);
         }
       });
     })

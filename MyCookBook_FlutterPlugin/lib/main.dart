@@ -9,6 +9,7 @@ import 'package:my_cook_book_flutter_plugin/pages/create_menu/create_menu_list_p
 import 'package:my_cook_book_flutter_plugin/utils/bridge.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/global.dart';
 import 'package:my_cook_book_flutter_plugin/utils/common/error_handler.dart';
+import 'package:my_cook_book_flutter_plugin/utils/common/screen_status_info.dart';
 import 'package:my_cook_book_flutter_plugin/utils/resources.dart';
 import 'package:my_cook_book_flutter_plugin/views/common/safe_update.dart';
 
@@ -82,6 +83,16 @@ void _initGlobalParams(String pathInfo) {
   }
   if (params.containsKey('splitScreenSetting')) {
     Global.isSplitScreen = params['splitScreenSetting'] as bool;
+  }
+  if (params.containsKey('windowStatusType') &&
+      params.containsKey('windowWidthBreakpoint') &&
+      params.containsKey('windowHeightBreakpoint')) {
+    Map<String, num> newScreenStatusInfoData = <String, num>{
+      'windowStatusType': params['windowStatusType'] as num,
+      'windowWidthBreakpoint': params['windowWidthBreakpoint'] as num,
+      'windowHeightBreakpoint': params['windowHeightBreakpoint'] as num
+    };
+    Global.screenStatusInfo = ScreenStatusInfo.fromMap(newScreenStatusInfoData);
   }
   if (params.containsKey('textSizePlanID')) {
     num data = params['textSizePlanID'] as num;
