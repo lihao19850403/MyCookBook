@@ -86,6 +86,9 @@ struct HomeMain {
   /** 页面叠加模式。 */
   @State navMode: NavigationMode = NavigationMode.Stack;
 
+  /** 空白图标位置。 */
+  @State navEmptyIconPosition: Position | undefined = undefined;
+
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
       let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
@@ -187,12 +190,7 @@ struct HomeMain {
     .backgroundColor(Color.White)
     .backgroundImage(this.navMode === NavigationMode.Split ? $r('app.media.app_icon_foreground_gray') : undefined)
     .backgroundImageSize({ width: '512px', height: '512px' })
-    .backgroundImagePosition(
-      this.navWidthPx === undefined || this.navHeightPx === undefined ? undefined :
-      this.navBarWidthType === NAV_BAR_WIDTH_TYPE.SMALL ? { x: `${this.navWidthPx - (((this.navWidthPx * 0.65) - 512) / 2) - 512}px`, y: `${(this.navHeightPx - 512) / 2}px` } :
-      this.navBarWidthType === NAV_BAR_WIDTH_TYPE.MIDDLE ? { x: `${this.navWidthPx - (((this.navWidthPx * 0.5) - 512) / 2) - 512}px`, y: `${(this.navHeightPx - 512) / 2}px` } :
-      undefined
-    )
+    .backgroundImagePosition(this.navEmptyIconPosition)
     .navBarWidth(
       this.navBarWidthType === NAV_BAR_WIDTH_TYPE.SMALL ? '35%' :
       this.navBarWidthType === NAV_BAR_WIDTH_TYPE.MIDDLE ? '50%' :
@@ -210,7 +208,7 @@ struct HomeMain {
     .onAreaChange((_, newArea: Area) => {
       this.navWidthPx = vp2px(newArea.width as number);
       this.navHeightPx = vp2px(newArea.height as number);
-      this.calcNavBarWidthType();
+      this.calcNavEmptyIconPosition();
     })
   }
 
@@ -230,6 +228,8 @@ struct HomeMain {
     this.calcNavBarWidthType();
     // 计算页面叠加模式。
     this.calcNavMode();
+    // 计算空白图标位置。
+    this.calcNavEmptyIconPosition();
   }
 
   /** 计算tabs标签栏纵向排列模式。 */
@@ -279,5 +279,24 @@ struct HomeMain {
         screenUIType === ScreenUIType.NORMAL ? NavigationMode.Stack :
         this.isSplitScreen ? NavigationMode.Split : NavigationMode.Stack
       );
+  }
+
+  /** 计算空白图标位置。 */
+  private calcNavEmptyIconPosition() {
+    if (this.navWidthPx === undefined || this.navHeightPx === undefined) {
+      this.navEmptyIconPosition = undefined;
+    } else if (this.navBarWidthType === NAV_BAR_WIDTH_TYPE.SMALL) {
+      this.navEmptyIconPosition = {
+        x: `${this.navWidthPx - (((this.navWidthPx * 0.65) - 512) / 2) - 512}px`,
+        y: `${(this.navHeightPx - 512) / 2}px`
+      };
+    } else if (this.navBarWidthType === NAV_BAR_WIDTH_TYPE.MIDDLE) {
+      this.navEmptyIconPosition = {
+        x: `${this.navWidthPx - (((this.navWidthPx * 0.5) - 512) / 2) - 512}px`,
+        y: `${(this.navHeightPx - 512) / 2}px`
+      };
+    } else {
+      this.navEmptyIconPosition = undefined;
+    }
   }
 }
