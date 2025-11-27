@@ -37,6 +37,7 @@ export function HomeMainTabBarBuilder(info: HomeMainTabBarInfo) {
   .bindPopup(info.showFirstPagePopTips, {
     message: res2string($r('app.string.home_tab_mine_settings_first_page_pop')),
     messageOptions: {
+      textColor: Color.Black,
       font: { size: AppSettings.textSizePlan().homeTabMinePopupTipsTextSize }
     },
     placement: getScreenUIType() === ScreenUIType.PAD ? (
