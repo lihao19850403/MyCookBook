@@ -6,7 +6,7 @@
 
 此外本项目还进行了如下测试工作：
 
-1.  使用ArkXTest框架进行项目测试，详情可查阅[1.1.0版本应用测试](./Doc/1.1.0/测试/应用测试.md)
+1.  使用ArkXTest框架进行项目测试，详情可查阅[应用测试](./Doc/1.1.0/测试/应用测试.md)
 2.  使用Hypium进行UI测试，测试工程见[https://gitee.com/greatleghair/MyCookBookTest](https://gitee.com/greatleghair/MyCookBookTest)。
 
 #### 软件特点
@@ -15,7 +15,7 @@
 
 应用的特点如下：
 
-1.  屏幕适配：应用适配普通直板设备、折叠屏、Pad屏幕。应用在折叠屏上运行时，会对设备展开与合盖状态进行响应，并自动调整页面布局。关于屏幕状态响应的实现方法可查阅[动态监听屏幕尺寸及状态改变](https://developer.huawei.com/consumer/cn/blog/topic/03162326904748004)。 
+1.  屏幕适配：应用适配普通直板设备、折叠屏(2折叠、3折叠、扩折叠)、Pad屏幕、PC屏幕、TV屏幕(操作方式暂未适配)。应用在折叠屏上运行时，会对设备展开与合盖状态进行响应，并自动调整页面布局。关于屏幕状态响应的实现方法可查阅[动态监听屏幕尺寸及状态改变](https://developer.huawei.com/consumer/cn/blog/topic/03162326904748004)。 此外应用还适配了各种屏幕下的悬浮窗模式、双应用分屏模式。
 2.  分页分屏：应用使用Tab组件进行多标签页展现，支持滑动切换页面或点击标签切换页面；应用使用Navigation实现分屏显示功能，并支持动态切换分屏状态。应用中各页面之间的跳转使用NavPathStack实现。关于分屏展示功能的实现方法可查阅[迁移旧项目至Navigation，使用NavPathStack进行页面跳转，并实现分屏显示](https://developer.huawei.com/consumer/cn/blog/topic/03162334632054323)。
 3.  列表吸顶：应用对List组件，使用ListItemGroup及sticky来展现小标题吸顶效果。 
 4.  网格拖拽：应用对Grid组件设置了用户可长按元素进行拖拽排序的功能。 
@@ -25,7 +25,7 @@
 8.  事件传递：应用使用emitter进行事件传递、接收与处理。 
 9.  持久化：应用使用preferences对需要保存的信息进行持久化。
 10. 自定义组件：应用对使用频次高的组件进行了封装，比如标题栏、分割线、Web组件等。
-11. 跨平台开发：应用集成了Flutter开发框架，并进行了Flutter与原生平台之间的双向通信。关于如何在鸿蒙平台集成Flutter、如何进行双向通信，可参考如下笔记：[鸿蒙平台集成Flutter框架开发笔记](./Doc/1.2.0/flutter)。
+11. 跨平台开发：应用集成了Flutter开发框架，并进行了Flutter与原生平台之间的双向通信。关于如何在鸿蒙平台集成Flutter、如何进行双向通信，可参考如下笔记：[鸿蒙平台集成Flutter框架开发笔记](./Doc/1.2.0/flutter)。此外Flutter页面也适配了各种类型的屏幕、悬浮窗模式、双应用分屏模式。
 
 #### 安装教程
 
@@ -54,7 +54,7 @@ ohpm install @ohos/pulltorefresh
 
 ##### 配置模拟器
 
-在DevEco Studio中创建模拟器(应用适配了Phone、Foldable、Tablet三种设备，可以创建三个模拟器来查看运行效果)。
+在DevEco Studio中创建模拟器(应用适配了除手表外的其余各种设备，可以创建对应模拟器来查看运行效果)。
 
 ##### 启动项目
 
@@ -130,7 +130,8 @@ ohpm install @ohos/pulltorefresh
 | 1.0.0 | 初版                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 1.1.0 | 改进ArkXTest测试代码，去除冗余id属性设置，解耦测试代码与产品代码，并适配折叠屏与Pad屏幕的测试                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 1.2.0 | 一、跨平台开发：<br />1.1&emsp;集成Flutter开发框架。<br /><br />二、功能更新：<br />2.1&emsp;屏幕适配：适配三折叠设备。<br />2.2&emsp;异常捕获：增加异常捕获模块。<br />2.3&emsp;实现优化Ⅰ：“上拉加载更多”优化实现效果。<br />2.4&emsp;实现优化Ⅱ：使用配置文件的方式实现文字字号调整功能。<br />2.5&emsp;实现优化Ⅲ：使用更好的方式代替.bind(this)方式。<br />2.6&emsp;实现优化Ⅳ：精简代码，不再存储旧的屏幕宽高数据、不再存储旧的屏幕状态。<br /><br />三、细节调整：<br />3.1&emsp;默认启动页：增加一个默认启动页。<br />3.2&emsp;标题栏优化：标题栏文字避让图标。<br />3.3&emsp;分屏兜底：分屏模式下内容区增加一个兜底页面。<br />3.4&emsp;气泡提示：“我的”页面中使用气泡提示代替Toast提示。 |
-| 1.2.1 | 一、Flutter部分增加图片选取功能：可以从图库中选择一张图片作为菜谱大图。<br />二、一些小细节的调整。                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 1.2.1 | Flutter部分增加图片选取功能：可以从图库中选择一张图片作为菜谱大图。                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 1.3.0 | 适配更多类型设备(除手表外)，并适配悬浮窗模式、双应用分屏模式。                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
 #### 致谢
 
@@ -140,6 +141,7 @@ ohpm install @ohos/pulltorefresh
 2.  PhotoView：图片浏览库，项目地址：[https://gitee.com/openharmony-sig/PhotoView](https://gitee.com/openharmony-sig/PhotoView)。
 3.  PullToRefresh：数据获取组件，支持下拉刷新、上拉加载更多，项目地址：[https://gitee.com/openharmony-sig/PullToRefresh](https://gitee.com/openharmony-sig/PullToRefresh)。
 4.  Flutter for HarmonyOS：鸿蒙平台可用的第三方FlutterSDK，项目地址：[https://gitcode.com/openharmony-tpc/flutter_flutter.git](https://gitcode.com/openharmony-tpc/flutter_flutter.git)。
+5.  path_provider：支持Flutter组件访问鸿蒙原生文件路径系统，项目地址：[https://gitcode.com/openharmony-tpc/flutter_packages.git](https://gitcode.com/openharmony-tpc/flutter_packages.git)。
 
 应用使用了天聚数行免费api，仅做技术演示，在此致谢。
 
