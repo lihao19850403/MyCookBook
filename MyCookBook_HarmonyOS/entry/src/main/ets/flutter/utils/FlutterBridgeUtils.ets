@@ -306,7 +306,7 @@ function removeCreatedMenus(result: MethodResult, markToDeletedIDs?: Array<numbe
  * @param maxSelectNumber 最多选取图片张数，默认选取一张。
  */
 function pickPhoto(result: MethodResult, maxSelectNumber: number) {
-  PhotoPickerUtils.pickPhoto({
+  PhotoPickerUtils.pickPhotoFromGallery({
     maxSelectNumber: maxSelectNumber
   })
     .then((pickResult?: photoAccessHelper.PhotoSelectResult) => {
@@ -316,7 +316,7 @@ function pickPhoto(result: MethodResult, maxSelectNumber: number) {
       }
       // 将图片移动至应用内部路径中，再返回内部路径。
       Promise.allSettled(pickResult.photoUris.map((sourceUri: string) => {
-        return PhotoPickerUtils.saveOnePhoto({
+        return PhotoPickerUtils.saveOnePhotoToAPP({
           sourceUri: sourceUri,
           targetPath: getPathProviderPlugin().getApplicationDocumentsPath()
         });

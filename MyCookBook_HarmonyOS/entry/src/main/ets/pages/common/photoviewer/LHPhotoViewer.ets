@@ -13,6 +13,8 @@ import { fileUri } from '@kit.CoreFileKit';
 import url from '@ohos.url';
 import { ScreenObserver, ScreenStatusInfo } from '../../../utils/common/uiobserver/ScreenObserver';
 import window from '@ohos.window';
+import { openCustomDialog } from '../../../utils/common/DialogUtils';
+import { LHPhotoDownloadDialog } from './LHPhotoDownloadDialog';
 
 export namespace LHPhotoViewer {
   export function go(params: PhotoViewerParams) {
@@ -65,6 +67,9 @@ struct LHPhotoViewerComponent {
   /** 顶部安全区高度。 */
   @State topSafeZoneHeightVp: number = px2vp(getScreenTopSafeZoneHeightPx());
 
+  /** 是否允许下载网络图片。 */
+  @State allowDownloadNetPhoto: boolean = false;
+
   private onGlobalAppSettingsChangedEvent: Callback<emitter.EventData> = (dataWrap: emitter.EventData) => {
     if (dataWrap.data) {
       let eventType: string = dataWrap.data[GLOBAL_APP_SETTINGS_EVENT_TYPE] as string;
@@ -82,6 +87,7 @@ struct LHPhotoViewerComponent {
           centerTitleText: this.title,
           centerTitleTextSize: this.appTextSizePlan.unifiedTitleCenterTextSize,
           leftAction: LHCommonTitleBarLeftNavBack,
+          rightAction: this.allowDownloadNetPhoto ? (): void => this.downloadNetPhoto() : undefined
         })
         PhotoView({
           model: this.data
@@ -112,6 +118,7 @@ struct LHPhotoViewerComponent {
           let realUri: string = fileUri.getUriFromPath(uriStr);
           this.data.setImageURI(realUri);
         }
+        this.allowDownloadNetPhoto = isNetUri;
       } else {
         this.data.setImageResource(params.uri as Resource);
       }
@@ -138,4 +145,30 @@ struct LHPhotoViewerComponent {
       ScreenObserver.unsubscribe(this.getUIContext());
     })
   }
+
+  @Builder
+  private downloadNetPhoto() {
+    Image($r("app.media.ic_load_more_arrow_down"))
+      .width(48)
+      .height(48)
+      .padding(12)
+      .objectFit(ImageFit.Contain)
+      .onClick((event: ClickEvent) => {
+        if (typeof this.data.src === 'string') {
+          let netPhotoUrl: string = this.data.src
+          openCustomDialog({
+            builder: wrapBuilder(photoDownloadDialogBuilder),
+            data: [netPhotoUrl]
+          });
+        }
+      })
+  }
+}
+
+@Builder
+function photoDownloadDialogBuilder(params: object, closeCallback: Callback<void, void>) {
+  LHPhotoDownloadDialog({
+    netPhotoUrl: (params as Array<object>)[0] as ESObject as string,
+    closeCallback: closeCallback
+  })
 }

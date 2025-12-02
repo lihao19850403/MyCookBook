@@ -223,6 +223,30 @@
     {
       "name": "fail_to_load_menu_thumbnail",
       "value": "菜谱图片加载失败"
+    },
+    {
+      "name": "preparing",
+      "value": "准备中"
+    },
+    {
+      "name": "prepare_success",
+      "value": "准备成功"
+    },
+    {
+      "name": "prepare_failure",
+      "value": "准备失败"
+    },
+    {
+      "name": "saving",
+      "value": "保存中"
+    },
+    {
+      "name": "save_success",
+      "value": "成功保存"
+    },
+    {
+      "name": "save_failure",
+      "value": "保存失败"
     }
   ]
 }

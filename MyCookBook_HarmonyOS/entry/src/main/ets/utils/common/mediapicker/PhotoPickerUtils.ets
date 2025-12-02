@@ -5,6 +5,8 @@ import { CopyFileOptions, CopyFileResult } from "../filecenter/models/FileCopyMo
 import image from "@ohos.multimedia.image";
 import fs from '@ohos.file.fs';
 import { copyFile, copyFileSync, getMimeTypeOfFile } from "../filecenter/FileUtils";
+import { GlobalContext } from "../GlobalContext";
+import common from "@ohos.app.ability.common";
 
 /** 带有文件mime类型的存文件方法入参。 */
 interface CopyFileWithMimeTypeOptions {
@@ -41,7 +43,7 @@ export class PhotoPickerUtils {
    * 选取图片。
    * @param options 入参。
    */
-  public static pickPhoto(options?: PickPhotoOptions): Promise<photoAccessHelper.PhotoSelectResult | undefined> {
+  public static pickPhotoFromGallery(options?: PickPhotoOptions): Promise<photoAccessHelper.PhotoSelectResult | undefined> {
     return new Promise((resolve, reject) => {
       let photoPicker: photoAccessHelper.PhotoViewPicker = new photoAccessHelper.PhotoViewPicker();
       photoPicker.select({
@@ -56,10 +58,10 @@ export class PhotoPickerUtils {
   }
 
   /**
-   * 保存一张图片。
+   * 保存一张图片至应用沙箱。
    * @param options 入参。
    */
-  public static saveOnePhoto(options: CopyFileOptions): Promise<CopyFileResult | undefined> {
+  public static saveOnePhotoToAPP(options: CopyFileOptions): Promise<CopyFileResult | undefined> {
     let sourceFile: fs.File | undefined = undefined;
     let sourceImg: image.ImageSource | undefined = undefined;
     try {
@@ -70,7 +72,7 @@ export class PhotoPickerUtils {
         // 处理图片方向问题。
         let sourceOrientation: string | undefined = sourceFileProperties[image.PropertyKey.ORIENTATION];
         if (sourceOrientation !== undefined && sourceOrientation !== "Top-left") {
-          return PhotoPickerUtils.adjustOrientationAndSavePhoto({
+          return PhotoPickerUtils.adjustOrientationAndSavePhotoToAPP({
             sourceFileMimeType: getMimeTypeOfFile(sourceFile.name) ?? "*/*",
             sourceFileName: sourceFile.name,
             targetPath: options.targetPath,
@@ -94,6 +96,39 @@ export class PhotoPickerUtils {
   }
 
   /**
+   * 保存一张图片至系统相册。<br />
+   * 注：需要得到图片的位图数据再调用此方法。
+   * 1，如果使用SaveButton控件，需要保证10秒内完成图片位图数据的存储。
+   * 2，如果不使用SaveButton控件，需要额外申请ohos.permission.WRITE_IMAGEVIDEO权限。
+   * @param buffer 图片位图数据。
+   */
+  public static saveOnePhotoToGallery(buffer: ArrayBuffer): Promise<CopyFileResult | undefined> {
+    return new Promise((resolve, reject) => {
+      let context: common.UIAbilityContext = GlobalContext.getContext() as common.UIAbilityContext;
+      let helper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+      helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg')
+        .then((targetFileUri: string) => {
+          let file: fs.File | undefined = undefined;
+          try {
+            file = fs.openSync(targetFileUri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+            fs.writeSync(file.fd, buffer);
+            let copyResult: CopyFileResult = {
+              resultUri: targetFileUri
+            };
+            resolve(copyResult);
+          } catch (error) {
+            reject(error);
+          } finally {
+            if (file !== undefined) {
+              fs.closeSync(file);
+            }
+          }
+        })
+        .catch((error: BusinessError) => reject(error));
+    });
+  }
+
+  /**
    * 获取图片属性。
    * @param sourceImg 源图文件对象。
    * @return 属性集合。
@@ -113,10 +148,10 @@ export class PhotoPickerUtils {
   }
 
   /**
-   * 调整图片方向，并存储图片。
+   * 调整图片方向，并存储图片至应用沙箱。
    * @param options 入参。
    */
-  private static adjustOrientationAndSavePhoto(options: AdjustOrientationAndSavePhotoOptions): Promise<CopyFileResult | undefined> {
+  private static adjustOrientationAndSavePhotoToAPP(options: AdjustOrientationAndSavePhotoOptions): Promise<CopyFileResult | undefined> {
     return new Promise(async (resolve, reject) => {
       let pixelMap: PixelMap | undefined = undefined;
       try {
@@ -132,7 +167,7 @@ export class PhotoPickerUtils {
           default:
             break;
         }
-        let copyResult: CopyFileResult | undefined = await PhotoPickerUtils.savePixelMapSync({
+        let copyResult: CopyFileResult | undefined = await PhotoPickerUtils.savePixelMapToAPPSync({
           sourceFileMimeType: options.sourceFileMimeType,
           sourceFileName: options.sourceFileName,
           targetPath: options.targetPath,
@@ -158,10 +193,10 @@ export class PhotoPickerUtils {
   }
 
   /**
-   * 同步存储位图信息。
+   * 同步存储位图信息至应用沙箱。
    * @param options 入参。
    */
-  private static async savePixelMapSync(options: SavePixelMapOptions): Promise<CopyFileResult | undefined> {
+  private static async savePixelMapToAPPSync(options: SavePixelMapOptions): Promise<CopyFileResult | undefined> {
     let imagePacker: image.ImagePacker | undefined = undefined;
     let targetFile: fs.File | undefined = undefined;
     try {
